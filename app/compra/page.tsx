@@ -61,7 +61,6 @@ export default function Compra() {
   /* ================== TOTALS ================== */
   const totalBase = qty * PRECIO;
   const totalATH = totalBase;
-  const totalTarjeta = Math.round(totalBase * FEE_TARJETA * 100) / 100;
   const totalPuerta = qty * 30;
 
   /* ================== FLOW ================== */
@@ -638,18 +637,7 @@ const athBtn = {
   marginBottom: 12,
 };
 
-const uploadBox = {
-  width: "100%",
-  padding: 16,
-  margin: "14px 0",
-  border: "1px dashed #0ff",
-  borderRadius: 10,
-  textAlign: "center" as const,
-  cursor: "pointer",
-  color: "#9ff",
-  transition: "all 0.25s ease",
-  boxShadow: "0 0 0 rgba(0,255,255,0)",
-};
+
 
 const uploadWrapper = {
   display: "flex",
