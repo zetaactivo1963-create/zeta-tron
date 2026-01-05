@@ -120,10 +120,7 @@ export default function AdminPage() {
 
       // 🔎 BUSCAR POR CÓDIGO O TELÉFONO (server-side)
       const s = search.trim();
-      if (s) {
-        // ticket_code ilike y phone ilike (incluye si el phone tiene guiones etc)
-        query = query.or(`ticket_code.ilike.%${s}%,phone.ilike.%${s}%`);
-      }
+
 
       const { data, error } = await query;
 
