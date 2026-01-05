@@ -344,6 +344,15 @@ function goToReview(e: React.FormEvent) {
           )}
 
           <button style={primaryBtn}>REVISAR COMPRA</button>
+
+          <button
+  type="button"
+  style={backBox}
+  onClick={() => (window.location.href = "/")}
+>
+  ← Volver al inicio
+</button>
+          
         </form>
       )}
 
@@ -695,4 +704,20 @@ const uploadMini = {
   boxShadow: "0 0 10px rgba(0,255,255,0.25)",
   transition: "all 0.25s ease",
   background: "rgba(0,0,0,0.6)",
+};
+
+
+const backBox = {
+  marginTop: 14,
+  width: "100%",
+  padding: 10,
+  background: "rgba(0,255,255,0.08)",
+  border: "1px solid rgba(0,255,255,0.4)",
+  borderRadius: 8,
+  color: "#9ff",
+  cursor: "pointer",
+  textAlign: "center" as const,
+  fontSize: 13,
+  letterSpacing: 1,
+  transition: "all 0.25s ease",
 };
