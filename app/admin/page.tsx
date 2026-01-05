@@ -118,9 +118,6 @@ export default function AdminPage() {
         query = query.eq("status", filter);
       }
 
-      // 🔎 BUSCAR POR CÓDIGO O TELÉFONO (server-side)
-      const s = search.trim();
-
 
       const { data, error } = await query;
 
@@ -146,7 +143,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter, search]);
+  }, [filter]);
 
   useEffect(() => {
     if (!authorized) return;
