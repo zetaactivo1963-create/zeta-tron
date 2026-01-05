@@ -81,7 +81,7 @@ function goToReview(e: React.FormEvent) {
   setMetodoPago("");
   setStep("review");
 }
-  }
+  
 
   async function confirmarATH() {
     if (!receipt) {
