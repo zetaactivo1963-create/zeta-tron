@@ -440,13 +440,16 @@ function goToReview(e: React.FormEvent) {
             ATH MÓVIL
           </h2>
 
+          
+Envía <b>${totalATH}</b> a Kenneth Morales
+            <br />
           <a
-            href="https://athmovil.com"
+            href="https://athm-ulink-prod-static-website.s3.amazonaws.com/qr-code?content=74ff061b98d7ab2708799bcd255ebef8f923d29c3248bf5b518b8be08e2055a8"
             target="_blank"
             rel="noopener noreferrer"
             style={athBtn}
           >
-            Abrir ATH Móvil
+            Pagar por ATH Móvil 
           </a>
 
           <div
@@ -457,8 +460,7 @@ function goToReview(e: React.FormEvent) {
               textAlign: "center",
             }}
           >
-            Envía <b>${totalATH}</b> a Kenneth Morales
-            <br />
+            
             <span
               onClick={() => {
                 navigator.clipboard.writeText("9392533384");
@@ -542,11 +544,7 @@ function goToReview(e: React.FormEvent) {
   </p>
 </div>
 
-          <p style={text}>
-            Total a pagar:
-            <br />
-            <b>${totalPuerta}</b>
-          </p>
+      
 
           <button
             style={primaryBtn}
