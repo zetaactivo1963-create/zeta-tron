@@ -4,7 +4,6 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Orbitron, Inter } from "next/font/google";
 const ATH_NUMBER = "9392533384"; // Kenneth
-  const [phone, setPhone] = useState("");
 
 
 /* ================== FONTS ================== */
