@@ -164,38 +164,46 @@ function goToReview(e: React.FormEvent) {
     }
   }
 
-  /* ================== DONE ================== */
-  if (step === "done") {
-    const esPuerta = metodoPago === "puerta";
-
-    return (
-      <main style={main}>
-        <div style={{ ...card, textAlign: "center" }}>
-          <h2 className={tron.className} style={title}>
-            {esPuerta ? "RESERVA CONFIRMADA" : "PAGO RECIBIDO"}
-          </h2>
-
-          <p style={text}>
-            Código de referencia:
-            <br />
-            <b style={{ fontSize: 18 }}>{ticketCode}</b>
-          </p>
-
-         
-          <button
-            style={primaryBtn}
-            onClick={() => (window.location.href = "/events/zeta-tron")}
-          >
-            Volver al evento
-          </button>
-        </div>
-      </main>
-    );
-  }
 
   /* ================== UI ================== */
   return (
     <main style={main} className={ui.className}>
+
+      {/* ===== DONE ===== */}
+{step === "done" && (
+  <div style={{ ...card, textAlign: "center" }}>
+    <h2 className={tron.className} style={title}>
+      {metodoPago === "puerta" ? "RESERVA CONFIRMADA" : "PAGO RECIBIDO"}
+    </h2>
+
+    <p style={text}>
+      Código de referencia:
+      <br />
+      <b style={{ fontSize: 18 }}>{ticketCode}</b>
+    </p>
+
+    <div style={summaryBox}>
+      <p><b>Nombre:</b> {name}</p>
+      <p><b>Teléfono:</b> {phone}</p>
+      <p><b>Cantidad:</b> {qty}</p>
+
+      {metodoPago === "puerta" && (
+        <p>
+          <b>Total en puerta:</b>{" "}
+          <span style={{ color: "#00ffff" }}>${qty * 30}</span>
+        </p>
+      )}
+    </div>
+
+    <button
+      style={primaryBtn}
+      onClick={() => (window.location.href = "/events/zeta-tron")}
+    >
+      Volver al evento
+    </button>
+  </div>
+)}
+      
       {/* ===== FORM ===== */}
       {step === "form" && (
         <form onSubmit={goToReview} style={card}>
