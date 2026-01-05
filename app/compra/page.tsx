@@ -348,7 +348,7 @@ function goToReview(e: React.FormEvent) {
           <button
   type="button"
   style={backBox}
-  onClick={() => (window.location.href = "/")}
+  onClick={() => (window.location.href = "/events/zeta-tron")}
 >
   ← Volver al inicio
 </button>
