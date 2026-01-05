@@ -548,10 +548,6 @@ export default function AdminPage() {
       <div style={{ width: "100%", maxWidth: 1200 }}>
         <div style={topHeader}>
           <h1 style={{ color: "#0ff", margin: 0 }}>ADMIN · TICKETS</h1>
-
-          <button style={refreshBtn} onClick={fetchTickets} type="button">
-            ↻ Refrescar
-          </button>
         </div>
 
         {/* ===== DASHBOARD ===== */}
@@ -569,9 +565,17 @@ export default function AdminPage() {
           </div>
 
           <div style={statsRight}>
-            {SearchBar}
-            {FilterSelect}
-          </div>
+  {SearchBar}
+  {FilterSelect}
+
+  <button
+    type="button"
+    onClick={fetchTickets}
+    style={refreshBtnInline}
+  >
+    ↻
+  </button>
+</div>
         </div>
 
         {/* ===== RESUMENES ===== */}
@@ -1090,6 +1094,16 @@ const cardGrid2: React.CSSProperties = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
   gap: 10,
+};
+
+const refreshBtnInline = {
+  padding: "6px 10px",
+  background: "#000",
+  color: "#0ff",
+  border: "1px solid #0ff",
+  borderRadius: 6,
+  cursor: "pointer",
+  fontSize: 14,
 };
 
 /* Responsive: barra búsqueda full width en iphone */
