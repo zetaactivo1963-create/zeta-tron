@@ -441,7 +441,9 @@ function goToReview(e: React.FormEvent) {
           </h2>
 
           
-Envía <b>${totalATH}</b> a Kenneth Morales
+            Envía <b>${totalATH}</b> a Kenneth Morales
+           <br />
+           
             <br />
           <a
             href="https://athm-ulink-prod-static-website.s3.amazonaws.com/qr-code?content=74ff061b98d7ab2708799bcd255ebef8f923d29c3248bf5b518b8be08e2055a8"
