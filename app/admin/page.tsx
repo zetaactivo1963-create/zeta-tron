@@ -96,8 +96,30 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    if (authorized) fetchTickets();
-  }, [filter]);
+  if (authorized) fetchTickets();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [filter, authorized]);
+
+
+  const resumenOrganizacion = Object.values(
+    tickets.reduce(
+      (
+        acc: Record<string, { organizacion: string; personas: number }>,
+        t
+      ) => {
+        // OJO: en tu DB la columna se llama "asociacion", NO "organizacion"
+        const org = (t as any).asociacion || "Sin organización";
+
+        if (!acc[org]) {
+          acc[org] = { organizacion: org, personas: 0 };
+        }
+
+        acc[org].personas += 1;
+        return acc;
+      },
+      {}
+    )
+  );
 
   // ===== STATUS UPDATE =====
   async function updateStatus(
@@ -121,15 +143,6 @@ export default function AdminPage() {
     // WhatsApp SOLO si es aprobado
     if (status === "aprobado") {
       const phoneClean = ticket.phone.replace(/\D/g, "");
-
-      const msg = encodeURIComponent(
-        `🎟️ TAQUILLA APROBADA\n\n` +
-          `Código: ${ticket.ticket_code}\n` +
-          `Nombre: ${ticket.name}\n` +
-          `Cantidad: ${ticket.qty}\n\n` +
-          `⚠️ Guarda este código. Será validado en la entrada.\n\n` +
-          `Capítulo Zeta – ΦΣΑ`
-      );
 
       const mensaje = encodeURIComponent(
         `ZETA TRON 🚀\n` +
@@ -209,7 +222,6 @@ export default function AdminPage() {
   const ticketsEntrados = filteredTickets.filter((t) => t.checked_in);
 
   // ===== TOTALES =====
-  const PRECIO_PUERTA = 30;
   const totalTickets = filteredTickets.reduce((acc, t) => acc + t.qty, 0);
   const totalATH = tickets
     .filter((t) => t.status === "aprobado" && t.payment_method !== "puerta")
@@ -345,6 +357,27 @@ export default function AdminPage() {
           </select>
         </div>
         <div style={{ marginTop: 40 }}>
+          <h2 style={{ marginBottom: 12 }}>Resumen por organización</h2>
+
+          <div style={{ width: "100%", overflowX: "auto" }}>
+            <table style={{ ...table, marginBottom: 20, minWidth: 420 }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left" }}>Organización</th>
+                  <th style={{ textAlign: "center" }}>Personas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resumenOrganizacion.map((o) => (
+                  <tr key={o.organizacion}>
+                    <td>{o.organizacion}</td>
+                    <td style={{ textAlign: "center" }}>{o.personas}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
           <h2 style={{ marginBottom: 12 }}>Resumen por candidato</h2>
 
           <table style={{ ...table, marginBottom: 40 }}>
