@@ -220,13 +220,18 @@ export default function Compra() {
             <br />
             TRON SHOW · Capítulo Zeta · ΦΣΑ
           </p>
-
+<input
+  type="text"
+  placeholder="Nombre completo"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  required
+/>
           <input
   type="tel"
   inputMode="numeric"
   pattern="[0-9]{10}"
   maxLength={10}
-  placeholder="Teléfono (10 dígitos)"
   value={phone}
   onChange={(e) => {
     const onlyNumbers = e.target.value.replace(/\D/g, "");
