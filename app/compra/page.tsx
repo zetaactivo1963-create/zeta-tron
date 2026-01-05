@@ -238,17 +238,28 @@ export default function Compra() {
     WebkitBoxShadow: "0 0 0px 1000px #000 inset",
   }}
 />
-          <input
+<input
   type="tel"
-  inputMode="numeric"
-  pattern="[0-9]{10}"
-  maxLength={10}
+  placeholder="Teléfono"
   value={phone}
+  inputMode="numeric"
+  autoComplete="off"
+  maxLength={10}
   onChange={(e) => {
-    const onlyNumbers = e.target.value.replace(/\D/g, "");
-    setPhone(onlyNumbers.slice(0, 10));
+    const onlyNums = e.target.value.replace(/\D/g, "");
+    setPhone(onlyNums);
   }}
-  required
+  style={{
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#000",
+    color: "#0ff",
+    border: "1px solid #0ff",
+    boxSizing: "border-box",
+    outline: "none",
+    WebkitAppearance: "none",
+    WebkitBoxShadow: "0 0 0px 1000px #000 inset",
+  }}
 />
 
           <input
