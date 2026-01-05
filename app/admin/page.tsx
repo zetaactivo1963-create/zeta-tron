@@ -95,12 +95,19 @@ export default function AdminPage() {
     const sLower = s.toLowerCase();
     const sDigits = s.replace(/\D/g, "");
 
-    return tickets.filter((t) => {
-      const code = (t.ticket_code ?? "").toLowerCase();
-      const phone = t.phone ?? "";
-      const phoneDigits = phone.replace(/\D/g, "");
-      return code.includes(sLower) || phone.includes(s) || (sDigits && phoneDigits.includes(sDigits));
-    });
+return tickets.filter((t) => {
+  const code = (t.ticket_code ?? "").toLowerCase();
+  const name = (t.name ?? "").toLowerCase();
+  const phone = t.phone ?? "";
+  const phoneDigits = phone.replace(/\D/g, "");
+
+  return (
+    code.includes(sLower) ||
+    name.includes(sLower) ||
+    phone.includes(s) ||
+    (sDigits && phoneDigits.includes(sDigits))
+  );
+});
   }, [tickets, search]);
 
   /* ================== FETCH ================== */
