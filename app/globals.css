@@ -16,3 +16,18 @@ html, body {
   color: var(--text);
   font-family: Inter, system-ui, -apple-system, sans-serif;
 }
+
+
+  autoComplete="off"
+  style={{
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#000",
+    color: "#0ff",
+    border: "1px solid #0ff",
+    boxSizing: "border-box",
+    outline: "none",
+    WebkitAppearance: "none",
+    WebkitBoxShadow: "0 0 0px 1000px #000 inset",
+  }}
+/>
