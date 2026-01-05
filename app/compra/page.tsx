@@ -262,13 +262,7 @@ export default function Compra() {
   }}
 />
 
-          <input
-            style={input}
-            placeholder="Teléfono"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
+      
 
           <label style={label}>Cantidad</label>
           <div
