@@ -225,7 +225,16 @@ export default function Compra() {
   placeholder="Nombre completo"
   value={name}
   onChange={(e) => setName(e.target.value)}
-  required
+  style={{
+    width: "100%",
+    display: "block",
+    boxSizing: "border-box",
+    padding: "12px",
+    background: "#000",
+    border: "1px solid #0ff",
+    color: "#0ff",
+    fontSize: 16,
+  }}
 />
           <input
   type="tel"
