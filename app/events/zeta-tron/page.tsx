@@ -21,7 +21,7 @@ export default function ZetaTron() {
     >
       {/* VIDEO DE FONDO */}
       <video autoPlay loop muted playsInline style={videoBg}>
-        <source src="/videos/bg.mp4" type="video/mp4" />
+        <source src="/videos/bgg.mp4" type="video/mp4" />
       </video>
 
       {/* OVERLAY */}
