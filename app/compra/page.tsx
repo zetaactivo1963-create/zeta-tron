@@ -225,15 +225,17 @@ export default function Compra() {
   placeholder="Nombre completo"
   value={name}
   onChange={(e) => setName(e.target.value)}
+  autoComplete="off"
   style={{
     width: "100%",
-    display: "block",
-    boxSizing: "border-box",
     padding: "12px",
-    background: "#000",
-    border: "1px solid #0ff",
+    backgroundColor: "#000",
     color: "#0ff",
-    fontSize: 16,
+    border: "1px solid #0ff",
+    boxSizing: "border-box",
+    outline: "none",
+    WebkitAppearance: "none",
+    WebkitBoxShadow: "0 0 0px 1000px #000 inset",
   }}
 />
           <input
@@ -300,13 +302,11 @@ export default function Compra() {
             value={asociacion}
             onChange={(e) => setAsociacion(e.target.value)}
           >
-            <option value="">Ninguna</option>
             <option value="Amiigo/Familiar">Amiigo/Familiar</option>
             <option value="Phi Sigma Alpha">Phi Sigma Alpha</option>
             <option value="Eta Gamma Delta">Eta Gamma Delta</option>
             <option value="Mu Alpha Phi">Mu Alpha Phi</option>
             <option value="Sigma Epsilon Chi">Sigma Epsilon Chi</option>
-            <option value="Nu Sigma Beta">Nu Sigma Beta</option>
             <option value="Otra">Otra</option>
           </select>
 
