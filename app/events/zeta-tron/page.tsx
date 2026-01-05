@@ -34,7 +34,7 @@ export default function ZetaTron() {
         {/* CONTENIDO */}
         <div style={content}>
           <h1 style={title}>Zeta's "Welcome to the Grid"</h1>
-          <h2 style={chapter}>Chap. Zeta Show</h2>
+          <h2 style={chapter}>Show de Neófitos</h2>
           <h3 style={org}>PHI SIGMA ALPHA</h3>
 
           <Link href="/compra">
