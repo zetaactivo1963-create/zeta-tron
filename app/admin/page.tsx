@@ -102,24 +102,24 @@ useEffect(() => {
 }, [authorized, filter]);
 
 
-  const resumenOrganizacion = Object.values(
-    tickets.reduce(
-      (
-        acc: Record<string, { organizacion: string; personas: number }>,
-        t
-      ) => {
-        // OJO: en tu DB la columna se llama "asociacion", NO "organizacion"
+const resumenOrganizacion = Object.values(
+  tickets.reduce(
+    (
+      acc: Record<string, { organizacion: string; personas: number }>,
+      t
+    ) => {
+      const org = t.asociacion || "Sin organización";
 
-        if (!acc[org]) {
-          acc[org] = { organizacion: org, personas: 0 };
-        }
+      if (!acc[org]) {
+        acc[org] = { organizacion: org, personas: 0 };
+      }
 
-        acc[org].personas += 1;
-        return acc;
-      },
-      {}
-    )
-  );
+      acc[org].personas += 1;
+      return acc;
+    },
+    {}
+  )
+);
 
   // ===== STATUS UPDATE =====
   async function updateStatus(
