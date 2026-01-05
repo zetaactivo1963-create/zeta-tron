@@ -57,6 +57,7 @@ export default function Compra() {
   const [receipt, setReceipt] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
+  const [phone, setPhone] = useState("");
 
   /* ================== TOTALS ================== */
   const totalBase = qty * PRECIO;
@@ -221,12 +222,18 @@ export default function Compra() {
           </p>
 
           <input
-            style={input}
-            placeholder="Nombre"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+  type="tel"
+  inputMode="numeric"
+  pattern="[0-9]{10}"
+  maxLength={10}
+  placeholder="Teléfono (10 dígitos)"
+  value={phone}
+  onChange={(e) => {
+    const onlyNumbers = e.target.value.replace(/\D/g, "");
+    setPhone(onlyNumbers.slice(0, 10));
+  }}
+  required
+/>
 
           <input
             style={input}
@@ -273,7 +280,7 @@ export default function Compra() {
             </button>
           </div>
 
-          <label style={label}>Parentezco</label>
+          <label style={label}>Relación / Organización</label>
           <select
             style={input}
             value={asociacion}
