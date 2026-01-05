@@ -15,6 +15,7 @@ type Ticket = {
   created_at: string;
   checked_in: boolean;
   checked_in_at?: string | null;
+  asociacion?: string | null;
 };
 
 type ResumenCandidato = {
@@ -95,10 +96,10 @@ export default function AdminPage() {
     setLoading(false);
   }
 
-  useEffect(() => {
+useEffect(() => {
   if (authorized) fetchTickets();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [filter, authorized]);
+}, [authorized, filter]);
 
 
   const resumenOrganizacion = Object.values(
@@ -108,7 +109,6 @@ export default function AdminPage() {
         t
       ) => {
         // OJO: en tu DB la columna se llama "asociacion", NO "organizacion"
-        const org = (t as any).asociacion || "Sin organización";
 
         if (!acc[org]) {
           acc[org] = { organizacion: org, personas: 0 };
@@ -347,8 +347,9 @@ export default function AdminPage() {
 
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
-            style={select}
+onChange={(e) =>
+  setFilter(e.target.value as "todos" | "pendiente" | "aprobado" | "rechazado")
+}            style={select}
           >
             <option value="todos">Todos</option>
             <option value="pendiente">Pendientes</option>
@@ -610,32 +611,6 @@ const main = {
   display: "flex",
   justifyContent: "center",
   padding: 24,
-};
-
-const card = {
-  border: "1px solid #0ff",
-  padding: 32,
-  width: 320,
-  textAlign: "center" as const,
-};
-
-const input = {
-  width: "100%",
-  padding: 12,
-  marginTop: 12,
-  background: "#000",
-  border: "1px solid #0ff",
-  color: "#0ff",
-};
-
-const btn = {
-  marginTop: 16,
-  width: "100%",
-  padding: 12,
-  background: "#0ff",
-  color: "#000",
-  fontWeight: "bold",
-  border: "none",
 };
 
 const stats = {
