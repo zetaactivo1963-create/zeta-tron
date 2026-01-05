@@ -627,7 +627,7 @@ const select = {
   padding: 6,
 };
 
-const table = {
+const table: React.CSSProperties = {
   width: "100%",
   borderCollapse: "collapse",
   minWidth: 1000,
