@@ -4,6 +4,8 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Orbitron, Inter } from "next/font/google";
 const ATH_NUMBER = "9392533384"; // Kenneth
+  const [phone, setPhone] = useState("");
+
 
 /* ================== FONTS ================== */
 const tron = Orbitron({
@@ -57,7 +59,6 @@ export default function Compra() {
   const [receipt, setReceipt] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
-  const [phone, setPhone] = useState("");
 
   /* ================== TOTALS ================== */
   const totalBase = qty * PRECIO;
