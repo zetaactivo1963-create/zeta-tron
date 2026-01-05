@@ -65,10 +65,22 @@ export default function Compra() {
   const totalPuerta = qty * 30;
 
   /* ================== FLOW ================== */
-  function goToReview(e: React.FormEvent) {
-    e.preventDefault();
-    setMetodoPago("");
-    setStep("review");
+function goToReview(e: React.FormEvent) {
+  e.preventDefault();
+
+  if (name.trim().length < 3) {
+    alert("Escribe tu nombre completo");
+    return;
+  }
+
+  if (phone.length !== 10) {
+    alert("El teléfono debe tener 10 dígitos");
+    return;
+  }
+
+  setMetodoPago("");
+  setStep("review");
+}
   }
 
   async function confirmarATH() {
@@ -169,25 +181,7 @@ export default function Compra() {
             <b style={{ fontSize: 18 }}>{ticketCode}</b>
           </p>
 
-          <div style={summaryBox}>
-            <p>
-              <b>Nombre:</b> {name}
-            </p>
-            <p>
-              <b>Teléfono:</b> {phone}
-            </p>
-            <p>
-              <b>Cantidad:</b> {qty}
-            </p>
-
-            {esPuerta && (
-              <p>
-                <b>Total en puerta:</b>{" "}
-                <span style={{ color: "#00ffff" }}>${totalPuerta}</span>
-              </p>
-            )}
-          </div>
-
+         
           <button
             style={primaryBtn}
             onClick={() => (window.location.href = "/events/zeta-tron")}
@@ -219,6 +213,8 @@ export default function Compra() {
             <br />
             <br />
             TRON SHOW · Capítulo Zeta · ΦΣΑ
+             <br />
+            Nos Reservamos el derecho de admisión
           </p>
 <input
   type="text"
@@ -527,6 +523,16 @@ export default function Compra() {
           <h2 className={tron.className} style={subtitle}>
             PAGO EN PUERTA
           </h2>
+
+          <div style={summaryBox}>
+  <p><b>Nombre:</b> {name}</p>
+  <p><b>Teléfono:</b> {phone}</p>
+  <p><b>Cantidad:</b> {qty}</p>
+  <p>
+    <b>Total a pagar en puerta:</b>{" "}
+    <span style={{ color: "#00ffff" }}>${totalPuerta}</span>
+  </p>
+</div>
 
           <p style={text}>
             Total a pagar:
