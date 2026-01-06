@@ -1,5 +1,5 @@
 import EventCard from "@/components/EventCard";
-import { events } from "@/lib/events";
+import { EVENTS } from "@/lib/events";
 
 export default function HomePage() {
   return (
@@ -38,7 +38,7 @@ export default function HomePage() {
             justifyItems: "center",
           }}
         >
-          {events.map((event) => (
+          {EVENTS.map((event) => (
             <EventCard key={event.slug} event={event} />
           ))}
         </div>
