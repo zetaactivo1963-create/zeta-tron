@@ -1,67 +1,75 @@
+import Link from "next/link";
+
 export default function ZetaTron() {
-    return (
-      <main
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "radial-gradient(circle at top, #00ffff22, #000 70%)",
+        color: "#e6ffff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        textAlign: "center",
+        padding: 24,
+      }}
+    >
+      <h1
         style={{
-          minHeight: "100vh",
-          background: "radial-gradient(circle at top, #0ff2, #000 70%)",
-          color: "#e6ffff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          textAlign: "center",
+          fontSize: 64,
+          letterSpacing: 6,
+          marginBottom: 12,
         }}
       >
-        <h1
-          style={{
-            fontSize: 64,
-            letterSpacing: 6,
-            marginBottom: 12,
-          }}
-        >
-          Capítulo Zeta
-        </h1>
-  
-        <h2
-          style={{
-            fontSize: 36,
-            opacity: 0.9,
-            marginBottom: 8,
-          }}
-        >
-          PHI SIGMA ALPHA
-        </h2>
-  
-        <p
-          style={{
-            fontSize: 14,
-            opacity: 0.7,
-            letterSpacing: 2,
-            marginBottom: 48,
-          }}
-        >
-          TRON Show
-        </p>
-  
-        {/* Botón principal */}
+        Capítulo Zeta
+      </h1>
+
+      <h2
+        style={{
+          fontSize: 36,
+          opacity: 0.9,
+          marginBottom: 8,
+        }}
+      >
+        PHI SIGMA ALPHA
+      </h2>
+
+      <p
+        style={{
+          fontSize: 14,
+          opacity: 0.7,
+          letterSpacing: 2,
+          marginBottom: 48,
+        }}
+      >
+        TRON SHOW
+      </p>
+
+      {/* BOTÓN COMPRAR */}
+      <Link href="/events/zeta-tron">
         <button
           style={{
             padding: "14px 40px",
-            background: "#0ff",
+            background: "#00ffff",
             border: "none",
             color: "#000",
             fontSize: 16,
+            fontWeight: 700,
             letterSpacing: 2,
             cursor: "pointer",
             marginBottom: 28,
+            borderRadius: 10,
+            boxShadow: "0 0 20px rgba(0,255,255,0.6)",
           }}
         >
           COMPRAR TAQUILLAS
         </button>
-  
-        {/* Acceso directiva */}
-        <a
-          href="/admin"
+      </Link>
+
+      {/* ACCESO DIRECTIVA */}
+      <Link href="/admin">
+        <span
           style={{
             fontSize: 12,
             opacity: 0.6,
@@ -71,9 +79,8 @@ export default function ZetaTron() {
           }}
         >
           Acceso Directiva
-        </a>
-      </main>
-    );
-  }
-  
-  
+        </span>
+      </Link>
+    </main>
+  );
+}
