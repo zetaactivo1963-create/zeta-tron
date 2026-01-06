@@ -32,6 +32,18 @@ export default function HomePage() {
           Eventos disponibles
         </h1>
 
+
+
+
+        {/* GRID DE EVENTOS */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: 24,
+            justifyItems: "center",
+          }}
+
         {/* HERO */}
 <div
   style={{
@@ -65,16 +77,7 @@ export default function HomePage() {
     Zeta Tron · Welcome to the Grid
   </div>
 </div>
-
-
-        {/* GRID DE EVENTOS */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 24,
-            justifyItems: "center",
-          }}
+          
         >
           {EVENTS.map((event) => (
             <EventCard key={event.slug} event={event} />
