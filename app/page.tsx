@@ -1,5 +1,5 @@
-import { EVENTS } from "./lib/events";
-import EventCard from "./components/EventCard";
+import EventCard from "@/components/EventCard";
+import { events } from "@/lib/events";
 
 export default function HomePage() {
   return (
@@ -7,31 +7,41 @@ export default function HomePage() {
       style={{
         minHeight: "100vh",
         background: "radial-gradient(circle at top, #001a1a, #000)",
-        padding: 24,
+        padding: "40px 20px",
+        display: "flex",
+        justifyContent: "center",
       }}
     >
-      <h1
-        style={{
-          color: "#00ffff",
-          fontSize: 36,
-          textAlign: "center",
-          marginBottom: 40,
-        }}
-      >
-        TicketEDY
-      </h1>
-
       <div
         style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 24,
-          justifyContent: "center",
+          width: "100%",
+          maxWidth: 1200,
         }}
       >
-        {EVENTS.filter((e) => e.status === "active").map((event) => (
-          <EventCard key={event.slug} event={event} />
-        ))}
+        <h1
+          style={{
+            color: "#00ffff",
+            textAlign: "center",
+            marginBottom: 40,
+            letterSpacing: 2,
+          }}
+        >
+          Eventos disponibles
+        </h1>
+
+        {/* GRID DE EVENTOS */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: 24,
+            justifyItems: "center",
+          }}
+        >
+          {events.map((event) => (
+            <EventCard key={event.slug} event={event} />
+          ))}
+        </div>
       </div>
     </main>
   );
