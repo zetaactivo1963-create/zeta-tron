@@ -43,8 +43,9 @@ export default function HomePage() {
             gap: 24,
             justifyItems: "center",
           }}
+        >
 
-        {/* HERO */}
+       {/* HERO */}
 <div
   style={{
     width: "100%",
@@ -77,8 +78,8 @@ export default function HomePage() {
     Zeta Tron · Welcome to the Grid
   </div>
 </div>
+
           
-        >
           {EVENTS.map((event) => (
             <EventCard key={event.slug} event={event} />
           ))}
