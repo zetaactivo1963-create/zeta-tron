@@ -19,7 +19,20 @@ export default function HomePage() {
         }}
       >
 
-{/* HERO */}
+
+        
+        <h1
+          style={{
+            color: "#00ffff",
+            textAlign: "center",
+            marginBottom: 40,
+            letterSpacing: 2,
+          }}
+        >
+          Eventos disponibles
+        </h1>
+
+        {/* HERO */}
 <div
   style={{
     width: "100%",
@@ -53,17 +66,6 @@ export default function HomePage() {
   </div>
 </div>
 
-        
-        <h1
-          style={{
-            color: "#00ffff",
-            textAlign: "center",
-            marginBottom: 40,
-            letterSpacing: 2,
-          }}
-        >
-          Eventos disponibles
-        </h1>
 
         {/* GRID DE EVENTOS */}
         <div
