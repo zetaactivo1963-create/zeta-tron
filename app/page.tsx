@@ -1,5 +1,5 @@
-import { EVENTS } from "@/lib/events";
-import EventCard from "@/components/EventCard";
+import { EVENTS } from "./lib/events";
+import EventCard from "./components/EventCard";
 
 export default function HomePage() {
   return (
