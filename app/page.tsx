@@ -72,7 +72,7 @@ export default function HomePage() {
           href={`/events/${featuredEvent.slug}`}
           style={{
             textDecoration: "none",
-            color: "#ffffff",
+            color: "#0ff",
             display: "block",
           }}
         >
