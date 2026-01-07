@@ -21,7 +21,7 @@ export default function HomePage() {
         {/* ===== TÍTULO ===== */}
         <h1
           style={{
-            color: "#00ffff",
+            color: "#0ff",
             textAlign: "center",
             marginBottom: 48,
             letterSpacing: 2,
@@ -86,7 +86,7 @@ export default function HomePage() {
                     padding: "6px 14px",
                     borderRadius: 20,
                     background: "rgba(0,255,255,0.2)",
-                    color: "#0ff",
+                    color: "#ffffff",
                     fontSize: 12,
                     letterSpacing: 2,
                   }}
@@ -96,7 +96,7 @@ export default function HomePage() {
 
                 <h2
                   style={{
-                    color: "#000",
+                    color: "#ffffff",
                     fontSize: 42,
                     lineHeight: 1.15,
                     marginBottom: 14,
@@ -128,7 +128,7 @@ export default function HomePage() {
                     display: "inline-block",
                     padding: "16px 38px",
                     background: "#0ff",
-                    color: "#0ff",
+                    color: "#000",
                     borderRadius: 14,
                     fontWeight: 800,
                     letterSpacing: 1,
