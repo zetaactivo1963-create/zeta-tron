@@ -106,7 +106,7 @@ export default function HomePage() {
                 </h2>
 
                 <p style={{ opacity: 0.9, marginBottom: 6 }}>
-                  📅 {featuredEvent.date} · {featuredEvent.time}
+                  📅 {featuredEvent.date} 
                 </p>
 
                 <p style={{ opacity: 0.9, marginBottom: 10 }}>
