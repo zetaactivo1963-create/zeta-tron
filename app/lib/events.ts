@@ -15,7 +15,7 @@ export const EVENTS: EventItem[] = [
     date: "24 de enero 2026 · 7:00 PM",
     location: "Bambalinas · Aguada",
     price: 25,
-    image: "/events/zeta-tron/banner.jpg",
+    image: "/zeta-tron.jpg"
     status: "active",
   },
 ];
