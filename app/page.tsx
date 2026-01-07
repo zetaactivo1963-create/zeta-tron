@@ -128,7 +128,7 @@ export default function HomePage() {
                     display: "inline-block",
                     padding: "16px 38px",
                     background: "#0ff",
-                    color: "#000",
+                    color: "#0ff",
                     borderRadius: 14,
                     fontWeight: 800,
                     letterSpacing: 1,
