@@ -21,7 +21,7 @@ export default function HomePage() {
         {/* ===== TÍTULO ===== */}
         <h1
           style={{
-            color: "#0ff",
+            color: "#ffffff",
             textAlign: "center",
             marginBottom: 48,
             letterSpacing: 2,
@@ -31,10 +31,14 @@ export default function HomePage() {
           Eventos disponibles
         </h1>
 
-        {/* ===== HERO BIEN HECHO ===== */}
+        {/* ===== HERO ===== */}
         <Link
           href={`/events/${featuredEvent.slug}`}
-          style={{ textDecoration: "none" }}
+          style={{
+            textDecoration: "none",
+            color: "#ffffff",
+            display: "block",
+          }}
         >
           <section
             style={{
@@ -58,13 +62,13 @@ export default function HomePage() {
               }}
             />
 
-            {/* DEGRADADO CONTROLADO */}
+            {/* DEGRADADO */}
             <div
               style={{
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.1) 100%)",
+                  "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.15) 100%)",
               }}
             />
 
@@ -76,6 +80,7 @@ export default function HomePage() {
                 display: "flex",
                 alignItems: "center",
                 padding: "0 64px",
+                color: "#ffffff",
               }}
             >
               <div style={{ maxWidth: 520 }}>
@@ -85,7 +90,7 @@ export default function HomePage() {
                     marginBottom: 14,
                     padding: "6px 14px",
                     borderRadius: 20,
-                    background: "rgba(0,255,255,0.2)",
+                    background: "rgba(0,255,255,0.25)",
                     color: "#ffffff",
                     fontSize: 12,
                     letterSpacing: 2,
@@ -105,11 +110,11 @@ export default function HomePage() {
                   {featuredEvent.title}
                 </h2>
 
-                <p style={{ opacity: 0.9, marginBottom: 6 }}>
-                  📅 {featuredEvent.date} 
+                <p style={{ marginBottom: 6 }}>
+                  📅 {featuredEvent.date}
                 </p>
 
-                <p style={{ opacity: 0.9, marginBottom: 10 }}>
+                <p style={{ marginBottom: 10 }}>
                   📍 {featuredEvent.location}
                 </p>
 
