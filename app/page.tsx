@@ -1,11 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import EventCard from "@/components/EventCard";
 import { EVENTS } from "@/lib/events";
 
 export default function HomePage() {
+  const [search, setSearch] = useState("");
   const featuredEvent = EVENTS[0];
+
+  const filteredEvents = EVENTS.slice(1).filter((event) =>
+    `${event.title} ${event.location} ${event.date}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
     <main
@@ -23,7 +31,7 @@ export default function HomePage() {
           style={{
             color: "#ffffff",
             textAlign: "center",
-            marginBottom: 48,
+            marginBottom: 24,
             letterSpacing: 2,
             fontSize: 38,
           }}
@@ -31,12 +39,40 @@ export default function HomePage() {
           Eventos disponibles
         </h1>
 
+        {/* ===== BUSCADOR ===== */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 48,
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Buscar evento, lugar o fecha..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              padding: "14px 18px",
+              borderRadius: 14,
+              background: "#000",
+              color: "#fff",
+              border: "1px solid rgba(0,255,255,0.5)",
+              outline: "none",
+              fontSize: 15,
+              letterSpacing: 0.5,
+            }}
+          />
+        </div>
+
         {/* ===== HERO ===== */}
         <Link
           href={`/events/${featuredEvent.slug}`}
           style={{
             textDecoration: "none",
-            color: "#0ff",
+            color: "#ffffff",
             display: "block",
           }}
         >
@@ -51,7 +87,6 @@ export default function HomePage() {
               cursor: "pointer",
             }}
           >
-            {/* IMAGEN */}
             <img
               src={featuredEvent.image}
               alt={featuredEvent.title}
@@ -62,17 +97,15 @@ export default function HomePage() {
               }}
             />
 
-            {/* DEGRADADO */}
             <div
               style={{
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.15) 100%)",
+                  "linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.15) 100%)",
               }}
             />
 
-            {/* CONTENIDO */}
             <div
               style={{
                 position: "absolute",
@@ -91,7 +124,6 @@ export default function HomePage() {
                     padding: "6px 14px",
                     borderRadius: 20,
                     background: "rgba(0,255,255,0.25)",
-                    color: "#ffffff",
                     fontSize: 12,
                     letterSpacing: 2,
                   }}
@@ -101,7 +133,6 @@ export default function HomePage() {
 
                 <h2
                   style={{
-                    color: "#ffffff",
                     fontSize: 42,
                     lineHeight: 1.15,
                     marginBottom: 14,
@@ -147,7 +178,7 @@ export default function HomePage() {
           </section>
         </Link>
 
-        {/* ===== GRID DE EVENTOS ===== */}
+        {/* ===== GRID ===== */}
         <section
           style={{
             display: "grid",
@@ -156,7 +187,7 @@ export default function HomePage() {
             justifyItems: "center",
           }}
         >
-          {EVENTS.slice(1).map((event) => (
+          {filteredEvents.map((event) => (
             <EventCard key={event.slug} event={event} />
           ))}
         </section>
