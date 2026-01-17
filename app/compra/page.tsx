@@ -1,4 +1,4 @@
-"use client";
+x"use client";
 
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
@@ -18,6 +18,7 @@ const ui = Inter({
 
 /* ================== DATA ================== */
 const CANDIDATOS = [
+  "Ninguno",
   "Adrian Monagas",
   "Alexander Jaime",
   "Andres Santos",
@@ -323,7 +324,7 @@ function goToReview(e: React.FormEvent) {
   onChange={(e) => setCandidato(e.target.value)}
   required
 >
-  <option value="">Ninguno</option>
+  <option value="">Seleccionar</option>
   {CANDIDATOS.map((c) => (
     <option key={c} value={c}>
       {c}
