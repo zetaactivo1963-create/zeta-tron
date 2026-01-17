@@ -302,20 +302,22 @@ function goToReview(e: React.FormEvent) {
               +
             </button>
           </div>
+<label style={label}>Relación / Organización</label>
+<select
+  style={input}
+  value={asociacion}
+  onChange={(e) => setAsociacion(e.target.value)}
+  required
+>
+  <option value="">Selecciona una opción</option>
+  <option value="Amigo/Familiar">Amigo/Familiar</option>
+  <option value="Phi Sigma Alpha">Phi Sigma Alpha</option>
+  <option value="Eta Gamma Delta">Eta Gamma Delta</option>
+  <option value="Mu Alpha Phi">Mu Alpha Phi</option>
+  <option value="Sigma Epsilon Chi">Sigma Epsilon Chi</option>
+  <option value="Otra">Otra</option>
+</select>
 
-          <label style={label}>Relación / Organización</label>
-          <select
-            style={input}
-            value={asociacion}
-            onChange={(e) => setAsociacion(e.target.value)}
-          >
-            <option value="Amiigo/Familiar">Amiigo/Familiar</option>
-            <option value="Phi Sigma Alpha">Phi Sigma Alpha</option>
-            <option value="Eta Gamma Delta">Eta Gamma Delta</option>
-            <option value="Mu Alpha Phi">Mu Alpha Phi</option>
-            <option value="Sigma Epsilon Chi">Sigma Epsilon Chi</option>
-            <option value="Otra">Otra</option>
-          </select>
 
         <label style={label}>¿Qué candidato te vendió la taquilla?</label>
 <select
@@ -324,7 +326,7 @@ function goToReview(e: React.FormEvent) {
   onChange={(e) => setCandidato(e.target.value)}
   required
 >
-  <option value="">Seleccionar</option>
+  <option value="">Selecciona una opción</option>
   {CANDIDATOS.map((c) => (
     <option key={c} value={c}>
       {c}
