@@ -22,7 +22,6 @@ const CANDIDATOS = [
   "Alexander Jaime",
   "Andres Santos",
   "Daniel Beltrán",
-  "Daniel Mora",
   "Dereck Pérez",
   "Gohan Martínez",
   "Ian Pérez",
@@ -31,8 +30,6 @@ const CANDIDATOS = [
   "Marcos Marcial",
   "Marcos Juarbe",
   "Ricardo Matías",
-  "Yadiel Acevedo",
-  "Yadiel Díaz",
   "Zabdiel Rodríguez",
 ];
 
@@ -319,29 +316,20 @@ function goToReview(e: React.FormEvent) {
             <option value="Otra">Otra</option>
           </select>
 
-          <label style={label}>¿Te vendió un candidato?</label>
-          <select
-            style={input}
-            value={vendidaPor}
-            onChange={(e) => setVendidaPor(e.target.value)}
-          >
-            <option value="no">No</option>
-            <option value="si">Sí</option>
-          </select>
-
-          {vendidaPor === "si" && (
-            <select
-              style={input}
-              value={candidato}
-              onChange={(e) => setCandidato(e.target.value)}
-              required
-            >
-              <option value="">Selecciona</option>
-              {CANDIDATOS.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </select>
-          )}
+        <label style={label}>¿Qué candidato te vendió la taquilla?</label>
+<select
+  style={input}
+  value={candidato}
+  onChange={(e) => setCandidato(e.target.value)}
+  required
+>
+  <option value="">Ninguno</option>
+  {CANDIDATOS.map((c) => (
+    <option key={c} value={c}>
+      {c}
+    </option>
+  ))}
+</select>
 
           <button style={primaryBtn}>REVISAR COMPRA</button>
 
