@@ -42,6 +42,8 @@ export default function Compra() {
   const FEE_TARJETA = 1.03;
   const [copiado, setCopiado] = useState(false);
 
+  const [guagua, setGuagua] = useState(false);
+
   const [step, setStep] = useState<Step>("form");
   const [metodoPago, setMetodoPago] = useState<
     "" | "ath" | "tarjeta" | "puerta"
@@ -282,6 +284,20 @@ function goToReview(e: React.FormEvent) {
             >
               −
             </button>
+
+            <label style={label}>Guagua Chinchorreo (Mayagüez · Western Plaza)</label>
+
+<label style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
+  <input
+    type="checkbox"
+    checked={guagua}
+    onChange={(e) => setGuagua(e.target.checked)}
+  />
+  <span style={{ opacity: 0.9 }}>
+    Añadir guagua (+$10 por taquilla). Incluye ida y vuelta + open bar en la guagua.
+  </span>
+</label>
+
 
             <div
               style={{
