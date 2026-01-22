@@ -287,16 +287,6 @@ function goToReview(e: React.FormEvent) {
 
             <label style={label}>Guagua Chinchorreo (Mayagüez · Western Plaza)</label>
 
-<label style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
-  <input
-    type="checkbox"
-    checked={guagua}
-    onChange={(e) => setGuagua(e.target.checked)}
-  />
-  <span style={{ opacity: 0.9 }}>
-    Añadir guagua (+$10 por taquilla). Incluye ida y vuelta + open bar en la guagua.
-  </span>
-</label>
 
 
             <div
@@ -318,6 +308,19 @@ function goToReview(e: React.FormEvent) {
               +
             </button>
           </div>
+
+<label style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
+  <input
+    type="checkbox"
+    checked={guagua}
+    onChange={(e) => setGuagua(e.target.checked)}
+  />
+  <span style={{ opacity: 0.9 }}>
+    Añadir guagua (+$10 por taquilla). Incluye ida y vuelta + open bar en la guagua.
+  </span>
+</label>
+
+          
 <label style={label}>Relación / Organización</label>
 <select
   style={input}
