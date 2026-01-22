@@ -41,7 +41,6 @@ export default function Compra() {
   const basePrice = 15;
 const guaguaExtra = 10;
 
-const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
 
   const [copiado, setCopiado] = useState(false);
 
@@ -63,9 +62,9 @@ const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
   const [ticketCode, setTicketCode] = useState("");
 
   /* ================== TOTALS ================== */
-  const totalBase = qty * PRECIO;
+  const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
   const totalATH = totalBase;
-  const totalPuerta = qty * 30;
+  const totalPuerta = qty * 15;
 
   /* ================== FLOW ================== */
 function goToReview(e: React.FormEvent) {
