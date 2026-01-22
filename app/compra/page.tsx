@@ -287,10 +287,6 @@ function goToReview(e: React.FormEvent) {
               −
             </button>
 
-            <label style={label}>Guagua Chinchorreo (Mayagüez · Western Plaza)</label>
-
-
-
             <div
               style={{
                 minWidth: 48,
@@ -311,15 +307,119 @@ function goToReview(e: React.FormEvent) {
             </button>
           </div>
 
-<label style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
+<label
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 14,
+    padding: "16px 18px",
+    borderRadius: 16,
+    background: guagua
+      ? "rgba(0,255,255,0.14)"
+      : "rgba(255,255,255,0.06)",
+    border: guagua
+      ? "1px solid rgba(0,255,255,0.70)"
+      : "1px solid rgba(255,255,255,0.14)",
+    boxShadow: guagua
+      ? "0 0 24px rgba(0,255,255,0.22)"
+      : "0 0 0 rgba(0,0,0,0)",
+    cursor: "pointer",
+    transition: "all 220ms ease",
+    marginBottom: 18,
+    userSelect: "none",
+  }}
+>
+  {/* INPUT REAL (OCULTO) */}
   <input
     type="checkbox"
     checked={guagua}
     onChange={(e) => setGuagua(e.target.checked)}
+    style={{ display: "none" }}
   />
-  <span style={{ opacity: 0.9 }}>
-    Añadir guagua (+$10 por taquilla). Incluye ida y vuelta + open bar en la guagua.
-  </span>
+
+  {/* CHECKBOX VISUAL */}
+  <div
+    style={{
+      width: 22,
+      height: 22,
+      borderRadius: 7,
+      border: "2px solid #0ff",
+      background: guagua ? "#0ff" : "transparent",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transform: guagua ? "scale(1.02)" : "scale(1)",
+      transition: "all 180ms ease",
+      boxShadow: guagua ? "0 0 14px rgba(0,255,255,0.35)" : "none",
+      flex: "0 0 auto",
+    }}
+  >
+    {guagua && (
+      <span
+        style={{
+          color: "#000",
+          fontWeight: 900,
+          fontSize: 14,
+          lineHeight: 1,
+        }}
+      >
+        ✓
+      </span>
+    )}
+  </div>
+
+  {/* ICONO */}
+  <div
+    style={{
+      width: 36,
+      height: 36,
+      borderRadius: 12,
+      background: guagua
+        ? "rgba(0,255,255,0.20)"
+        : "rgba(255,255,255,0.07)",
+      border: guagua
+        ? "1px solid rgba(0,255,255,0.35)"
+        : "1px solid rgba(255,255,255,0.10)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 18,
+      boxShadow: guagua ? "0 0 18px rgba(0,255,255,0.18)" : "none",
+      transition: "all 220ms ease",
+      flex: "0 0 auto",
+    }}
+  >
+    🚍
+  </div>
+
+  {/* TEXTO */}
+  <div style={{ flex: 1 }}>
+    <div style={{ fontWeight: 800, letterSpacing: 0.2 }}>
+      Guagua desde Mayagüez <span style={{ opacity: 0.85 }}>(+$10)</span>
+    </div>
+    <div style={{ fontSize: 13, opacity: 0.86 }}>
+      Incluye transportación ida y vuelta + open bar en la guagua
+    </div>
+  </div>
+
+  {/* SUBTOTAL EN VIVO */}
+  <div style={{ textAlign: "right" }}>
+    <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 2 }}>
+      Extra
+    </div>
+    <div
+      style={{
+        fontWeight: 900,
+        letterSpacing: 0.4,
+        color: guagua ? "#0ff" : "#fff",
+        opacity: guagua ? 1 : 0.85,
+        transition: "all 220ms ease",
+        minWidth: 70,
+      }}
+    >
+      +${guagua ? qty * 10 : 0}
+    </div>
+  </div>
 </label>
 
           
