@@ -387,7 +387,7 @@ function goToReview(e: React.FormEvent) {
               <b>Cantidad de taquillas:</b> {qty}
             </p>
             <p>
-              <b>Total base:</b> ${totalBase}
+              <b>Total:</b> ${total}
             </p>
 
             {asociacion && (
