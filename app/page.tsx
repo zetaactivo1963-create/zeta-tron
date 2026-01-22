@@ -156,7 +156,7 @@ export default function HomePage() {
                     marginBottom: 26,
                   }}
                 >
-                  ${featuredEvent.price} · Open Bar
+                  ${featuredEvent.price} · Cash Bar
                 </p>
 
                 <div
