@@ -38,8 +38,11 @@ type Step = "form" | "review" | "ath" | "puerta" | "done";
 
 /* ================== COMPONENT ================== */
 export default function Compra() {
-  const PRECIO = 25;
-  const FEE_TARJETA = 1.03;
+  const basePrice = 15;
+const guaguaExtra = 10;
+
+const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
+
   const [copiado, setCopiado] = useState(false);
 
   const [guagua, setGuagua] = useState(false);
