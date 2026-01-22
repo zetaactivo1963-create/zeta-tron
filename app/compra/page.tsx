@@ -21,7 +21,6 @@ const CANDIDATOS = [
   "Ninguno",
   "Adrian Monagas",
   "Alexander Jaime",
-  "Andres Santos",
   "Daniel Beltrán",
   "Dereck Pérez",
   "Gohan Martínez",
