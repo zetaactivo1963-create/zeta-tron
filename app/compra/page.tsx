@@ -61,10 +61,10 @@ const guaguaExtra = 10;
   const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
 
-  /* ================== TOTALS ================== */
-  const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
-  const totalATH = totalBase;
-  const totalPuerta = qty * 15;
+/* ================== TOTALS ================== */
+const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
+const totalATH = total;
+const totalPuerta = qty * basePrice;
 
   /* ================== FLOW ================== */
 function goToReview(e: React.FormEvent) {
