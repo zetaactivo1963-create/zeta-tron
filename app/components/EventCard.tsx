@@ -38,7 +38,7 @@ export default function EventCard({ event }: { event: EventItem }) {
         </p>
 
         <p style={{ fontWeight: 700, marginBottom: 14 }}>
-          ${event.price} · Open Bar
+          ${event.price} · Cash Bar
         </p>
 
         <Link href={`/events/${event.slug}`}>
