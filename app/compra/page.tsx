@@ -216,10 +216,10 @@ function goToReview(e: React.FormEvent) {
           <p style={text}>
             SAB-24-ENE-26 - 7:00pm
             <br />
-            "Bambalinas" - Coliseo Aguada
+            Arecibo Country Club
             <br />
             <br />
-            <b>$25 · OPEN BAR</b>
+            <b>$15 · CASH BAR</b>
             <br />
             <br />
             TRON SHOW · Capítulo Zeta · ΦΣΑ
@@ -537,16 +537,7 @@ function goToReview(e: React.FormEvent) {
             ATH Móvil · ${totalATH}
           </button>
 
-          <button
-            style={secondaryBtn}
-            type="button"
-            onClick={() => {
-              setMetodoPago("puerta");
-              setStep("puerta");
-            }}
-          >
-            Pago en la puerta · ${totalPuerta}
-          </button>
+       
 
           <button type="button" onClick={() => setStep("form")} style={linkBtn}>
             Editar información
