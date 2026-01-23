@@ -522,16 +522,7 @@ function goToReview(e: React.FormEvent) {
       ATH Móvil · ${totalATH}
     </button>
 
-    <button
-      style={primaryBtn}
-      type="button"
-      onClick={() => {
-        setMetodoPago("puerta");
-        setStep("puerta");
-      }}
-    >
-      Pago en puerta · ${totalPuerta}
-    </button>
+  
 
     <button type="button" onClick={() => setStep("form")} style={linkBtn}>
       Editar información
