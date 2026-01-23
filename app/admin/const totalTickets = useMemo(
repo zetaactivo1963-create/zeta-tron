@@ -113,140 +113,52 @@ return tickets.filter((t) => {
 });
   }, [tickets, search]);
 
-  /* ================== FETCH ================== */
-  const fetchTickets = useCallback(async () => {
-    setLoading(true);
-
-    try {
-      let query = supabase
-        .from("tickets")
 /* ================== FETCH ================== */
-  const fetchTickets = useCallback(async () => {
-    setLoading(true);
+const fetchTickets = useCallback(async () => {
+  setLoading(true);
 
-    try {
-      let query = supabase
-        .from("tickets")
-/* ================== FETCH ================== */
-  const fetchTickets = useCallback(async () => {
-    setLoading(true);
+  try {
+    let query = supabase
+      .from("tickets")
+      .select(
+        "id,ticket_code,name,phone,qty,payment_method,status,proof_url,created_at,checked_in,checked_in_at,asociacion,candidato,guagua"
+      )
+      .order("created_at", { ascending: false });
 
-    try {
-      let query = supabase
-        .from("tickets")
-        .select("id,ticket_code,name,phone,qty,payment_method,status,proof_url,created_at,checked_in,checked_in_at,asociacion,candidato,guagua")
-        .order("created_at", { ascending: false });
-
-      // filtro por status
-      if (filter !== "todos") {
-        query = query.eq("status", filter);
-      }
-
-
-      const { data, error } = await query;
-
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error("DB ERROR:", error);
-        alert("Error cargando tickets");
-      } else {
-        setTickets((data ?? []) as Ticket[]);
-      }
-
-      // ===== RESUMEN POR CANDIDATO =====
-      const { data: resumenData, error: resumenErr } = await supabase
-        .from("resumen_por_candidato")
-        .select("*");
-
-      if (resumenErr) {
-        // eslint-disable-next-line no-console
-        console.error("RESUMEN ERROR:", resumenErr);
-      } else if (resumenData) {
-        setResumen(resumenData as ResumenCandidato[]);
-      }
-    } finally {
-      setLoading(false);
+    // filtro por status
+    if (filter !== "todos") {
+      query = query.eq("status", filter);
     }
-  }, [filter]);
 
-  useEffect(() => {
-    if (!authorized) return;
-    fetchTickets();
-  }, [authorized, fetchTickets]);        .order("created_at", { ascending: false });
+    const { data, error } = await query;
 
-      // filtro por status
-      if (filter !== "todos") {
-        query = query.eq("status", filter);
-      }
-
-
-      const { data, error } = await query;
-
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error("DB ERROR:", error);
-        alert("Error cargando tickets");
-      } else {
-        setTickets((data ?? []) as Ticket[]);
-      }
-
-      // ===== RESUMEN POR CANDIDATO =====
-      const { data: resumenData, error: resumenErr } = await supabase
-        .from("resumen_por_candidato")
-        .select("*");
-
-      if (resumenErr) {
-        // eslint-disable-next-line no-console
-        console.error("RESUMEN ERROR:", resumenErr);
-      } else if (resumenData) {
-        setResumen(resumenData as ResumenCandidato[]);
-      }
-    } finally {
-      setLoading(false);
+    if (error) {
+      console.error("DB ERROR:", error);
+      alert("Error cargando tickets");
+    } else {
+      setTickets((data ?? []) as Ticket[]);
     }
-  }, [filter]);
 
-  useEffect(() => {
-    if (!authorized) return;
-    fetchTickets();
-  }, [authorized, fetchTickets]);        .order("created_at", { ascending: false });
+    // ===== RESUMEN POR CANDIDATO =====
+    const { data: resumenData, error: resumenErr } = await supabase
+      .from("resumen_por_candidato")
+      .select("*");
 
-      // filtro por status
-      if (filter !== "todos") {
-        query = query.eq("status", filter);
-      }
-
-
-      const { data, error } = await query;
-
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error("DB ERROR:", error);
-        alert("Error cargando tickets");
-      } else {
-        setTickets((data ?? []) as Ticket[]);
-      }
-
-      // ===== RESUMEN POR CANDIDATO =====
-      const { data: resumenData, error: resumenErr } = await supabase
-        .from("resumen_por_candidato")
-        .select("*");
-
-      if (resumenErr) {
-        // eslint-disable-next-line no-console
-        console.error("RESUMEN ERROR:", resumenErr);
-      } else if (resumenData) {
-        setResumen(resumenData as ResumenCandidato[]);
-      }
-    } finally {
-      setLoading(false);
+    if (resumenErr) {
+      console.error("RESUMEN ERROR:", resumenErr);
+    } else if (resumenData) {
+      setResumen(resumenData as ResumenCandidato[]);
     }
-  }, [filter]);
+  } finally {
+    setLoading(false);
+  }
+}, [filter]);
 
-  useEffect(() => {
-    if (!authorized) return;
-    fetchTickets();
-  }, [authorized, fetchTickets]);
+useEffect(() => {
+  if (!authorized) return;
+  fetchTickets();
+}, [authorized, fetchTickets]);
+
 
   /* ================== RESUMEN ORG ================== */
   const resumenOrganizacion: ResumenOrgRow[] = useMemo(() => {
