@@ -919,7 +919,7 @@ useEffect(() => {
             }}
             type="button"
           >
-            + Registrar pago en puerta ($30)
+            + Registrar pago en puerta ($20)
           </button>
         </div>
       </div>
