@@ -332,8 +332,10 @@ const totalPuertaMonto = useMemo(() => {
 }, [tickets]);
 
 // Cantidad de taquillas en puerta (solo qty)
-const totalPuertaCantidad = useMemo(() => {
-  return tickets
+const totalPagosPuerta = useMemo(
+  () => ticketsPuerta.reduce((acc, t) => acc + (t.qty ?? 0), 0),
+  [ticketsPuerta]
+);  return tickets
     .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
     .reduce((acc, t) => acc + (t.qty ?? 0), 0);
 }, [tickets]);
