@@ -285,50 +285,48 @@ useEffect(() => {
   );
 
   /* ================== TOTALS ================== */
-  const totalTickets = useMemo(
-    () => filteredTickets.reduce((acc, t) => acc + (t.qty ?? 0), 0),
-    [filteredTickets]
-  );
+const PRICE = 15;
+const GUAGUA_EXTRA = 10;
 
-    const totalGuagua = useMemo(
-    () => filteredTickets.reduce((acc, t) => acc + (t.guagua ? (t.qty ?? 0) : 0), 0),
-    [filteredTickets]
-  );
+// Total aprobado (incluye ATH + puerta, y suma guagua si aplica)
+const totalRecaudado = useMemo(() => {
+  return tickets
+    .filter((t) => t.status === "aprobado")
+    .reduce((acc, t) => {
+      const qty = t.qty ?? 0;
+      const unit = PRICE + (t.guagua ? GUAGUA_EXTRA : 0);
+      return acc + qty * unit;
+    }, 0);
+}, [tickets]);
 
-  const listaGuagua = useMemo(
-    () => filteredTickets.filter((t) => t.guagua),
-    [filteredTickets]
-  );
-
+// ATH aprobado (incluye guagua)
 const totalATH = useMemo(() => {
   return tickets
     .filter((t) => t.status === "aprobado" && t.payment_method !== "puerta")
-    .reduce((acc, t) => acc + (t.qty ?? 0) * 15, 0);
+    .reduce((acc, t) => {
+      const qty = t.qty ?? 0;
+      const unit = PRICE + (t.guagua ? GUAGUA_EXTRA : 0);
+      return acc + qty * unit;
+    }, 0);
 }, [tickets]);
 
-  const totalPagosPuerta = useMemo(() => {
-    return tickets
-      .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
-      .reduce((acc, t) => acc + (t.qty ?? 0), 0);
-  }, [tickets]);
-
+// Puerta aprobado (incluye guagua)
 const totalPuertaMonto = useMemo(() => {
   return tickets
     .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
-    .reduce((acc, t) => acc + (t.qty ?? 0) * 15, 0);
+    .reduce((acc, t) => {
+      const qty = t.qty ?? 0;
+      const unit = PRICE + (t.guagua ? GUAGUA_EXTRA : 0);
+      return acc + qty * unit;
+    }, 0);
 }, [tickets]);
-  
-  const totalRecaudado = totalATH + totalPuertaMonto;
 
-  const ticketsPuerta = useMemo(
-    () => tickets.filter((t) => t.payment_method === "puerta" && t.status === "aprobado"),
-    [tickets]
-  );
-
-  const totalPuertaCantidad = useMemo(
-    () => ticketsPuerta.reduce((acc, t) => acc + (t.qty ?? 0), 0),
-    [ticketsPuerta]
-  );
+// Cantidad de taquillas en puerta (solo qty)
+const totalPuertaCantidad = useMemo(() => {
+  return tickets
+    .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
+    .reduce((acc, t) => acc + (t.qty ?? 0), 0);
+}, [tickets]);
 
   /* ================== LOADING OVERLAY ================== */
   if (authorized && loading) {
