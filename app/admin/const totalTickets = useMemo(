@@ -17,6 +17,9 @@ type Ticket = {
   checked_in: boolean;
   checked_in_at?: string | null;
   asociacion?: string | null;
+  candidato?: string | null;
+  guagua?: boolean | null;
+  
 };
 
 type ResumenCandidato = {
@@ -117,8 +120,96 @@ return tickets.filter((t) => {
     try {
       let query = supabase
         .from("tickets")
-        .select("*")
+/* ================== FETCH ================== */
+  const fetchTickets = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      let query = supabase
+        .from("tickets")
+/* ================== FETCH ================== */
+  const fetchTickets = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      let query = supabase
+        .from("tickets")
+        .select("id,ticket_code,name,phone,qty,payment_method,status,proof_url,created_at,checked_in,checked_in_at,asociacion,candidato,guagua")
         .order("created_at", { ascending: false });
+
+      // filtro por status
+      if (filter !== "todos") {
+        query = query.eq("status", filter);
+      }
+
+
+      const { data, error } = await query;
+
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("DB ERROR:", error);
+        alert("Error cargando tickets");
+      } else {
+        setTickets((data ?? []) as Ticket[]);
+      }
+
+      // ===== RESUMEN POR CANDIDATO =====
+      const { data: resumenData, error: resumenErr } = await supabase
+        .from("resumen_por_candidato")
+        .select("*");
+
+      if (resumenErr) {
+        // eslint-disable-next-line no-console
+        console.error("RESUMEN ERROR:", resumenErr);
+      } else if (resumenData) {
+        setResumen(resumenData as ResumenCandidato[]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    if (!authorized) return;
+    fetchTickets();
+  }, [authorized, fetchTickets]);        .order("created_at", { ascending: false });
+
+      // filtro por status
+      if (filter !== "todos") {
+        query = query.eq("status", filter);
+      }
+
+
+      const { data, error } = await query;
+
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("DB ERROR:", error);
+        alert("Error cargando tickets");
+      } else {
+        setTickets((data ?? []) as Ticket[]);
+      }
+
+      // ===== RESUMEN POR CANDIDATO =====
+      const { data: resumenData, error: resumenErr } = await supabase
+        .from("resumen_por_candidato")
+        .select("*");
+
+      if (resumenErr) {
+        // eslint-disable-next-line no-console
+        console.error("RESUMEN ERROR:", resumenErr);
+      } else if (resumenData) {
+        setResumen(resumenData as ResumenCandidato[]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    if (!authorized) return;
+    fetchTickets();
+  }, [authorized, fetchTickets]);        .order("created_at", { ascending: false });
 
       // filtro por status
       if (filter !== "todos") {
@@ -284,6 +375,16 @@ return tickets.filter((t) => {
   /* ================== TOTALS ================== */
   const totalTickets = useMemo(
     () => filteredTickets.reduce((acc, t) => acc + (t.qty ?? 0), 0),
+    [filteredTickets]
+  );
+
+    const totalGuagua = useMemo(
+    () => filteredTickets.reduce((acc, t) => acc + (t.guagua ? (t.qty ?? 0) : 0), 0),
+    [filteredTickets]
+  );
+
+  const listaGuagua = useMemo(
+    () => filteredTickets.filter((t) => t.guagua),
     [filteredTickets]
   );
 
@@ -482,6 +583,17 @@ return tickets.filter((t) => {
             </div>
           </div>
 
+          <div style={cardGrid2}>
+  <div style={cardField}>
+    <span style={cardLabel}>Candidato</span>
+    <span style={cardValue}>{t.candidato || "Ninguno"}</span>
+  </div>
+  <div style={cardField}>
+    <span style={cardLabel}>Guagua</span>
+    <span style={cardValue}>{t.guagua ? "Sí" : "No"}</span>
+  </div>
+</div>      
+
           {mode === "entrados" && (
             <div style={cardField}>
               <span style={cardLabel}>Hora entrada</span>
@@ -564,6 +676,10 @@ return tickets.filter((t) => {
           </div>
 
           <div style={statPill}>
+            Guagua: <b>{totalGuagua}</b>
+          </div>
+
+          <div style={statPill}>
             Total aprobado: <b>${totalRecaudado}</b>
           </div>
 
@@ -638,6 +754,44 @@ return tickets.filter((t) => {
           </div>
         </div>
 
+        {/* ===== Listado de guagua ===== */}
+         <div style={{ height: 16 }} />
+
+          <div style={sectionHeaderRow}>
+            <h2 style={sectionTitle}>Guagua (Mayagüez ➜ Arecibo)</h2>
+          </div>
+
+          <div style={tableWrap}>
+            <table style={{ ...table, minWidth: 720 }}>
+              <thead>
+                <tr>
+                  <th style={{ ...th, textAlign: "left" }}>Nombre</th>
+                  <th style={{ ...th, textAlign: "left" }}>Teléfono</th>
+                  <th style={{ ...th, textAlign: "center", width: 90 }}>Qty</th>
+                  <th style={{ ...th, textAlign: "left", width: 200 }}>Candidato</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listaGuagua.map((t) => (
+                  <tr key={t.id}>
+                    <td style={td}>{t.name || "—"}</td>
+                    <td style={td}>{t.phone || "—"}</td>
+                    <td style={{ ...td, textAlign: "center" }}>{t.qty ?? 0}</td>
+                    <td style={td}>{t.candidato || "Ninguno"}</td>
+                  </tr>
+                ))}
+
+                {listaGuagua.length === 0 && (
+                  <tr>
+                    <td style={td} colSpan={4}>
+                      <div style={emptyBox}>No hay personas marcadas con guagua.</div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
         {/* ===== TICKETS REGISTRADOS ===== */}
         <div style={{ marginTop: 32 }}>
           <div style={sectionHeaderRow}>
@@ -673,6 +827,8 @@ return tickets.filter((t) => {
                     <th style={{ ...th, textAlign: "left", width: 110 }}>Método</th>
                     <th style={{ ...th, textAlign: "left", width: 110 }}>Status</th>
                     <th style={{ ...th, textAlign: "left", width: 110 }}>Evidencia</th>
+                    <th style={{ ...th, textAlign: "left", width: 160 }}>Candidato</th>
+                    <th style={{ ...th, textAlign: "left", width: 100 }}>Guagua</th>
                     <th style={{ ...th, textAlign: "left", width: 420 }}>Acción</th>
                   </tr>
                 </thead>
@@ -697,6 +853,12 @@ return tickets.filter((t) => {
                           "—"
                         )}
                       </td>
+
+                      <td style={td}>{t.candidato || "—"}</td>
+<td style={{ ...td, textAlign: "center" }}>
+  {t.guagua ? "Sí" : "No"}
+</td>
+                      
                       <td style={td}>
                         {t.checked_in ? (
                           <span style={{ color: "#0f0", fontWeight: "bold" }}>✔ ENTRADO</span>
