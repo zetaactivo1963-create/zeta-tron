@@ -288,6 +288,11 @@ useEffect(() => {
 const PRICE = 15;
 const GUAGUA_EXTRA = 10;
 
+  const totalTickets = useMemo(
+  () => filteredTickets.reduce((acc, t) => acc + (t.qty ?? 0), 0),
+  [filteredTickets]
+);
+
 // Total aprobado (incluye ATH + puerta, y suma guagua si aplica)
 const totalRecaudado = useMemo(() => {
   return tickets
