@@ -543,25 +543,24 @@ function goToReview(e: React.FormEvent) {
         </div>
       )}
 
-      {/* ===== ATH ===== */}
+          {/* ===== ATH ===== */}
       {step === "ath" && (
         <div style={card}>
           <h2 className={tron.className} style={subtitle}>
             ATH MÓVIL
           </h2>
 
-          
+          <p style={{ ...text, textAlign: "center" }}>
             Envía <b>${totalATH}</b> a Kenneth Morales
-           <br />
-           
-            <br />
+          </p>
+
           <a
             href="https://athm-ulink-prod-static-website.s3.amazonaws.com/qr-code?content=74ff061b98d7ab2708799bcd255ebef8f923d29c3248bf5b518b8be08e2055a8"
             target="_blank"
             rel="noopener noreferrer"
             style={athBtn}
           >
-            Pagar por ATH Móvil 
+            Pagar por ATH Móvil
           </a>
 
           <div
@@ -572,7 +571,6 @@ function goToReview(e: React.FormEvent) {
               textAlign: "center",
             }}
           >
-            
             <span
               onClick={() => {
                 navigator.clipboard.writeText("9392533384");
@@ -595,6 +593,7 @@ function goToReview(e: React.FormEvent) {
             >
               (939) 253-3384
             </span>
+
             <div
               style={{
                 marginTop: 6,
@@ -607,6 +606,7 @@ function goToReview(e: React.FormEvent) {
             >
               {copiado ? "✓ COPIADO" : "👆 TOCA PARA COPIAR"}
             </div>
+
             <div style={{ marginTop: 12, fontSize: 13, opacity: 0.8 }}>
               Recuerda adjuntar confirmación de pago para continuar.
             </div>
@@ -620,7 +620,6 @@ function goToReview(e: React.FormEvent) {
                 hidden
                 onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
               />
-
               {receipt ? (
                 <span style={{ color: "#0f0" }}>✔ Evidencia cargada</span>
               ) : (
@@ -633,7 +632,7 @@ function goToReview(e: React.FormEvent) {
             {loading ? "Subiendo..." : "Confirmar pago"}
           </button>
 
-          <button style={linkBtn} onClick={() => setStep("review")}>
+          <button type="button" style={linkBtn} onClick={() => setStep("review")}>
             Volver
           </button>
         </div>
