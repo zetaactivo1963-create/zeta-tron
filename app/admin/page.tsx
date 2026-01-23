@@ -300,11 +300,11 @@ useEffect(() => {
     [filteredTickets]
   );
 
-  const totalATH = useMemo(() => {
-    return tickets
-      .filter((t) => t.status === "aprobado" && t.payment_method !== "puerta")
-      .reduce((acc, t) => acc + (t.qty ?? 0) * 25, 0);
-  }, [tickets]);
+const totalATH = useMemo(() => {
+  return tickets
+    .filter((t) => t.status === "aprobado" && t.payment_method !== "puerta")
+    .reduce((acc, t) => acc + (t.qty ?? 0) * 15, 0);
+}, [tickets]);
 
   const totalPagosPuerta = useMemo(() => {
     return tickets
@@ -312,12 +312,12 @@ useEffect(() => {
       .reduce((acc, t) => acc + (t.qty ?? 0), 0);
   }, [tickets]);
 
-  const totalPuertaMonto = useMemo(() => {
-    return tickets
-      .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
-      .reduce((acc, t) => acc + (t.qty ?? 0) * 30, 0);
-  }, [tickets]);
-
+const totalPuertaMonto = useMemo(() => {
+  return tickets
+    .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
+    .reduce((acc, t) => acc + (t.qty ?? 0) * 15, 0);
+}, [tickets]);
+  
   const totalRecaudado = totalATH + totalPuertaMonto;
 
   const ticketsPuerta = useMemo(
@@ -919,7 +919,7 @@ useEffect(() => {
             }}
             type="button"
           >
-            + Registrar pago en puerta ($20)
+            + Registrar pago en puerta ($15)
           </button>
         </div>
       </div>
