@@ -469,81 +469,75 @@ function goToReview(e: React.FormEvent) {
       )}
 
       {/* ===== REVIEW ===== */}
-      {step === "review" && (
-        <div style={card}>
-          <h2 className={tron.className} style={subtitle}>
-            CONFIRMA TU INFORMACIÓN
-          </h2>
+{step === "review" && (
+  <div style={card}>
+    <h2 className={tron.className} style={subtitle}>
+      CONFIRMA TU INFORMACIÓN
+    </h2>
 
-          {/* ===== RESUMEN ===== */}
-          <div style={summaryBox}>
-            <p>
-              <b>Nombre:</b> {name}
-            </p>
-            <p>
-              <b>Teléfono:</b> {phone}
-            </p>
-            <p>
-              <b>Cantidad de taquillas:</b> {qty}
-            </p>
-            <p>
-              <b>Total:</b> ${total}
-            </p>
+    {/* ===== RESUMEN ===== */}
+    <div style={summaryBox}>
+      <p><b>Nombre:</b> {name}</p>
+      <p><b>Teléfono:</b> {phone}</p>
+      <p><b>Cantidad de taquillas:</b> {qty}</p>
+      <p><b>Total:</b> ${total}</p>
 
-            {asociacion && (
-              <p>
-                <b>Asociación:</b> {asociacion}
-              </p>
-            )}
+      {asociacion && <p><b>Asociación:</b> {asociacion}</p>}
 
-{candidato && candidato !== "Ninguno" ? (
-  <p>
-    <b>Vendida por candidato:</b> Sí <br />
-    <b>Candidato:</b> {candidato}
-  </p>
-) : (
-  <p>
-    <b>Vendida por candidato:</b> No
-  </p>
+      {candidato && candidato !== "Ninguno" ? (
+        <>
+          <p><b>Vendida por candidato:</b> Sí</p>
+          <p><b>Candidato:</b> {candidato}</p>
+        </>
+      ) : (
+        <p><b>Vendida por candidato:</b> No</p>
+      )}
+    </div>
+
+    <p style={{ ...text, marginTop: 12 }}>
+      Verifica que toda la información esté correcta antes de continuar.
+    </p>
+
+    <hr
+      style={{
+        border: "1px solid rgba(0,255,255,0.4)",
+        margin: "20px 0",
+      }}
+    />
+
+    {/* ===== MÉTODO DE PAGO ===== */}
+    <h3 className={tron.className} style={{ marginBottom: 10 }}>
+      MÉTODO DE PAGO
+    </h3>
+
+    <button
+      style={primaryBtn}
+      type="button"
+      onClick={() => {
+        setMetodoPago("ath");
+        setReceipt(null);
+        setStep("ath");
+      }}
+    >
+      ATH Móvil · ${totalATH}
+    </button>
+
+    <button
+      style={primaryBtn}
+      type="button"
+      onClick={() => {
+        setMetodoPago("puerta");
+        setStep("puerta");
+      }}
+    >
+      Pago en puerta · ${totalPuerta}
+    </button>
+
+    <button type="button" onClick={() => setStep("form")} style={linkBtn}>
+      Editar información
+    </button>
+  </div>
 )}
-
-          <p style={{ ...text, marginTop: 12 }}>
-            Verifica que toda la información esté correcta antes de continuar.
-          </p>
-
-          <hr
-            style={{
-              border: "1px solid rgba(0,255,255,0.4)",
-              margin: "20px 0",
-            }}
-          />
-
-          {/* ===== MÉTODOS DE PAGO ===== */}
-          <h3 className={tron.className} style={{ marginBottom: 10 }}>
-            MÉTODO DE PAGO
-          </h3>
-
-          <button
-            style={primaryBtn}
-            type="button"
-            onClick={() => {
-              setMetodoPago("ath");
-              setReceipt(null);
-              setStep("ath");
-            }}
-          >
-            ATH Móvil · ${totalATH}
-          </button>
-
-       
-<button
-  type="button"
-  onClick={() => setStep("form")}
-  style={linkBtn}
->
-  Editar información
-</button>
-
           {/* ===== ATH ===== */}
       {step === "ath" && (
         <div style={card}>
