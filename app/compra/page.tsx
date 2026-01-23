@@ -54,7 +54,6 @@ const guaguaExtra = 10;
   const [phone, setPhone] = useState("");
   const [qty, setQty] = useState(1);
   const [asociacion, setAsociacion] = useState("");
-  const [vendidaPor, setVendidaPor] = useState("no");
   const [candidato, setCandidato] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -119,6 +118,7 @@ function goToReview(e: React.FormEvent) {
         proof_url: publicData.publicUrl,
         asociacion,
         candidato: candidato || "Ninguno",
+        guagua,
       });
 
       if (insertError) throw insertError;
@@ -150,6 +150,7 @@ function goToReview(e: React.FormEvent) {
         status: "pendiente",
         asociacion,
         candidato: candidato || "Ninguno",
+        guagua,
       });
 
       if (error) throw error;
@@ -495,18 +496,16 @@ function goToReview(e: React.FormEvent) {
               </p>
             )}
 
-            {vendidaPor === "si" && (
-              <p>
-                <b>Candidato:</b> {candidato}
-              </p>
-            )}
-
-            {vendidaPor === "no" && (
-              <p>
-                <b>Vendida por candidato:</b> No
-              </p>
-            )}
-          </div>
+{candidato && candidato !== "Ninguno" ? (
+  <p>
+    <b>Vendida por candidato:</b> Sí <br />
+    <b>Candidato:</b> {candidato}
+  </p>
+) : (
+  <p>
+    <b>Vendida por candidato:</b> No
+  </p>
+)}
 
           <p style={{ ...text, marginTop: 12 }}>
             Verifica que toda la información esté correcta antes de continuar.
