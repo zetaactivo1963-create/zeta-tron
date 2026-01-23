@@ -293,6 +293,11 @@ const GUAGUA_EXTRA = 10;
   [filteredTickets]
 );
 
+  const totalGuagua = useMemo(
+  () => filteredTickets.reduce((acc, t) => acc + (t.guagua ? (t.qty ?? 0) : 0), 0),
+  [filteredTickets]
+);
+
 // Total aprobado (incluye ATH + puerta, y suma guagua si aplica)
 const totalRecaudado = useMemo(() => {
   return tickets
