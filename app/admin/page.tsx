@@ -597,8 +597,8 @@ const totalRecaudado = totalBase + totalGuaguaExtra;
           </div>
 
           <div style={statPill}>
-            Puerta: <b>{totalPagosPuerta}</b> (${totalPuertaMonto})
-          </div>
+  Puerta: <b>{totalPuertaCantidad}</b> (${totalPuertaCantidad * 15})
+</div>
 
           <div style={statsRight}>
   {SearchBar}
