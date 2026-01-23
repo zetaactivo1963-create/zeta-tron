@@ -338,7 +338,7 @@ const totalPagosPuerta = useMemo(
 );  return tickets
     .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
     .reduce((acc, t) => acc + (t.qty ?? 0), 0);
-}, [tickets]);
+} [tickets]);
 
   /* ================== LOADING OVERLAY ================== */
   if (authorized && loading) {
