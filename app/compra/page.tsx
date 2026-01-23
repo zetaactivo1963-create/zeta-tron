@@ -536,12 +536,13 @@ function goToReview(e: React.FormEvent) {
           </button>
 
        
-
-          <button type="button" onClick={() => setStep("form")} style={linkBtn}>
-            Editar información
-          </button>
-        </div>
-      )}
+<button
+  type="button"
+  onClick={() => setStep("form")}
+  style={linkBtn}
+>
+  Editar información
+</button>
 
           {/* ===== ATH ===== */}
       {step === "ath" && (
