@@ -284,61 +284,52 @@ useEffect(() => {
     [filteredTickets]
   );
 
-  /* ================== TOTALS ================== */
-const PRICE = 15;
-const GUAGUA_EXTRA = 10;
+ /* ================== TOTALS ================== */
 
-  const totalTickets = useMemo(
-  () => filteredTickets.reduce((acc, t) => acc + (t.qty ?? 0), 0),
-  [filteredTickets]
+// Total de taquillas vendidas
+const totalTickets = useMemo(
+  () => tickets.reduce((acc, t) => acc + (t.qty ?? 0), 0),
+  [tickets]
 );
 
-  const totalGuagua = useMemo(
-  () => filteredTickets.reduce((acc, t) => acc + (t.guagua ? (t.qty ?? 0) : 0), 0),
-  [filteredTickets]
+// Cantidad de taquillas con guagua
+const totalGuagua = useMemo(
+  () =>
+    tickets
+      .filter((t) => t.guagua && t.status === "aprobado")
+      .reduce((acc, t) => acc + (t.qty ?? 0), 0),
+  [tickets]
 );
 
-// Total aprobado (incluye ATH + puerta, y suma guagua si aplica)
-const totalRecaudado = useMemo(() => {
-  return tickets
-    .filter((t) => t.status === "aprobado")
-    .reduce((acc, t) => {
-      const qty = t.qty ?? 0;
-      const unit = PRICE + (t.guagua ? GUAGUA_EXTRA : 0);
-      return acc + qty * unit;
-    }, 0);
-}, [tickets]);
+// Base $15 (ATH + tarjeta + puerta)
+const totalBase = useMemo(
+  () =>
+    tickets
+      .filter((t) => t.status === "aprobado")
+      .reduce((acc, t) => acc + (t.qty ?? 0) * 15, 0),
+  [tickets]
+);
 
-// ATH aprobado (incluye guagua)
-const totalATH = useMemo(() => {
-  return tickets
-    .filter((t) => t.status === "aprobado" && t.payment_method !== "puerta")
-    .reduce((acc, t) => {
-      const qty = t.qty ?? 0;
-      const unit = PRICE + (t.guagua ? GUAGUA_EXTRA : 0);
-      return acc + qty * unit;
-    }, 0);
-}, [tickets]);
+// Extra guagua ($10 por taquilla)
+const totalGuaguaExtra = useMemo(
+  () =>
+    tickets
+      .filter((t) => t.status === "aprobado" && t.guagua)
+      .reduce((acc, t) => acc + (t.qty ?? 0) * 10, 0),
+  [tickets]
+);
 
-// Puerta aprobado (incluye guagua)
-const totalPuertaMonto = useMemo(() => {
-  return tickets
-    .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
-    .reduce((acc, t) => {
-      const qty = t.qty ?? 0;
-      const unit = PRICE + (t.guagua ? GUAGUA_EXTRA : 0);
-      return acc + qty * unit;
-    }, 0);
-}, [tickets]);
+// Pagos en puerta (cantidad)
+const totalPuertaCantidad = useMemo(
+  () =>
+    tickets
+      .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
+      .reduce((acc, t) => acc + (t.qty ?? 0), 0),
+  [tickets]
+);
 
-// Cantidad de taquillas en puerta (solo qty)
-const totalPagosPuerta = useMemo(
-  () => ticketsPuerta.reduce((acc, t) => acc + (t.qty ?? 0), 0),
-  [ticketsPuerta]
-);  return tickets
-    .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
-    .reduce((acc, t) => acc + (t.qty ?? 0), 0);
-} [tickets]);
+// 💰 TOTAL FINAL CORRECTO
+const totalRecaudado = totalBase + totalGuaguaExtra;
 
   /* ================== LOADING OVERLAY ================== */
   if (authorized && loading) {
