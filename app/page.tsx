@@ -185,7 +185,7 @@ export default function Home() {
               <div style={footerLinks}>
                 <div style={footerSection}>
                   <h4 style={footerSectionTitle}>Contact</h4>
-                  <a href="mailto:info@ticketedy.com" style={footerLink}>info@ticketedy.com</a>
+                  <a href="mailto:djedypr@gmail.com" style={footerLink}>info@ticketedy.com</a>
                 </div>
               </div>
             </div>
