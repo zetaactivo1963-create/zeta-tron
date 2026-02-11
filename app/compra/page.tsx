@@ -1,14 +1,12 @@
-
 "use client";
 
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Orbitron, Inter } from "next/font/google";
+import { Rajdhani, Inter } from "next/font/google";
 
-const ATH_NUMBER = "9392533384"; // Kenneth
+const ATH_NUMBER = "9392533384";
 
-/* ================== FONTS ================== */
-const tron = Orbitron({
+const tron = Rajdhani({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
 });
@@ -17,7 +15,6 @@ const ui = Inter({
   subsets: ["latin"],
 });
 
-/* ================== DATA ================== */
 const ORGANIZACIONES = [
   "Mu Alpha Phi",
   "Eta Gamma Delta",
@@ -32,44 +29,49 @@ const PRICE_TYPES = [
   { value: "entrada", label: "Entrada", price: 25 },
 ];
 
-type Step = "form" | "review" | "ath" | "puerta" | "done";
+type Step = "form" | "review" | "ath" | "done";
 type PriceType = "newbies" | "preventa" | "entrada";
 
-/* ================== COMPONENT ================== */
 export default function Compra() {
   const [copiado, setCopiado] = useState(false);
   const [step, setStep] = useState<Step>("form");
-  const [metodoPago, setMetodoPago] = useState<"" | "ath" | "tarjeta" | "puerta">("");
-
+  const [metodoPago, setMetodoPago] = useState<"" | "ath">("" );
+  
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [qty, setQty] = useState(1);
-  const [priceType, setPriceType] = useState<PriceType>("preventa"); // Default: pre-venta
+  const [priceType, setPriceType] = useState<PriceType>("preventa");
   const [asociacion, setAsociacion] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
+  
+  // Alert state
+  const [alert, setAlert] = useState<{show: boolean, message: string}>({show: false, message: ""});
 
-  /* ================== TOTALS ================== */
   const currentPrice = PRICE_TYPES.find((p) => p.value === priceType)?.price || 20;
   const total = qty * currentPrice;
 
-  /* ================== FLOW ================== */
+  function showAlert(message: string) {
+    setAlert({show: true, message});
+    setTimeout(() => setAlert({show: false, message: ""}), 3000);
+  }
+
   function goToReview(e: React.FormEvent) {
     e.preventDefault();
 
     if (name.trim().length < 3) {
-      alert("Escribe tu nombre completo");
+      showAlert("Por favor escribe tu nombre completo");
       return;
     }
 
     if (phone.length !== 10) {
-      alert("El teléfono debe tener 10 dígitos");
+      showAlert("El teléfono debe tener 10 dígitos");
       return;
     }
 
     if (!asociacion) {
-      alert("Debes seleccionar una organización");
+      showAlert("Debes seleccionar una organización");
       return;
     }
 
@@ -79,7 +81,7 @@ export default function Compra() {
 
   async function confirmarATH() {
     if (!receipt) {
-      alert("Debes subir la evidencia de pago ATH Móvil");
+      showAlert("Debes subir la evidencia de pago ATH Móvil");
       return;
     }
 
@@ -121,51 +123,27 @@ export default function Compra() {
       setStep("done");
     } catch (err) {
       console.error(err);
-      alert("Error procesando el pago ATH");
+      showAlert("Error procesando el pago ATH");
     } finally {
       setLoading(false);
     }
   }
 
-  async function confirmarPagoPuerta() {
-    const code = `Z${Math.floor(100000 + Math.random() * 900000)}`;
-
-    try {
-      setLoading(true);
-
-      const { error } = await supabase.from("tickets").insert({
-        ticket_code: code,
-        event_slug: "zeta-grid-2",
-        name,
-        phone,
-        qty,
-        payment_method: "puerta",
-        status: "pendiente",
-        asociacion,
-        price_type: priceType,
-      });
-
-      if (error) throw error;
-
-      setMetodoPago("puerta");
-      setTicketCode(code);
-      setStep("done");
-    } catch (err) {
-      console.error(err);
-      alert("Error creando reserva");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /* ================== UI ================== */
   return (
     <main style={main} className={ui.className}>
-      {/* ===== DONE ===== */}
+      {/* ALERT */}
+      {alert.show && (
+        <div style={alertBox}>
+          <span style={alertIcon}>⚠️</span>
+          <span>{alert.message}</span>
+        </div>
+      )}
+
+      {/* DONE */}
       {step === "done" && (
         <div style={{ ...card, textAlign: "center" }}>
           <h2 className={tron.className} style={title}>
-            {metodoPago === "puerta" ? "RESERVA CONFIRMADA" : "PAGO RECIBIDO"}
+            PAGO RECIBIDO
           </h2>
 
           <p style={text}>
@@ -175,25 +153,12 @@ export default function Compra() {
           </p>
 
           <div style={summaryBox}>
-            <p>
-              <b>Nombre:</b> {name}
-            </p>
-            <p>
-              <b>Teléfono:</b> {phone}
-            </p>
-            <p>
-              <b>Cantidad:</b> {qty}
-            </p>
-            <p>
-              <b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}
-            </p>
-
-            {metodoPago === "puerta" && (
-              <p>
-                <b>Total en puerta:</b>{" "}
-                <span style={{ color: "#ff5722" }}>${total}</span>
-              </p>
-            )}
+            <p><b>Nombre:</b> {name}</p>
+            <p><b>Teléfono:</b> {phone}</p>
+            <p><b>Cantidad:</b> {qty}</p>
+            <p><b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}</p>
+            <p><b>Organización:</b> {asociacion}</p>
+            <p><b>Total pagado:</b> <span style={{color: "#ff5722"}}>${total}</span></p>
           </div>
 
           <button
@@ -205,7 +170,7 @@ export default function Compra() {
         </div>
       )}
 
-      {/* ===== FORM ===== */}
+      {/* FORM */}
       {step === "form" && (
         <form onSubmit={goToReview} style={card}>
           <h1 className={tron.className} style={title}>
@@ -213,12 +178,12 @@ export default function Compra() {
           </h1>
 
           <p style={text}>
-            Viernes 27 de febrero 2026 · 7:00 PM
+            Viernes 6 de marzo 2026 · 7:00 PM
             <br />
             Bambalinas Música & Teatro, Aguada PR
             <br />
             <br />
-            <b>ThrowBack WelcomeNewbies Show</b>
+            <b>TrowBack WelcomeNewbie Show</b>
             <br />
             <br />
             PHI SIGMA ALPHA · Capítulo Zeta · ΦΣΑ
@@ -226,18 +191,20 @@ export default function Compra() {
             Nos Reservamos el derecho de admisión
           </p>
 
+          <label style={label}>Nombre completo *</label>
           <input
             type="text"
-            placeholder="Nombre completo"
+            placeholder="Tu nombre completo"
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoComplete="off"
             style={input}
           />
 
+          <label style={label}>Teléfono *</label>
           <input
             type="tel"
-            placeholder="Teléfono"
+            placeholder="Teléfono (10 dígitos)"
             value={phone}
             inputMode="numeric"
             autoComplete="off"
@@ -250,14 +217,7 @@ export default function Compra() {
           />
 
           <label style={label}>Cantidad</label>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              marginBottom: 16,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
             <button
               type="button"
               onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -265,18 +225,9 @@ export default function Compra() {
             >
               −
             </button>
-
-            <div
-              style={{
-                minWidth: 48,
-                textAlign: "center",
-                fontSize: 18,
-                fontWeight: 600,
-              }}
-            >
+            <div style={{ minWidth: 48, textAlign: "center", fontSize: 18, fontWeight: 600 }}>
               {qty}
             </div>
-
             <button
               type="button"
               onClick={() => setQty((q) => q + 1)}
@@ -286,7 +237,6 @@ export default function Compra() {
             </button>
           </div>
 
-          {/* SELECTOR DE TIPO DE PRECIO */}
           <label style={{ ...label, marginBottom: 8, display: "block" }}>
             Tipo de taquilla
           </label>
@@ -300,18 +250,9 @@ export default function Compra() {
                   gap: 14,
                   padding: "14px 16px",
                   borderRadius: 12,
-                  background:
-                    priceType === type.value
-                      ? "rgba(255,87,34,0.14)"
-                      : "rgba(255,255,255,0.04)",
-                  border:
-                    priceType === type.value
-                      ? "1px solid rgba(255,87,34,0.70)"
-                      : "1px solid rgba(255,255,255,0.10)",
-                  boxShadow:
-                    priceType === type.value
-                      ? "0 0 24px rgba(255,87,34,0.22)"
-                      : "0 0 0 rgba(0,0,0,0)",
+                  background: priceType === type.value ? "rgba(255,87,34,0.14)" : "rgba(255,255,255,0.04)",
+                  border: priceType === type.value ? "1px solid rgba(255,87,34,0.70)" : "1px solid rgba(255,255,255,0.10)",
+                  boxShadow: priceType === type.value ? "0 0 24px rgba(255,87,34,0.22)" : "0 0 0 rgba(0,0,0,0)",
                   cursor: "pointer",
                   transition: "all 220ms ease",
                   marginBottom: 10,
@@ -332,12 +273,8 @@ export default function Compra() {
                     width: 20,
                     height: 20,
                     borderRadius: "50%",
-                    border:
-                      priceType === type.value
-                        ? "2px solid #ff5722"
-                        : "2px solid rgba(255,255,255,0.3)",
-                    background:
-                      priceType === type.value ? "#ff5722" : "transparent",
+                    border: priceType === type.value ? "2px solid #ff5722" : "2px solid rgba(255,255,255,0.3)",
+                    background: priceType === type.value ? "#ff5722" : "transparent",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -388,6 +325,8 @@ export default function Compra() {
             ))}
           </select>
 
+          <p style={requiredNote}>* Campo obligatorio</p>
+
           <button type="submit" style={primaryBtn}>
             REVISAR COMPRA
           </button>
@@ -402,7 +341,7 @@ export default function Compra() {
         </form>
       )}
 
-      {/* ===== REVIEW ===== */}
+      {/* REVIEW */}
       {step === "review" && (
         <div style={card}>
           <h2 className={tron.className} style={subtitle}>
@@ -410,39 +349,29 @@ export default function Compra() {
           </h2>
 
           <div style={summaryBox}>
-            <p>
-              <b>Nombre:</b> {name}
+            <p><b>Nombre:</b> {name}</p>
+            <p><b>Teléfono:</b> {phone}</p>
+            <p><b>Cantidad de taquillas:</b> {qty}</p>
+            <p><b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}</p>
+            <p><b>Precio unitario:</b> ${currentPrice}</p>
+            <p><b>Organización:</b> {asociacion}</p>
+            <hr style={{border: "1px solid rgba(255,87,34,0.3)", margin: "12px 0"}} />
+            <p style={{fontSize: 18, fontWeight: 700}}>
+              <b>TOTAL:</b> <span style={{color: "#ff5722"}}>${total}</span>
             </p>
-            <p>
-              <b>Teléfono:</b> {phone}
-            </p>
-            <p>
-              <b>Cantidad de taquillas:</b> {qty}
-            </p>
-            <p>
-              <b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}
-            </p>
-            <p>
-              <b>Total:</b> ${total}
-            </p>
-
-            {asociacion && (
-              <p>
-                <b>Organización:</b> {asociacion}
-              </p>
-            )}
           </div>
+
+          <p style={{ ...text, marginTop: 12, marginBottom: 20 }}>
+            📅 <b>Viernes 6 de marzo 2026 · 7:00 PM</b>
+            <br />
+            📍 Bambalinas Música & Teatro, Aguada PR
+          </p>
 
           <p style={{ ...text, marginTop: 12 }}>
             Verifica que toda la información esté correcta antes de continuar.
           </p>
 
-          <hr
-            style={{
-              border: "1px solid rgba(255,87,34,0.4)",
-              margin: "20px 0",
-            }}
-          />
+          <hr style={{ border: "1px solid rgba(255,87,34,0.4)", margin: "20px 0" }} />
 
           <h3 className={tron.className} style={{ marginBottom: 10 }}>
             MÉTODO DE PAGO
@@ -460,14 +389,13 @@ export default function Compra() {
             ATH Móvil · ${total}
           </button>
 
-
           <button type="button" onClick={() => setStep("form")} style={linkBtn}>
             Editar información
           </button>
         </div>
       )}
 
-      {/* ===== ATH ===== */}
+      {/* ATH */}
       {step === "ath" && (
         <div style={card}>
           <h2 className={tron.className} style={subtitle}>
@@ -487,14 +415,7 @@ export default function Compra() {
             Pagar por ATH Móvil
           </a>
 
-          <div
-            style={{
-              fontSize: 15,
-              opacity: 0.9,
-              marginTop: 10,
-              textAlign: "center",
-            }}
-          >
+          <div style={{ fontSize: 15, opacity: 0.9, marginTop: 10, textAlign: "center" }}>
             <span
               onClick={() => {
                 navigator.clipboard.writeText("9392533384");
@@ -509,9 +430,7 @@ export default function Compra() {
                 letterSpacing: 1,
                 cursor: "pointer",
                 color: copiado ? "#0f0" : "#ff5722",
-                textShadow: copiado
-                  ? "0 0 20px rgba(0,255,0,0.9)"
-                  : "0 0 12px rgba(255,87,34,0.9)",
+                textShadow: copiado ? "0 0 20px rgba(0,255,0,0.9)" : "0 0 12px rgba(255,87,34,0.9)",
                 transition: "all 0.3s ease",
               }}
             >
@@ -561,47 +480,12 @@ export default function Compra() {
           </button>
         </div>
       )}
-
-      {/* ===== PUERTA ===== */}
-      {step === "puerta" && (
-        <div style={card}>
-          <h2 className={tron.className} style={subtitle}>
-            PAGO EN PUERTA
-          </h2>
-
-          <div style={summaryBox}>
-            <p>
-              <b>Nombre:</b> {name}
-            </p>
-            <p>
-              <b>Teléfono:</b> {phone}
-            </p>
-            <p>
-              <b>Cantidad:</b> {qty}
-            </p>
-            <p>
-              <b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}
-            </p>
-            <p>
-              <b>Total a pagar en puerta:</b>{" "}
-              <span style={{ color: "#ff5722" }}>${total}</span>
-            </p>
-          </div>
-
-          <button style={primaryBtn} onClick={confirmarPagoPuerta} disabled={loading}>
-            Confirmar reserva
-          </button>
-
-          <button style={linkBtn} onClick={() => setStep("review")}>
-            Volver
-          </button>
-        </div>
-      )}
     </main>
   );
 }
 
-/* ================== STYLES ================== */
+/* ==================== STYLES ==================== */
+
 const main = {
   minHeight: "100vh",
   background: "radial-gradient(circle at top, #331100, #000)",
@@ -609,6 +493,31 @@ const main = {
   justifyContent: "center",
   alignItems: "center",
   padding: "20px",
+  position: "relative" as const,
+};
+
+const alertBox = {
+  position: "fixed" as const,
+  top: 20,
+  left: "50%",
+  transform: "translateX(-50%)",
+  background: "rgba(255,87,34,0.95)",
+  color: "#fff",
+  padding: "16px 24px",
+  borderRadius: 12,
+  boxShadow: "0 4px 20px rgba(255,87,34,0.5)",
+  zIndex: 9999,
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  fontWeight: 600,
+  fontSize: 15,
+  maxWidth: "90%",
+  animation: "slideDown 0.3s ease",
+};
+
+const alertIcon = {
+  fontSize: 20,
 };
 
 const card = {
@@ -618,8 +527,7 @@ const card = {
   borderRadius: 14,
   background: "rgba(0,0,0,0.65)",
   border: "1px solid rgba(255,87,34,0.6)",
-  boxShadow:
-    "0 0 30px rgba(255,87,34,0.25), inset 0 0 20px rgba(255,87,34,0.15)",
+  boxShadow: "0 0 30px rgba(255,87,34,0.25), inset 0 0 20px rgba(255,87,34,0.15)",
   color: "#ffffff",
 };
 
@@ -674,6 +582,14 @@ const select = {
   border: "1px solid rgba(255,87,34,0.6)",
   borderRadius: 8,
   outline: "none",
+};
+
+const requiredNote = {
+  fontSize: 11,
+  color: "#999",
+  fontStyle: "italic",
+  marginTop: -8,
+  marginBottom: 16,
 };
 
 const primaryBtn = {
