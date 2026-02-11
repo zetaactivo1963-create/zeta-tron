@@ -1,3 +1,15 @@
+import { redirect } from 'next/navigation';
+
+export default function EventoPage({ params }: { params: { slug: string } }) {
+  // Por ahora redirige al evento específico que ya tienes
+  if (params.slug === 'zeta-grid-2') {
+    redirect('/events/zeta-grid-2');
+  }
+  
+  // Si no existe, redirige al home
+  redirect('/');
+}
+
 "use client";
 
 import { useState } from "react";
