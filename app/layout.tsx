@@ -1,5 +1,5 @@
 import './globals.css';
-import { Orbitron, Inter } from "next/font/google";
+import { Orbitron, Inter, Rajdhani } from "next/font/google";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -13,13 +13,19 @@ const inter = Inter({
   variable: "--font-body",
 });
 
+const rajdhani = Rajdhani({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-robot",
+});
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${orbitron.variable}`}>
+    <html lang="es" className={`${inter.variable} ${orbitron.variable} ${rajdhani.variable}`}>
       <body>{children}</body>
     </html>
   );
