@@ -1,3 +1,6 @@
+"use client";
+
+
 import { redirect } from 'next/navigation';
 
 export default function EventoPage({ params }: { params: { slug: string } }) {
@@ -10,7 +13,6 @@ export default function EventoPage({ params }: { params: { slug: string } }) {
   redirect('/');
 }
 
-"use client";
 
 import { useState } from "react";
 import Link from "next/link";
