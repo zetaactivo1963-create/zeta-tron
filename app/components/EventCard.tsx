@@ -8,8 +8,8 @@ export default function EventCard({ event }: { event: EventItem }) {
         borderRadius: 16,
         overflow: "hidden",
         background: "#000",
-        border: "1px solid rgba(0,255,255,0.35)",
-        boxShadow: "0 0 25px rgba(0,255,255,0.15)",
+        border: "1px solid rgba(255, 87, 34, 0.4)",
+        boxShadow: "0 0 25px rgba(255, 23, 68, 0.2)",
         maxWidth: 420,
         width: "100%",
       }}
@@ -25,7 +25,7 @@ export default function EventCard({ event }: { event: EventItem }) {
       />
 
       <div style={{ padding: 16 }}>
-        <h2 style={{ color: "#0ff", marginBottom: 6 }}>
+        <h2 style={{ color: "#ff5722", marginBottom: 6 }}>
           {event.title}
         </h2>
 
@@ -46,12 +46,13 @@ export default function EventCard({ event }: { event: EventItem }) {
             style={{
               width: "100%",
               padding: 12,
-              background: "#00ffff",
+              background: "#ff5722",
               color: "#000",
               fontWeight: 700,
               border: "none",
               borderRadius: 10,
               cursor: "pointer",
+              boxShadow: "0 0 15px rgba(255, 87, 34, 0.4)",
             }}
           >
             Ver evento
