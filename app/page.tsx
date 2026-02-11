@@ -102,7 +102,6 @@ export default function Home() {
                       )}
                       
                       <div className="ticket-header">
-                        <div className="category-tag">{evento.category}</div>
                         <div className="ticket-org">{evento.organization}</div>
                       </div>
 
@@ -276,8 +275,8 @@ const responsiveCSS = `
 
   .featured-badge {
     position: absolute;
-    top: -12px;
-    right: 16px;
+    top: 16px;
+    right: 32px;
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
     color: #000;
     padding: 6px 14px;
@@ -293,17 +292,6 @@ const responsiveCSS = `
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-  }
-
-  .category-tag {
-    background: rgba(139,92,246,0.25);
-    border: 1px solid rgba(139,92,246,0.4);
-    color: #c4b5fd;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
   }
 
   .ticket-org {
