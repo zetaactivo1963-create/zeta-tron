@@ -3,85 +3,65 @@
 import Link from "next/link";
 import { Rajdhani } from "next/font/google";
 
-/* ===== FONTS ===== */
 const robotFont = Rajdhani({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-/* ===== COMPONENT ===== */
 export default function ZetaGrid2() {
   return (
-    <main
-      className={robotFont.className}
-      style={{
-        ...main,
-        fontFamily: "'Rajdhani', sans-serif",
-      }}
-    >
-      {/* GLOBAL CSS */}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% {
-            box-shadow: 0 0 40px rgba(255, 87, 34, 0.5), inset 0 0 20px rgba(255, 23, 68, 0.2);
-            transform: scale(1);
-          }
-          50% {
-            box-shadow: 0 0 60px rgba(255, 87, 34, 0.8), inset 0 0 30px rgba(255, 23, 68, 0.3);
-            transform: scale(1.02);
-          }
-        }
-      `}</style>
+    <main className={robotFont.className} style={main}>
+      <style>{globalCSS}</style>
 
-      {/* VIDEO DE FONDO */}
+      {/* VIDEO */}
       <video autoPlay loop muted playsInline style={videoBg}>
         <source src="/videos/bgg.mp4" type="video/mp4" />
       </video>
 
       {/* OVERLAY */}
       <div style={overlay}>
-        {/* BOTÓN HOME */}
+        {/* HEADER */}
         <Link href="/" style={homeBtn}>
-          ← Home
+          <span style={homeArrow}>←</span>
+          <span>Home</span>
         </Link>
 
-        {/* CONTENIDO */}
+        {/* CONTENT */}
         <div style={content}>
           <div style={titleWrapper}>
-            <h1 style={title}>ZETA'S GRID 2.0</h1>
+            <h1 style={title}>ZETA'S</h1>
+            <h1 style={titleGrid}>GRID 2.0</h1>
           </div>
-          <h2 style={subtitle}>ThrowBack WelcomeNewbies Show</h2>
+          <h2 style={subtitle}>TrowBack WelcomeNewbie Show</h2>
           <h3 style={org}>PHI SIGMA ALPHA · Capítulo Zeta</h3>
 
-          {/* INFO EVENTO */}
+          {/* INFO */}
           <div style={infoBox}>
-            <p style={infoText}>📅 Viernes 27 de febrero 2026 · 7:00 PM</p>
+            <p style={infoText}>📅 Viernes 6 de marzo 2026 · 7:00 PM</p>
             <p style={infoText}>📍 Bambalinas Música & Teatro</p>
             <p style={infoText}>Aguada, Puerto Rico</p>
-            <p style={infoText}>Evento solo para Fraternos ΦΣΑ y damas</p>
-            <p style={infoText}>After Party OPEN BAR. Incluido</p>
-
-
           </div>
 
-          {/* PRECIOS */}
-          <div style={priceBox}>
-            <div style={priceItem}>
-              <span style={priceLabel}>All Newbie's</span>
-              <span style={priceValue}>$15</span>
-            </div>
-            <div style={priceItem}>
-              <span style={priceLabel}>Pre-venta</span>
-              <span style={priceValue}>$20</span>
-            </div>
-            <div style={priceItem}>
-              <span style={priceLabel}>Entrada</span>
-              <span style={priceValue}>$25</span>
+          {/* PRECIOS (sin botón) */}
+          <div style={pricesSection}>
+            <div style={pricesList}>
+              <div style={priceRow}>
+                <span style={priceLabel}>All Newbie's</span>
+                <span style={priceValue}>$15</span>
+              </div>
+              <div style={priceRow}>
+                <span style={priceLabel}>Pre-venta</span>
+                <span style={priceValue}>$20</span>
+              </div>
+              <div style={priceRow}>
+                <span style={priceLabel}>Entrada</span>
+                <span style={priceValue}>$25</span>
+              </div>
             </div>
           </div>
 
-          {/* OPEN BAR */}
-          <div style={openBarBox}>
+          {/* OPEN BAR (sin botón) */}
+          <div style={openBarSection}>
             <span style={openBarText}>🍹 OPEN BAR 🍹</span>
           </div>
 
@@ -98,86 +78,107 @@ export default function ZetaGrid2() {
   );
 }
 
-/* ===================== STYLES ===================== */
+/* ==================== STYLES ==================== */
 
-const main = {
+const globalCSS = `
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+`;
+
+const main: React.CSSProperties = {
   minHeight: "100vh",
   background: "#000",
-  position: "relative" as const,
+  position: "relative",
   overflow: "hidden",
+  fontFamily: "'Rajdhani', sans-serif",
 };
 
-const videoBg = {
-  position: "fixed" as const,
+const videoBg: React.CSSProperties = {
+  position: "fixed",
   inset: 0,
   width: "100%",
   height: "100%",
-  objectFit: "cover" as const,
+  objectFit: "cover",
   zIndex: 0,
 };
 
-const overlay = {
-  position: "relative" as const,
+const overlay: React.CSSProperties = {
+  position: "relative",
   zIndex: 1,
   minHeight: "100vh",
   background: "radial-gradient(circle at top, rgba(255, 87, 34, 0.15), #000 70%)",
   color: "#ffe6e6",
   display: "flex",
+  flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  textAlign: "center" as const,
+  textAlign: "center",
   padding: "20px",
 };
 
-const homeBtn = {
-  position: "absolute" as const,
+const homeBtn: React.CSSProperties = {
+  position: "absolute",
   top: 20,
   left: 20,
-  color: "#ffffff",
-  fontSize: 14,
+  color: "#ffccbc",
+  fontSize: 15,
   textDecoration: "none",
-  opacity: 0.85,
-};
-
-const content = {
+  opacity: 0.9,
   display: "flex",
-  flexDirection: "column" as const,
   alignItems: "center",
+  gap: 6,
+  fontWeight: 500,
+  transition: "all 0.2s",
 };
 
-const titleWrapper = {
+const homeArrow: React.CSSProperties = {
+  fontSize: 20,
+  fontWeight: 700,
+};
+
+const content: React.CSSProperties = {
   display: "flex",
-  flexDirection: "column" as const,
+  flexDirection: "column",
+  alignItems: "center",
+  maxWidth: 700,
+};
+
+const titleWrapper: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
   alignItems: "center",
   marginBottom: 8,
 };
 
-const title = {
-  fontFamily: "'Rajdhani', sans-serif",
+const title: React.CSSProperties = {
   fontSize: 72,
   fontWeight: 700,
   letterSpacing: 12,
-  textTransform: "uppercase" as const,
+  textTransform: "uppercase",
   color: "#ff1744",
   textShadow: "0 0 40px rgba(255, 23, 68, 0.8), 0 0 20px rgba(255, 23, 68, 0.5)",
   margin: 0,
   lineHeight: 0.9,
 };
 
-const titleGrid = {
-  fontFamily: "'Rajdhani', sans-serif",
+const titleGrid: React.CSSProperties = {
   fontSize: 72,
   fontWeight: 700,
   letterSpacing: 12,
-  textTransform: "uppercase" as const,
+  textTransform: "uppercase",
   color: "#ff1744",
   textShadow: "0 0 40px rgba(255, 23, 68, 0.8), 0 0 20px rgba(255, 23, 68, 0.5)",
   margin: 0,
   lineHeight: 0.9,
 };
 
-const subtitle = {
-  fontFamily: "'Rajdhani', sans-serif",
+const subtitle: React.CSSProperties = {
   fontSize: 36,
   fontWeight: 500,
   letterSpacing: 4,
@@ -187,8 +188,7 @@ const subtitle = {
   textShadow: "0 0 25px rgba(255, 87, 34, 0.6)",
 };
 
-const org = {
-  fontFamily: "'Rajdhani', sans-serif",
+const org: React.CSSProperties = {
   fontSize: 17,
   fontWeight: 400,
   letterSpacing: 3,
@@ -196,7 +196,7 @@ const org = {
   marginBottom: 40,
 };
 
-const infoBox = {
+const infoBox: React.CSSProperties = {
   marginBottom: 32,
   padding: "16px 24px",
   background: "rgba(0, 0, 0, 0.4)",
@@ -204,67 +204,67 @@ const infoBox = {
   border: "1px solid rgba(255, 87, 34, 0.3)",
 };
 
-const infoText = {
+const infoText: React.CSSProperties = {
   fontSize: 15,
   marginBottom: 6,
   letterSpacing: 1,
 };
 
-const priceBox = {
-  display: "flex",
-  gap: "20px",
-  marginBottom: 36,
-  flexWrap: "wrap" as const,
-  justifyContent: "center",
+const pricesSection: React.CSSProperties = {
+  marginBottom: 24,
+  width: "100%",
+  maxWidth: 500,
 };
 
-const priceItem = {
+const pricesList: React.CSSProperties = {
   display: "flex",
-  flexDirection: "column" as const,
+  flexDirection: "column",
+  gap: 12,
+  padding: "20px",
+  background: "rgba(0,0,0,0.3)",
+  borderRadius: 12,
+  border: "1px solid rgba(255,87,34,0.2)",
+};
+
+const priceRow: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
   alignItems: "center",
-  padding: "12px 24px",
-  background: "rgba(255, 23, 68, 0.15)",
-  borderRadius: 10,
-  border: "1px solid rgba(255, 87, 34, 0.4)",
-  minWidth: 100,
+  padding: "8px 0",
 };
 
-const priceLabel = {
-  fontSize: 12,
-  opacity: 0.75,
-  marginBottom: 4,
+const priceLabel: React.CSSProperties = {
+  fontSize: 16,
+  opacity: 0.9,
   letterSpacing: 1,
+  color: "#ffccbc",
 };
 
-const priceValue = {
+const priceValue: React.CSSProperties = {
   fontSize: 24,
   fontWeight: 700,
   color: "#ff5722",
   textShadow: "0 0 15px rgba(255, 87, 34, 0.6)",
 };
 
-const openBarBox = {
-  marginTop: 8,
-  marginBottom: 32,
-  padding: "8px 20px",
-  background: "linear-gradient(135deg, rgba(255, 23, 68, 0.25), rgba(255, 87, 34, 0.25))",
+const openBarSection: React.CSSProperties = {
+  marginBottom: 36,
+  padding: "12px 28px",
+  background: "rgba(255,87,34,0.1)",
   borderRadius: 8,
-  border: "2px solid #ff5722",
-  boxShadow: "0 0 40px rgba(255, 87, 34, 0.5), inset 0 0 20px rgba(255, 23, 68, 0.2)",
-  animation: "pulse 2s ease-in-out infinite",
+  border: "1px solid rgba(255,87,34,0.3)",
 };
 
-const openBarText = {
-  fontFamily: "'Rajdhani', sans-serif",
-  fontSize: 22,
+const openBarText: React.CSSProperties = {
+  fontSize: 20,
   fontWeight: 700,
   letterSpacing: 4,
   color: "#fff",
-  textTransform: "uppercase" as const,
-  textShadow: "0 0 30px rgba(255, 87, 34, 0.9), 0 0 15px rgba(255, 23, 68, 0.7)",
+  textShadow: "0 0 20px rgba(255, 87, 34, 0.7)",
+  animation: "pulse 2s ease-in-out infinite",
 };
 
-const buyBtn = {
+const buyBtn: React.CSSProperties = {
   background: "#ff5722",
   color: "#000",
   padding: "16px 48px",
@@ -279,7 +279,7 @@ const buyBtn = {
   transition: "all 0.3s ease",
 };
 
-const adminLink = {
+const adminLink: React.CSSProperties = {
   fontSize: 12,
   color: "#ffccbc",
   textDecoration: "none",
