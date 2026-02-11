@@ -18,8 +18,7 @@ type Ticket = {
   checked_in_at?: string | null;
   asociacion?: string | null;
   candidato?: string | null;
-  guagua?: boolean | null;
-  
+  price_type?: string | null; // NUEVO: tipo de precio
 };
 
 type ResumenCandidato = {
@@ -35,21 +34,7 @@ type ResumenOrgRow = {
 
 const PIN = "1963";
 
-/* ================== SMALL HOOK ================== */
-function useIsMobile(breakpoint = 640) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    const onChange = () => setIsMobile(mq.matches);
-    onChange();
-    mq.addEventListener?.("change", onChange);
-    return () => mq.removeEventListener?.("change", onChange);
-  }, [breakpoint]);
-
-  return isMobile;
-}
-
+/* ================== HELPERS ================== */
 function formatMetodo(m: string) {
   if (!m) return "—";
   if (m === "puerta") return "Puerta";
@@ -69,6 +54,35 @@ function statusColor(s: string) {
   return "#ff0";
 }
 
+function formatPriceType(type: string | null | undefined) {
+  if (!type) return "Entrada";
+  if (type === "newbies") return "Newbi's";
+  if (type === "preventa") return "Pre-venta";
+  if (type === "entrada") return "Entrada";
+  return type;
+}
+
+function getPriceValue(type: string | null | undefined): number {
+  if (!type || type === "entrada") return 25;
+  if (type === "preventa") return 20;
+  if (type === "newbies") return 15;
+  return 25;
+}
+
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const onChange = () => setIsMobile(mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
 /* ================== COMPONENT ================== */
 export default function AdminPage() {
   const isMobile = useIsMobile(740);
@@ -78,19 +92,11 @@ export default function AdminPage() {
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [resumen, setResumen] = useState<ResumenCandidato[]>([]);
-
   const [loading, setLoading] = useState(false);
 
-  const [filter, setFilter] = useState<"todos" | "pendiente" | "aprobado" | "rechazado">(
-    "todos"
-  );
-
-  // Barra de búsqueda (lo que escribes)
+  const [filter, setFilter] = useState<"todos" | "pendiente" | "aprobado" | "rechazado">("todos");
   const [search, setSearch] = useState("");
 
-  // Para evitar que cada teclazo pegue a Supabase (si quieres), se puede usar local.
-  // Pero aquí lo dejamos simple y el query lo hace fetchTickets().
-  // Aun así, el filtrado local se mantiene por si estás mirando tickets ya cargados.
   const filteredTickets = useMemo(() => {
     const s = search.trim();
     if (!s) return tickets;
@@ -98,74 +104,72 @@ export default function AdminPage() {
     const sLower = s.toLowerCase();
     const sDigits = s.replace(/\D/g, "");
 
-return tickets.filter((t) => {
-  const code = (t.ticket_code ?? "").toLowerCase();
-  const name = (t.name ?? "").toLowerCase();
-  const phone = t.phone ?? "";
-  const phoneDigits = phone.replace(/\D/g, "");
+    return tickets.filter((t) => {
+      const code = (t.ticket_code ?? "").toLowerCase();
+      const name = (t.name ?? "").toLowerCase();
+      const phone = t.phone ?? "";
+      const phoneDigits = phone.replace(/\D/g, "");
 
-  return (
-    code.includes(sLower) ||
-    name.includes(sLower) ||
-    phone.includes(s) ||
-    (sDigits && phoneDigits.includes(sDigits))
-  );
-});
+      return (
+        code.includes(sLower) ||
+        name.includes(sLower) ||
+        phone.includes(s) ||
+        (sDigits && phoneDigits.includes(sDigits))
+      );
+    });
   }, [tickets, search]);
 
-/* ================== FETCH ================== */
-const fetchTickets = useCallback(async () => {
-  setLoading(true);
+  /* ================== FETCH ================== */
+  const fetchTickets = useCallback(async () => {
+    setLoading(true);
 
-  try {
-    let query = supabase
-      .from("tickets")
-      .select(
-        "id,ticket_code,name,phone,qty,payment_method,status,proof_url,created_at,checked_in,checked_in_at,asociacion,candidato,guagua"
-      )
-      .order("created_at", { ascending: false });
+    try {
+      let query = supabase
+        .from("tickets")
+        .select(
+          "id,ticket_code,name,phone,qty,payment_method,status,proof_url,created_at,checked_in,checked_in_at,asociacion,candidato,price_type"
+        )
+        .order("created_at", { ascending: false });
 
-    // filtro por status
-    if (filter !== "todos") {
-      query = query.eq("status", filter);
+      if (filter !== "todos") {
+        query = query.eq("status", filter);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("DB ERROR:", error);
+        alert("Error cargando tickets");
+      } else {
+        setTickets((data ?? []) as Ticket[]);
+      }
+
+      // Resumen por candidato
+      const { data: resumenData, error: resumenErr } = await supabase
+        .from("resumen_por_candidato")
+        .select("*");
+
+      if (resumenErr) {
+        console.error("RESUMEN ERROR:", resumenErr);
+      } else if (resumenData) {
+        setResumen(resumenData as ResumenCandidato[]);
+      }
+    } finally {
+      setLoading(false);
     }
+  }, [filter]);
 
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("DB ERROR:", error);
-      alert("Error cargando tickets");
-    } else {
-      setTickets((data ?? []) as Ticket[]);
-    }
-
-    // ===== RESUMEN POR CANDIDATO =====
-    const { data: resumenData, error: resumenErr } = await supabase
-      .from("resumen_por_candidato")
-      .select("*");
-
-    if (resumenErr) {
-      console.error("RESUMEN ERROR:", resumenErr);
-    } else if (resumenData) {
-      setResumen(resumenData as ResumenCandidato[]);
-    }
-  } finally {
-    setLoading(false);
-  }
-}, [filter]);
-
-useEffect(() => {
-  if (!authorized) return;
-  fetchTickets();
-}, [authorized, fetchTickets]);
-
+  useEffect(() => {
+    if (!authorized) return;
+    fetchTickets();
+  }, [authorized, fetchTickets]);
 
   /* ================== RESUMEN ORG ================== */
   const resumenOrganizacion: ResumenOrgRow[] = useMemo(() => {
     const obj = tickets.reduce((acc: Record<string, ResumenOrgRow>, t) => {
-      const org = (t.asociacion && t.asociacion.trim()) ? t.asociacion : "Sin organización";
+      const org = t.asociacion && t.asociacion.trim() ? t.asociacion : "Sin organización";
       if (!acc[org]) acc[org] = { organizacion: org, personas: 0 };
-      acc[org].personas += 1; // conteo por persona/compra (si quieres por qty, cambia a += t.qty)
+      acc[org].personas += 1;
       return acc;
     }, {});
     return Object.values(obj).sort((a, b) => b.personas - a.personas);
@@ -176,7 +180,6 @@ useEffect(() => {
     e.preventDefault();
     if (pin === PIN) {
       setAuthorized(true);
-      // fetchTickets() se dispara por useEffect
     } else {
       alert("PIN incorrecto");
     }
@@ -190,7 +193,6 @@ useEffect(() => {
 
       if (error) {
         alert("Error actualizando ticket");
-        // eslint-disable-next-line no-console
         console.error(error);
         return;
       }
@@ -198,16 +200,17 @@ useEffect(() => {
       // WhatsApp SOLO si es aprobado
       if (status === "aprobado") {
         const phoneClean = (ticket.phone ?? "").replace(/\D/g, "");
+        const priceValue = getPriceValue(ticket.price_type);
         const mensaje = encodeURIComponent(
-          `ZETA TRON 🚀\n` +
-            `Show de Neófitos\n\n` +
+          `ZETA'S GRID 2.0 🚀\n` +
+            `TrowBack WelcomeNewbi Show\n\n` +
             `Código: ${ticket.ticket_code}\n` +
             `Nombre: ${ticket.name}\n` +
-            `Cantidad: ${ticket.qty}\n\n` +
+            `Cantidad: ${ticket.qty}\n` +
+            `Tipo: ${formatPriceType(ticket.price_type)}\n\n` +
             `Presenta este mensaje en la entrada`
         );
 
-        // redirige
         window.location.href = `https://wa.me/1${phoneClean}?text=${mensaje}`;
       }
 
@@ -226,7 +229,6 @@ useEffect(() => {
         .eq("id", ticket.id);
 
       if (error) {
-        // eslint-disable-next-line no-console
         console.error("SUPABASE ERROR:", error);
         alert("Error registrando pago en puerta");
       }
@@ -246,7 +248,6 @@ useEffect(() => {
         .eq("id", ticket.id);
 
       if (error) {
-        // eslint-disable-next-line no-console
         console.error("DB ERROR:", error);
         alert("Error registrando entrada");
       }
@@ -264,7 +265,6 @@ useEffect(() => {
 
       if (error) {
         alert("Error revirtiendo entrada");
-        // eslint-disable-next-line no-console
         console.error(error);
       }
 
@@ -275,147 +275,83 @@ useEffect(() => {
   }
 
   /* ================== DERIVED LISTS ================== */
-  const ticketsNoEntrados = useMemo(
-    () => filteredTickets.filter((t) => !t.checked_in),
-    [filteredTickets]
-  );
-  const ticketsEntrados = useMemo(
-    () => filteredTickets.filter((t) => t.checked_in),
-    [filteredTickets]
+  const ticketsNoEntrados = useMemo(() => filteredTickets.filter((t) => !t.checked_in), [filteredTickets]);
+  const ticketsEntrados = useMemo(() => filteredTickets.filter((t) => t.checked_in), [filteredTickets]);
+
+  /* ================== TOTALS ================== */
+  // Total de taquillas APROBADAS
+  const totalTickets = useMemo(
+    () =>
+      tickets
+        .filter((t) => t.status === "aprobado")
+        .reduce((acc, t) => acc + (t.qty ?? 0), 0),
+    [tickets]
   );
 
-/* ================== TOTALS ================== */
+  // Total dinero (por tipo de precio)
+  const totalDinero = useMemo(() => {
+    return tickets
+      .filter((t) => t.status === "aprobado")
+      .reduce((acc, t) => {
+        const priceValue = getPriceValue(t.price_type);
+        return acc + t.qty * priceValue;
+      }, 0);
+  }, [tickets]);
 
-// Total de taquillas APROBADAS
-const totalTickets = useMemo(
-  () =>
+  // Desglose por tipo de precio
+  const ticketsPorTipo = useMemo(() => {
+    const tipos = { newbies: 0, preventa: 0, entrada: 0 };
     tickets
       .filter((t) => t.status === "aprobado")
-      .reduce((acc, t) => acc + (t.qty ?? 0), 0),
-  [tickets]
-);
+      .forEach((t) => {
+        const type = t.price_type || "entrada";
+        if (type === "newbies") tipos.newbies += t.qty;
+        else if (type === "preventa") tipos.preventa += t.qty;
+        else tipos.entrada += t.qty;
+      });
+    return tipos;
+  }, [tickets]);
 
-// Cantidad de taquillas con guagua (APROBADAS)
-const totalGuagua = useMemo(
-  () =>
-    tickets
-      .filter((t) => t.status === "aprobado" && t.guagua)
-      .reduce((acc, t) => acc + (t.qty ?? 0), 0),
-  [tickets]
-);
+  const dineroPorTipo = useMemo(() => {
+    return {
+      newbies: ticketsPorTipo.newbies * 15,
+      preventa: ticketsPorTipo.preventa * 20,
+      entrada: ticketsPorTipo.entrada * 25,
+    };
+  }, [ticketsPorTipo]);
 
-// Lista guagua (APROBADAS)
-const listaGuagua = useMemo(
-  () => tickets.filter((t) => t.status === "aprobado" && !!t.guagua),
-  [tickets]
-);
+  // Puerta: cantidad y monto
+  const totalPuertaCantidad = useMemo(
+    () =>
+      tickets
+        .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
+        .reduce((acc, t) => acc + (t.qty ?? 0), 0),
+    [tickets]
+  );
 
-// Base $15 (incluye puerta también)
-const totalBase = useMemo(
-  () =>
-    tickets
-      .filter((t) => t.status === "aprobado")
-      .reduce((acc, t) => acc + (t.qty ?? 0) * 15, 0),
-  [tickets]
-);
-
-// Extra guagua ($10 por taquilla aprobada con guagua)
-const totalGuaguaExtra = useMemo(
-  () =>
-    tickets
-      .filter((t) => t.status === "aprobado" && t.guagua)
-      .reduce((acc, t) => acc + (t.qty ?? 0) * 10, 0),
-  [tickets]
-);
-
-// Puerta: cantidad aprobada
-const totalPuertaCantidad = useMemo(
-  () =>
-    tickets
+  const totalPuertaMonto = useMemo(() => {
+    return tickets
       .filter((t) => t.status === "aprobado" && t.payment_method === "puerta")
-      .reduce((acc, t) => acc + (t.qty ?? 0), 0),
-  [tickets]
-);
+      .reduce((acc, t) => {
+        const priceValue = getPriceValue(t.price_type);
+        return acc + t.qty * priceValue;
+      }, 0);
+  }, [tickets]);
 
-// Puerta: monto
-const totalPuertaMonto = useMemo(
-  () => totalPuertaCantidad * 15,
-  [totalPuertaCantidad]
-);
-
-// TOTAL FINAL
-const totalRecaudado = totalBase + totalGuaguaExtra;
-
-  
-  /* ================== LOADING OVERLAY ================== */
-  if (authorized && loading) {
-    return (
-      <div style={overlay}>
-        <div style={loaderBox}>
-          <div className="spinner" />
-          <p style={{ marginTop: 8 }}>Cargando tickets…</p>
-        </div>
-        <style>{spinnerCSS}</style>
-      </div>
-    );
-  }
-
-  /* ================== LOGIN VIEW ================== */
+  /* ================== RENDER ================== */
   if (!authorized) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "#000",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 24,
-        }}
-      >
-        <form
-          onSubmit={handlePin}
-          style={{
-            width: "100%",
-            maxWidth: 320,
-            padding: 24,
-            border: "1px solid #0ff",
-            textAlign: "center",
-            borderRadius: 10,
-          }}
-        >
-          <h3 style={{ marginBottom: 16, color: "#0ff" }}>Acceso Directiva</h3>
-
+      <main style={main}>
+        <form onSubmit={handlePin} style={{ ...card, maxWidth: 360, textAlign: "center" }}>
+          <h1 style={{ color: "#0ff", marginBottom: 20 }}>ADMIN</h1>
           <input
             type="password"
             placeholder="PIN"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              background: "#000",
-              border: "1px solid #0ff",
-              color: "#0ff",
-              textAlign: "center",
-              marginBottom: 12,
-              borderRadius: 8,
-              outline: "none",
-            }}
+            style={searchInput}
           />
-
-          <button
-            style={{
-              width: "100%",
-              padding: 10,
-              background: "#0ff",
-              color: "#000",
-              fontWeight: "bold",
-              border: "none",
-              cursor: "pointer",
-              borderRadius: 8,
-            }}
-          >
+          <button type="submit" style={registerPuertaBtn}>
             Entrar
           </button>
         </form>
@@ -423,482 +359,461 @@ const totalRecaudado = totalBase + totalGuaguaExtra;
     );
   }
 
-  /* ================== UI HELPERS ================== */
-  const SearchBar = (
-    <input
-      type="text"
-      placeholder="🔍 Código o teléfono"
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      style={searchInput}
-    />
-  );
-
-  const FilterSelect = (
-    <select
-      value={filter}
-      onChange={(e) => setFilter(e.target.value as "todos" | "pendiente" | "aprobado" | "rechazado")}
-      style={select}
-    >
-      <option value="todos">Todos</option>
-      <option value="pendiente">Pendientes</option>
-      <option value="aprobado">Aprobados</option>
-      <option value="rechazado">Rechazados</option>
-    </select>
-  );
-
-  /* ================== MOBILE CARDS ================== */
-  function TicketCard({
-    t,
-    mode,
-  }: {
-    t: Ticket;
-    mode: "no_entrados" | "entrados";
-  }) {
-    const isEntrado = !!t.checked_in;
-
-    return (
-      <div style={cardRow}>
-        <div style={cardRowTop}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ fontSize: 12, opacity: 0.8 }}>Código</div>
-            <div style={{ fontWeight: 800, fontSize: 16, color: "#0ff" }}>{t.ticket_code}</div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-            <div style={{ fontSize: 12, opacity: 0.8 }}>Status</div>
-            <div style={{ fontWeight: 800, color: statusColor(t.status) }}>{formatStatus(t.status)}</div>
-          </div>
-        </div>
-
-        <div style={cardRowBody}>
-          <div style={cardField}>
-            <span style={cardLabel}>Nombre</span>
-            <span style={cardValue}>{t.name || "—"}</span>
-          </div>
-
-          <div style={cardField}>
-            <span style={cardLabel}>Teléfono</span>
-            <span style={cardValue}>{t.phone || "—"}</span>
-          </div>
-
-          <div style={cardGrid2}>
-            <div style={cardField}>
-              <span style={cardLabel}>Cantidad</span>
-              <span style={cardValue}>{t.qty}</span>
-            </div>
-            <div style={cardField}>
-              <span style={cardLabel}>Método</span>
-              <span style={cardValue}>{formatMetodo(t.payment_method)}</span>
-            </div>
-          </div>
-
-          <div style={cardGrid2}>
-            <div style={cardField}>
-              <span style={cardLabel}>Organización</span>
-              <span style={cardValue}>{t.asociacion || "—"}</span>
-            </div>
-            <div style={cardField}>
-              <span style={cardLabel}>Evidencia</span>
-              <span style={cardValue}>
-                {t.proof_url ? (
-                  <a href={t.proof_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0ff" }}>
-                    Ver
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </span>
-            </div>
-          </div>
-
-          <div style={cardGrid2}>
-  <div style={cardField}>
-    <span style={cardLabel}>Candidato</span>
-    <span style={cardValue}>{t.candidato || "Ninguno"}</span>
-  </div>
-  <div style={cardField}>
-    <span style={cardLabel}>Guagua</span>
-    <span style={cardValue}>{t.guagua ? "Sí" : "No"}</span>
-  </div>
-</div>      
-
-          {mode === "entrados" && (
-            <div style={cardField}>
-              <span style={cardLabel}>Hora entrada</span>
-              <span style={cardValue}>
-                {t.checked_in_at ? new Date(t.checked_in_at).toLocaleTimeString() : "—"}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div style={cardRowActions}>
-          {mode === "no_entrados" ? (
-            <>
-              {!isEntrado ? (
-                <>
-                  <button
-                    style={{ ...actionBtnMobile, background: "#0f0" }}
-                    onClick={() => updateStatus(t, "aprobado")}
-                  >
-                    Aprobar
-                  </button>
-
-                  <button
-                    style={{ ...actionBtnMobile, background: "#f00", color: "#fff" }}
-                    onClick={() => updateStatus(t, "rechazado")}
-                  >
-                    Rechazar
-                  </button>
-
-                  {t.status === "aprobado" && (
-                    <button
-                      style={{ ...actionBtnMobile, background: "#0ff", color: "#000" }}
-                      onClick={() => checkIn(t)}
-                    >
-                      Marcar ENTRÓ
-                    </button>
-                  )}
-
-                  {t.payment_method === "puerta" && t.status !== "aprobado" && (
-                    <button
-                      style={{ ...actionBtnMobile, background: "#ff0", color: "#000" }}
-                      onClick={() => marcarPagoPuerta(t)}
-                    >
-                      Cobrar en puerta
-                    </button>
-                  )}
-                </>
-              ) : (
-                <div style={{ color: "#0f0", fontWeight: 800 }}>✔ ENTRADO</div>
-              )}
-            </>
-          ) : (
-            <button
-              style={{ ...actionBtnMobile, background: "#ff0", color: "#000" }}
-              onClick={() => undoCheckIn(t)}
-            >
-              Deshacer check-in
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  /* ================== ADMIN VIEW ================== */
   return (
     <main style={main}>
-      {/* global responsive helpers */}
+      <style>{spinnerCSS}</style>
       <style>{responsiveCSS}</style>
 
-      <div style={{ width: "100%", maxWidth: 1200 }}>
+      {loading && (
+        <div style={overlay}>
+          <div style={loaderBox}>
+            <div className="spinner" />
+            <p>Cargando...</p>
+          </div>
+        </div>
+      )}
+
+      <div style={{ width: "100%", maxWidth: 1400 }}>
+        {/* ===== TOP HEADER ===== */}
         <div style={topHeader}>
-          <h1 style={{ color: "#0ff", margin: 0 }}>ADMIN · TICKETS</h1>
+          <h1 style={{ margin: 0, color: "#0ff" }}>ADMIN ZETA'S GRID 2.0</h1>
+          <button style={refreshBtn} onClick={fetchTickets}>
+            ⟳ Refrescar
+          </button>
         </div>
 
-        {/* ===== DASHBOARD ===== */}
+        {/* ===== STATS ===== */}
         <div style={stats}>
           <div style={statPill}>
-            Total tickets: <b>{totalTickets}</b>
+            <b>Total taquillas:</b> {totalTickets}
           </div>
-
           <div style={statPill}>
-            Guagua: <b>{totalGuagua}</b>
+            <b>Newbi's ($15):</b> {ticketsPorTipo.newbies}
           </div>
-
           <div style={statPill}>
-            Total aprobado: <b>${totalRecaudado}</b>
+            <b>Pre-venta ($20):</b> {ticketsPorTipo.preventa}
           </div>
-
           <div style={statPill}>
-  Puerta: <b>{totalPuertaCantidad}</b> (${totalPuertaCantidad * 15})
-</div>
+            <b>Entrada ($25):</b> {ticketsPorTipo.entrada}
+          </div>
 
           <div style={statsRight}>
-  {SearchBar}
-  {FilterSelect}
-
-  <button
-    type="button"
-    onClick={fetchTickets}
-    style={refreshBtnInline}
-  >
-    ↻
-  </button>
-</div>
-        </div>
-
-        {/* ===== RESUMENES ===== */}
-        <div style={{ marginTop: 26 }}>
-          <div style={sectionHeaderRow}>
-            <h2 style={sectionTitle}>Resumen por organización</h2>
-          </div>
-
-          <div style={tableWrap}>
-            <table style={{ ...table, minWidth: 520 }}>
-              <thead>
-                <tr>
-                  <th style={{ ...th, textAlign: "left" }}>Organización</th>
-                  <th style={{ ...th, textAlign: "center", width: 120 }}>Personas</th>
-                </tr>
-              </thead>
-              <tbody>
-                {resumenOrganizacion.map((o) => (
-                  <tr key={o.organizacion}>
-                    <td style={td}>{o.organizacion}</td>
-                    <td style={{ ...td, textAlign: "center" }}>{o.personas}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div style={{ height: 16 }} />
-
-          <div style={sectionHeaderRow}>
-            <h2 style={sectionTitle}>Resumen por candidato</h2>
-          </div>
-
-          <div style={tableWrap}>
-            <table style={{ ...table, minWidth: 720 }}>
-              <thead>
-                <tr>
-                  <th style={{ ...th, textAlign: "left" }}>Candidato</th>
-                  <th style={{ ...th, textAlign: "center", width: 130 }}>Taquillas</th>
-                  <th style={{ ...th, textAlign: "center", width: 130 }}>Total $</th>
-                </tr>
-              </thead>
-              <tbody>
-                {resumen.map((r) => (
-                  <tr key={r.candidato}>
-                    <td style={td}>{r.candidato}</td>
-                    <td style={{ ...td, textAlign: "center" }}>{r.taquillas}</td>
-                    <td style={{ ...td, textAlign: "center" }}>${r.total}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ===== Listado de guagua ===== */}
-         <div style={{ height: 16 }} />
-
-          <div style={sectionHeaderRow}>
-            <h2 style={sectionTitle}>Guagua (Mayagüez ➜ Arecibo)</h2>
-          </div>
-
-          <div style={tableWrap}>
-            <table style={{ ...table, minWidth: 720 }}>
-              <thead>
-                <tr>
-                  <th style={{ ...th, textAlign: "left" }}>Nombre</th>
-                  <th style={{ ...th, textAlign: "left" }}>Teléfono</th>
-                  <th style={{ ...th, textAlign: "center", width: 90 }}>Qty</th>
-                  <th style={{ ...th, textAlign: "left", width: 200 }}>Candidato</th>
-                </tr>
-              </thead>
-              <tbody>
-                {listaGuagua.map((t) => (
-                  <tr key={t.id}>
-                    <td style={td}>{t.name || "—"}</td>
-                    <td style={td}>{t.phone || "—"}</td>
-                    <td style={{ ...td, textAlign: "center" }}>{t.qty ?? 0}</td>
-                    <td style={td}>{t.candidato || "Ninguno"}</td>
-                  </tr>
-                ))}
-
-                {listaGuagua.length === 0 && (
-                  <tr>
-                    <td style={td} colSpan={4}>
-                      <div style={emptyBox}>No hay personas marcadas con guagua.</div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-        {/* ===== TICKETS REGISTRADOS ===== */}
-        <div style={{ marginTop: 32 }}>
-          <div style={sectionHeaderRow}>
-            <h2 style={sectionTitle}>Tickets registrados</h2>
-
-            {/* mini search duplicate for iphone (si quieres arriba fijo) */}
-            {isMobile ? (
-              <div style={{ width: "100%", marginTop: 10 }}>
-                {SearchBar}
-                <div style={{ marginTop: 10 }}>{FilterSelect}</div>
-              </div>
-            ) : null}
-          </div>
-
-          {isMobile ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {ticketsNoEntrados.map((t) => (
-                <TicketCard key={t.id} t={t} mode="no_entrados" />
-              ))}
-              {ticketsNoEntrados.length === 0 && (
-                <div style={emptyBox}>No hay tickets en esta vista.</div>
-              )}
+            <div style={{ ...statPill, background: "rgba(0,255,0,0.1)", borderColor: "#0f0" }}>
+              <b>Total dinero:</b> ${totalDinero}
             </div>
-          ) : (
+          </div>
+        </div>
+
+        {/* ===== DESGLOSE DINERO ===== */}
+        <details style={{ marginBottom: 20, color: "#0ff" }}>
+          <summary style={{ cursor: "pointer", fontSize: 14, opacity: 0.9 }}>
+            📊 Ver desglose de dinero por tipo
+          </summary>
+          <div
+            style={{
+              marginTop: 10,
+              padding: 12,
+              border: "1px solid rgba(0,255,255,0.3)",
+              borderRadius: 8,
+              fontSize: 13,
+            }}
+          >
+            <p>
+              <b>Newbi's:</b> {ticketsPorTipo.newbies} x $15 = ${dineroPorTipo.newbies}
+            </p>
+            <p>
+              <b>Pre-venta:</b> {ticketsPorTipo.preventa} x $20 = ${dineroPorTipo.preventa}
+            </p>
+            <p>
+              <b>Entrada:</b> {ticketsPorTipo.entrada} x $25 = ${dineroPorTipo.entrada}
+            </p>
+            <hr style={{ border: "1px solid rgba(0,255,255,0.3)", margin: "10px 0" }} />
+            <p>
+              <b>TOTAL:</b> ${totalDinero}
+            </p>
+          </div>
+        </details>
+
+        {/* ===== SEARCH & FILTER ===== */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+          <input
+            type="text"
+            placeholder="Buscar por código, nombre o teléfono..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={searchInput}
+          />
+
+          <select value={filter} onChange={(e) => setFilter(e.target.value as any)} style={select}>
+            <option value="todos">Todos</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aprobado">Aprobado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+        </div>
+
+        {/* ===== RESUMEN CANDIDATOS ===== */}
+        {resumen.length > 0 && (
+          <details style={{ marginBottom: 20, color: "#0ff" }}>
+            <summary style={{ cursor: "pointer", fontSize: 14, opacity: 0.9 }}>
+              📊 Resumen por Candidato
+            </summary>
             <div style={tableWrap}>
-              <table style={{ ...table, minWidth: 980 }}>
+              <table style={table}>
                 <thead>
                   <tr>
-                    <th style={{ ...th, textAlign: "left" }}>Código</th>
-                    <th style={{ ...th, textAlign: "left" }}>Nombre</th>
-                    <th style={{ ...th, textAlign: "left" }}>Teléfono</th>
-                    <th style={{ ...th, textAlign: "left", width: 80 }}>Cant.</th>
-                    <th style={{ ...th, textAlign: "left", width: 110 }}>Método</th>
-                    <th style={{ ...th, textAlign: "left", width: 110 }}>Status</th>
-                    <th style={{ ...th, textAlign: "left", width: 110 }}>Evidencia</th>
-                    <th style={{ ...th, textAlign: "left", width: 160 }}>Candidato</th>
-                    <th style={{ ...th, textAlign: "left", width: 100 }}>Guagua</th>
-                    <th style={{ ...th, textAlign: "left", width: 420 }}>Acción</th>
+                    <th style={th}>Candidato</th>
+                    <th style={th}>Taquillas</th>
+                    <th style={th}>Total $</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {ticketsNoEntrados.map((t) => (
-                    <tr key={t.id}>
-                      <td style={td}>{t.ticket_code}</td>
-                      <td style={td}>{t.name}</td>
-                      <td style={td}>{t.phone}</td>
-                      <td style={td}>{t.qty}</td>
-                      <td style={td}>{formatMetodo(t.payment_method)}</td>
-                      <td style={{ ...td, color: statusColor(t.status), fontWeight: 700 }}>
-                        {formatStatus(t.status)}
-                      </td>
-                      <td style={td}>
-                        {t.proof_url ? (
-                          <a href={t.proof_url} target="_blank" rel="noopener noreferrer" style={{ color: "#0ff" }}>
-                            Ver
-                          </a>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-
-                      <td style={td}>{t.candidato || "—"}</td>
-<td style={{ ...td, textAlign: "center" }}>
-  {t.guagua ? "Sí" : "No"}
-</td>
-                      
-                      <td style={td}>
-                        {t.checked_in ? (
-                          <span style={{ color: "#0f0", fontWeight: "bold" }}>✔ ENTRADO</span>
-                        ) : (
-                          <>
-                            <button style={{ ...actionBtn, background: "#0f0" }} onClick={() => updateStatus(t, "aprobado")}>
-                              ✓
-                            </button>
-
-                            <button style={{ ...actionBtn, background: "#f00", color: "#fff" }} onClick={() => updateStatus(t, "rechazado")}>
-                              ✕
-                            </button>
-
-                            {t.status === "aprobado" && (
-                              <button
-                                style={{ ...actionBtn, background: "#0ff", marginLeft: 6, color: "#000" }}
-                                onClick={() => checkIn(t)}
-                              >
-                                ENTRÓ
-                              </button>
-                            )}
-
-                            {t.payment_method === "puerta" && t.status !== "aprobado" && (
-                              <button style={{ ...actionBtn, background: "#ff0", color: "#000" }} onClick={() => marcarPagoPuerta(t)}>
-                                COBRAR EN PUERTA
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </td>
+                  {resumen.map((r, i) => (
+                    <tr key={i}>
+                      <td style={td}>{r.candidato}</td>
+                      <td style={td}>{r.taquillas}</td>
+                      <td style={td}>${r.total}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        )}
 
-                  {ticketsNoEntrados.length === 0 && (
+        {/* ===== RESUMEN ORGANIZACIONES ===== */}
+        {resumenOrganizacion.length > 0 && (
+          <details style={{ marginBottom: 20, color: "#0ff" }}>
+            <summary style={{ cursor: "pointer", fontSize: 14, opacity: 0.9 }}>
+              📊 Resumen por Organización
+            </summary>
+            <div style={tableWrap}>
+              <table style={table}>
+                <thead>
+                  <tr>
+                    <th style={th}>Organización</th>
+                    <th style={th}>Personas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resumenOrganizacion.map((r, i) => (
+                    <tr key={i}>
+                      <td style={td}>{r.organizacion}</td>
+                      <td style={td}>{r.personas}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        )}
+
+        {/* ===== TICKETS SIN ENTRAR ===== */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={sectionHeaderRow}>
+            <h2 style={sectionTitle}>Tickets por entrar ({ticketsNoEntrados.length})</h2>
+            <button style={refreshBtnInline} onClick={fetchTickets}>
+              ⟳
+            </button>
+          </div>
+
+          {!isMobile ? (
+            <div style={tableWrap}>
+              <table style={table}>
+                <thead>
+                  <tr>
+                    <th style={th}>Código</th>
+                    <th style={th}>Nombre</th>
+                    <th style={th}>Tel</th>
+                    <th style={th}>Qty</th>
+                    <th style={th}>Tipo</th>
+                    <th style={th}>Método</th>
+                    <th style={th}>Status</th>
+                    <th style={th}>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ticketsNoEntrados.length === 0 ? (
                     <tr>
-                      <td style={td} colSpan={8}>
-                        <div style={emptyBox}>No hay tickets en esta vista.</div>
+                      <td colSpan={8} style={td}>
+                        <div style={emptyBox}>No hay tickets por entrar en esta vista.</div>
                       </td>
                     </tr>
+                  ) : (
+                    ticketsNoEntrados.map((t) => (
+                      <tr key={t.id}>
+                        <td style={td}>{t.ticket_code}</td>
+                        <td style={td}>{t.name}</td>
+                        <td style={td}>{t.phone}</td>
+                        <td style={td}>{t.qty}</td>
+                        <td style={td}>{formatPriceType(t.price_type)}</td>
+                        <td style={td}>{formatMetodo(t.payment_method)}</td>
+                        <td style={{ ...td, color: statusColor(t.status) }}>{formatStatus(t.status)}</td>
+                        <td style={td}>
+                          {t.status === "pendiente" && (
+                            <>
+                              <button
+                                style={{ ...actionBtn, background: "#0f0", color: "#000" }}
+                                onClick={() => updateStatus(t, "aprobado")}
+                              >
+                                Aprobar
+                              </button>
+                              <button
+                                style={{ ...actionBtn, background: "#f00", color: "#fff" }}
+                                onClick={() => updateStatus(t, "rechazado")}
+                              >
+                                Rechazar
+                              </button>
+                              {t.proof_url && (
+                                <a
+                                  href={t.proof_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ ...actionBtn, background: "#09f", color: "#fff", textDecoration: "none" }}
+                                >
+                                  Ver evidencia
+                                </a>
+                              )}
+                            </>
+                          )}
+
+                          {t.status === "aprobado" && (
+                            <button
+                              style={{ ...actionBtn, background: "#ff0", color: "#000" }}
+                              onClick={() => checkIn(t)}
+                            >
+                              CHECK-IN
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
                   )}
                 </tbody>
               </table>
             </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {ticketsNoEntrados.length === 0 ? (
+                <div style={emptyBox}>No hay tickets por entrar en esta vista.</div>
+              ) : (
+                ticketsNoEntrados.map((t) => (
+                  <div key={t.id} style={cardRow}>
+                    <div style={cardRowTop}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 15, color: "#0ff" }}>{t.ticket_code}</div>
+                        <div style={{ fontSize: 13, opacity: 0.85, marginTop: 2 }}>{t.name}</div>
+                      </div>
+                      <div
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: 999,
+                          background: statusColor(t.status) === "#0f0" ? "rgba(0,255,0,0.2)" : "rgba(255,255,0,0.2)",
+                          color: statusColor(t.status),
+                          fontSize: 12,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {formatStatus(t.status)}
+                      </div>
+                    </div>
+
+                    <div style={cardRowBody}>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Teléfono</span>
+                        <span style={cardValue}>{t.phone}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Cantidad</span>
+                        <span style={cardValue}>{t.qty}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Tipo</span>
+                        <span style={cardValue}>{formatPriceType(t.price_type)}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Método</span>
+                        <span style={cardValue}>{formatMetodo(t.payment_method)}</span>
+                      </div>
+                    </div>
+
+                    <div style={cardRowActions}>
+                      {t.status === "pendiente" && (
+                        <>
+                          <button
+                            style={{ ...actionBtnMobile, background: "#0f0", color: "#000" }}
+                            onClick={() => updateStatus(t, "aprobado")}
+                          >
+                            ✓ Aprobar
+                          </button>
+                          <button
+                            style={{ ...actionBtnMobile, background: "#f00", color: "#fff" }}
+                            onClick={() => updateStatus(t, "rechazado")}
+                          >
+                            ✕ Rechazar
+                          </button>
+                          {t.proof_url && (
+                            <a
+                              href={t.proof_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                ...actionBtnMobile,
+                                background: "#09f",
+                                color: "#fff",
+                                textDecoration: "none",
+                                display: "block",
+                                textAlign: "center",
+                              }}
+                            >
+                              Ver evidencia
+                            </a>
+                          )}
+                        </>
+                      )}
+
+                      {t.status === "aprobado" && (
+                        <button
+                          style={{ ...actionBtnMobile, background: "#ff0", color: "#000" }}
+                          onClick={() => checkIn(t)}
+                        >
+                          ⚡ CHECK-IN
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
         </div>
 
-        {/* ===== ENTRADOS ===== */}
-        <div style={{ marginTop: 34 }}>
+        {/* ===== TICKETS ENTRADOS ===== */}
+        <div style={{ marginBottom: 40 }}>
           <div style={sectionHeaderRow}>
-            <h2 style={sectionTitle}>Tickets ENTRADOS</h2>
+            <h2 style={sectionTitle}>Tickets entrados ({ticketsEntrados.length})</h2>
+            <button style={refreshBtnInline} onClick={fetchTickets}>
+              ⟳
+            </button>
           </div>
 
-          {isMobile ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {ticketsEntrados.map((t) => (
-                <TicketCard key={t.id} t={t} mode="entrados" />
-              ))}
-              {ticketsEntrados.length === 0 && (
-                <div style={emptyBox}>No hay tickets entrados en esta vista.</div>
-              )}
-            </div>
-          ) : (
+          {!isMobile ? (
             <div style={tableWrap}>
-              <table style={{ ...table, minWidth: 980 }}>
+              <table style={table}>
                 <thead>
                   <tr>
-                    <th style={{ ...th, textAlign: "left" }}>Código</th>
-                    <th style={{ ...th, textAlign: "left" }}>Nombre</th>
-                    <th style={{ ...th, textAlign: "left" }}>Teléfono</th>
-                    <th style={{ ...th, textAlign: "left", width: 80 }}>Cant.</th>
-                    <th style={{ ...th, textAlign: "left", width: 160 }}>Hora entrada</th>
-                    <th style={{ ...th, textAlign: "left", width: 160 }}>Acción</th>
+                    <th style={th}>Código</th>
+                    <th style={th}>Nombre</th>
+                    <th style={th}>Tel</th>
+                    <th style={th}>Qty</th>
+                    <th style={th}>Tipo</th>
+                    <th style={th}>Método</th>
+                    <th style={th}>Hora entrada</th>
+                    <th style={th}>Acción</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {ticketsEntrados.map((t) => (
-                    <tr key={t.id}>
-                      <td style={td}>{t.ticket_code}</td>
-                      <td style={td}>{t.name}</td>
-                      <td style={td}>{t.phone}</td>
-                      <td style={td}>{t.qty}</td>
-                      <td style={td}>
-                        {t.checked_in_at ? new Date(t.checked_in_at).toLocaleTimeString() : "—"}
-                      </td>
-                      <td style={td}>
-                        <button style={{ ...actionBtn, background: "#ff0", color: "#000" }} onClick={() => undoCheckIn(t)}>
-                          DESHACER
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-
-                  {ticketsEntrados.length === 0 && (
+                  {ticketsEntrados.length === 0 ? (
                     <tr>
-                      <td style={td} colSpan={6}>
+                      <td colSpan={8} style={td}>
                         <div style={emptyBox}>No hay tickets entrados en esta vista.</div>
                       </td>
                     </tr>
+                  ) : (
+                    ticketsEntrados.map((t) => (
+                      <tr key={t.id}>
+                        <td style={td}>{t.ticket_code}</td>
+                        <td style={td}>{t.name}</td>
+                        <td style={td}>{t.phone}</td>
+                        <td style={td}>{t.qty}</td>
+                        <td style={td}>{formatPriceType(t.price_type)}</td>
+                        <td style={td}>{formatMetodo(t.payment_method)}</td>
+                        <td style={td}>
+                          {t.checked_in_at ? new Date(t.checked_in_at).toLocaleTimeString("es-PR") : "—"}
+                        </td>
+                        <td style={td}>
+                          <button
+                            style={{ ...actionBtn, background: "#f90", color: "#000" }}
+                            onClick={() => undoCheckIn(t)}
+                          >
+                            Revertir
+                          </button>
+                        </td>
+                      </tr>
+                    ))
                   )}
                 </tbody>
               </table>
             </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {ticketsEntrados.length === 0 ? (
+                <div style={emptyBox}>No hay tickets entrados en esta vista.</div>
+              ) : (
+                ticketsEntrados.map((t) => (
+                  <div key={t.id} style={cardRow}>
+                    <div style={cardRowTop}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 15, color: "#0ff" }}>{t.ticket_code}</div>
+                        <div style={{ fontSize: 13, opacity: 0.85, marginTop: 2 }}>{t.name}</div>
+                      </div>
+                      <div
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: 999,
+                          background: "rgba(0,255,0,0.2)",
+                          color: "#0f0",
+                          fontSize: 12,
+                          fontWeight: 700,
+                        }}
+                      >
+                        ✓ ENTRADO
+                      </div>
+                    </div>
+
+                    <div style={cardRowBody}>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Teléfono</span>
+                        <span style={cardValue}>{t.phone}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Cantidad</span>
+                        <span style={cardValue}>{t.qty}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Tipo</span>
+                        <span style={cardValue}>{formatPriceType(t.price_type)}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Método</span>
+                        <span style={cardValue}>{formatMetodo(t.payment_method)}</span>
+                      </div>
+                      <div style={cardField}>
+                        <span style={cardLabel}>Hora</span>
+                        <span style={cardValue}>
+                          {t.checked_in_at ? new Date(t.checked_in_at).toLocaleTimeString("es-PR") : "—"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      style={{ ...actionBtnMobile, background: "#f90", color: "#000" }}
+                      onClick={() => undoCheckIn(t)}
+                    >
+                      ↩ Revertir entrada
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           )}
         </div>
 
-        {/* ===== PAGO EN PUERTA (ADMIN) ===== */}
+        {/* ===== PAGO EN PUERTA ===== */}
         <div style={{ marginTop: 50, borderTop: "1px solid rgba(0,255,255,0.35)", paddingTop: 20 }}>
-          <h2 style={{ margin: 0 }}>Pago en la puerta</h2>
+          <h2 style={{ margin: 0, color: "#0ff" }}>Pago en la puerta</h2>
 
-          <p style={{ marginTop: 10, opacity: 0.9 }}>
+          <p style={{ marginTop: 10, opacity: 0.9, color: "#bff" }}>
             Pagos en puerta registrados: <b>{totalPuertaCantidad}</b>
             <br />
             Total cobrado en puerta: <b>${totalPuertaMonto}</b>
@@ -912,7 +827,7 @@ const totalRecaudado = totalBase + totalGuaguaExtra;
               try {
                 const { error } = await supabase.from("tickets").insert({
                   ticket_code: `PUERTA-${Date.now()}`,
-                  event_slug: "zeta-tron",
+                  event_slug: "zeta-grid-2",
                   name: "Pago en puerta",
                   phone: "PUERTA",
                   qty: 1,
@@ -921,10 +836,10 @@ const totalRecaudado = totalBase + totalGuaguaExtra;
                   checked_in: true,
                   checked_in_at: new Date().toISOString(),
                   created_at: new Date().toISOString(),
+                  price_type: "entrada", // SIEMPRE $25
                 });
 
                 if (error) {
-                  // eslint-disable-next-line no-console
                   console.error("DB ERROR:", error);
                   alert("Error registrando pago en puerta");
                 }
@@ -936,7 +851,7 @@ const totalRecaudado = totalBase + totalGuaguaExtra;
             }}
             type="button"
           >
-            + Registrar pago en puerta ($15)
+            + Registrar pago en puerta ($25)
           </button>
         </div>
       </div>
@@ -952,6 +867,13 @@ const main: React.CSSProperties = {
   display: "flex",
   justifyContent: "center",
   padding: 16,
+};
+
+const card = {
+  padding: 24,
+  borderRadius: 12,
+  background: "rgba(0,0,0,0.8)",
+  border: "1px solid rgba(0,255,255,0.4)",
 };
 
 const topHeader: React.CSSProperties = {
@@ -1188,12 +1110,6 @@ const cardValue: React.CSSProperties = {
   textAlign: "right",
 };
 
-const cardGrid2: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: 10,
-};
-
 const refreshBtnInline = {
   padding: "6px 10px",
   background: "#000",
@@ -1204,10 +1120,8 @@ const refreshBtnInline = {
   fontSize: 14,
 };
 
-/* Responsive: barra búsqueda full width en iphone */
 const responsiveCSS = `
 @media (max-width: 740px) {
-  /* inputs/select full width dentro del dashboard */
   input[type="text"], select {
     width: 100% !important;
     min-width: 0 !important;
