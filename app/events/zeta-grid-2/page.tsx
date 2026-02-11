@@ -1,24 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { Orbitron } from "next/font/google";
+import { Rajdhani } from "next/font/google";
 
-/* ===== FONT TRON ===== */
-const tronFont = Orbitron({
+/* ===== FONTS ===== */
+const robotFont = Rajdhani({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 /* ===== COMPONENT ===== */
 export default function ZetaGrid2() {
   return (
     <main
-      className={tronFont.className}
+      className={robotFont.className}
       style={{
         ...main,
-        fontFamily: "'Orbitron', sans-serif",
+        fontFamily: "'Rajdhani', sans-serif",
       }}
     >
+      {/* GLOBAL CSS */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            box-shadow: 0 0 40px rgba(255, 87, 34, 0.5), inset 0 0 20px rgba(255, 23, 68, 0.2);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 60px rgba(255, 87, 34, 0.8), inset 0 0 30px rgba(255, 23, 68, 0.3);
+            transform: scale(1.02);
+          }
+        }
+      `}</style>
+
       {/* VIDEO DE FONDO */}
       <video autoPlay loop muted playsInline style={videoBg}>
         <source src="/videos/bgg.mp4" type="video/mp4" />
@@ -33,8 +47,11 @@ export default function ZetaGrid2() {
 
         {/* CONTENIDO */}
         <div style={content}>
-          <h1 style={title}>Zeta'sGrid 2.0</h1>
-          <h2 style={subtitle}>TrowBack WelcomeNewbi Show</h2>
+          <div style={titleWrapper}>
+            <h1 style={title}>ZETA'S</h1>
+            <h1 style={titleGrid}>GRID 2.0</h1>
+          </div>
+          <h2 style={subtitle}>TrowBack WelcomeNewbie Show</h2>
           <h3 style={org}>PHI SIGMA ALPHA · Capítulo Zeta</h3>
 
           {/* INFO EVENTO */}
@@ -47,7 +64,7 @@ export default function ZetaGrid2() {
           {/* PRECIOS */}
           <div style={priceBox}>
             <div style={priceItem}>
-              <span style={priceLabel}>All Newbi's</span>
+              <span style={priceLabel}>All Newbie's</span>
               <span style={priceValue}>$15</span>
             </div>
             <div style={priceItem}>
@@ -58,6 +75,11 @@ export default function ZetaGrid2() {
               <span style={priceLabel}>Entrada</span>
               <span style={priceValue}>$25</span>
             </div>
+          </div>
+
+          {/* OPEN BAR */}
+          <div style={openBarBox}>
+            <span style={openBarText}>🍹 OPEN BAR 🍹</span>
           </div>
 
           <Link href="/compra">
@@ -120,29 +142,53 @@ const content = {
   alignItems: "center",
 };
 
+const titleWrapper = {
+  display: "flex",
+  flexDirection: "column" as const,
+  alignItems: "center",
+  marginBottom: 8,
+};
+
 const title = {
-  fontFamily: "'Orbitron', sans-serif",
-  fontSize: 56,
-  letterSpacing: 6,
+  fontFamily: "'Rajdhani', sans-serif",
+  fontSize: 72,
+  fontWeight: 700,
+  letterSpacing: 12,
   textTransform: "uppercase" as const,
   color: "#ff1744",
-  textShadow: "0 0 30px rgba(255, 23, 68, 0.7)",
-  marginBottom: 12,
+  textShadow: "0 0 40px rgba(255, 23, 68, 0.8), 0 0 20px rgba(255, 23, 68, 0.5)",
+  margin: 0,
+  lineHeight: 0.9,
+};
+
+const titleGrid = {
+  fontFamily: "'Rajdhani', sans-serif",
+  fontSize: 72,
+  fontWeight: 700,
+  letterSpacing: 12,
+  textTransform: "uppercase" as const,
+  color: "#ff1744",
+  textShadow: "0 0 40px rgba(255, 23, 68, 0.8), 0 0 20px rgba(255, 23, 68, 0.5)",
+  margin: 0,
+  lineHeight: 0.9,
 };
 
 const subtitle = {
-  fontFamily: "'Orbitron', sans-serif",
-  fontSize: 32,
-  letterSpacing: 3,
+  fontFamily: "'Rajdhani', sans-serif",
+  fontSize: 36,
+  fontWeight: 500,
+  letterSpacing: 4,
   marginBottom: 8,
   color: "#ff5722",
   opacity: 0.95,
-  textShadow: "0 0 20px rgba(255, 87, 34, 0.5)",
+  textShadow: "0 0 25px rgba(255, 87, 34, 0.6)",
 };
 
 const org = {
-  fontSize: 16,
-  letterSpacing: 2,
+  fontFamily: "'Rajdhani', sans-serif",
+  fontSize: 17,
+  fontWeight: 400,
+  letterSpacing: 3,
   opacity: 0.8,
   marginBottom: 40,
 };
@@ -192,6 +238,27 @@ const priceValue = {
   fontWeight: 700,
   color: "#ff5722",
   textShadow: "0 0 15px rgba(255, 87, 34, 0.6)",
+};
+
+const openBarBox = {
+  marginTop: 8,
+  marginBottom: 32,
+  padding: "14px 32px",
+  background: "linear-gradient(135deg, rgba(255, 23, 68, 0.25), rgba(255, 87, 34, 0.25))",
+  borderRadius: 12,
+  border: "2px solid #ff5722",
+  boxShadow: "0 0 40px rgba(255, 87, 34, 0.5), inset 0 0 20px rgba(255, 23, 68, 0.2)",
+  animation: "pulse 2s ease-in-out infinite",
+};
+
+const openBarText = {
+  fontFamily: "'Rajdhani', sans-serif",
+  fontSize: 32,
+  fontWeight: 700,
+  letterSpacing: 6,
+  color: "#fff",
+  textTransform: "uppercase" as const,
+  textShadow: "0 0 30px rgba(255, 87, 34, 0.9), 0 0 15px rgba(255, 23, 68, 0.7)",
 };
 
 const buyBtn = {
