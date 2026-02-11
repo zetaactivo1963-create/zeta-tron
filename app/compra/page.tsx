@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Orbitron, Inter } from "next/font/google";
-const ATH_NUMBER = "9392533384"; // Kenneth
 
+const ATH_NUMBER = "9392533384"; // Kenneth
 
 /* ================== FONTS ================== */
 const tron = Orbitron({
@@ -33,55 +33,52 @@ const CANDIDATOS = [
   "Zabdiel Rodríguez",
 ];
 
+const PRICE_TYPES = [
+  { value: "newbies", label: "All Newbi's", price: 15 },
+  { value: "preventa", label: "Pre-venta", price: 20 },
+  { value: "entrada", label: "Entrada", price: 25 },
+];
+
 type Step = "form" | "review" | "ath" | "puerta" | "done";
+type PriceType = "newbies" | "preventa" | "entrada";
 
 /* ================== COMPONENT ================== */
 export default function Compra() {
-  const basePrice = 15;
-const guaguaExtra = 10;
-
-
   const [copiado, setCopiado] = useState(false);
-
-  const [guagua, setGuagua] = useState(false);
-
   const [step, setStep] = useState<Step>("form");
-  const [metodoPago, setMetodoPago] = useState<
-    "" | "ath" | "tarjeta" | "puerta"
-  >("");
+  const [metodoPago, setMetodoPago] = useState<"" | "ath" | "tarjeta" | "puerta">("");
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [qty, setQty] = useState(1);
+  const [priceType, setPriceType] = useState<PriceType>("preventa"); // Default: pre-venta
   const [asociacion, setAsociacion] = useState("");
   const [candidato, setCandidato] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
 
-/* ================== TOTALS ================== */
-const total = qty * (basePrice + (guagua ? guaguaExtra : 0));
-const totalATH = total;
-const totalPuerta = qty * basePrice;
+  /* ================== TOTALS ================== */
+  const currentPrice = PRICE_TYPES.find((p) => p.value === priceType)?.price || 20;
+  const total = qty * currentPrice;
 
   /* ================== FLOW ================== */
-function goToReview(e: React.FormEvent) {
-  e.preventDefault();
+  function goToReview(e: React.FormEvent) {
+    e.preventDefault();
 
-  if (name.trim().length < 3) {
-    alert("Escribe tu nombre completo");
-    return;
+    if (name.trim().length < 3) {
+      alert("Escribe tu nombre completo");
+      return;
+    }
+
+    if (phone.length !== 10) {
+      alert("El teléfono debe tener 10 dígitos");
+      return;
+    }
+
+    setMetodoPago("");
+    setStep("review");
   }
-
-  if (phone.length !== 10) {
-    alert("El teléfono debe tener 10 dígitos");
-    return;
-  }
-
-  setMetodoPago("");
-  setStep("review");
-}
-  
 
   async function confirmarATH() {
     if (!receipt) {
@@ -109,7 +106,7 @@ function goToReview(e: React.FormEvent) {
 
       const { error: insertError } = await supabase.from("tickets").insert({
         ticket_code: code,
-        event_slug: "zeta-tron",
+        event_slug: "zeta-grid-2",
         name,
         phone,
         qty,
@@ -118,7 +115,7 @@ function goToReview(e: React.FormEvent) {
         proof_url: publicData.publicUrl,
         asociacion,
         candidato: candidato || "Ninguno",
-        guagua,
+        price_type: priceType,
       });
 
       if (insertError) throw insertError;
@@ -142,7 +139,7 @@ function goToReview(e: React.FormEvent) {
 
       const { error } = await supabase.from("tickets").insert({
         ticket_code: code,
-        event_slug: "zeta-tron",
+        event_slug: "zeta-grid-2",
         name,
         phone,
         qty,
@@ -150,7 +147,7 @@ function goToReview(e: React.FormEvent) {
         status: "pendiente",
         asociacion,
         candidato: candidato || "Ninguno",
-        guagua,
+        price_type: priceType,
       });
 
       if (error) throw error;
@@ -166,109 +163,96 @@ function goToReview(e: React.FormEvent) {
     }
   }
 
-
   /* ================== UI ================== */
   return (
     <main style={main} className={ui.className}>
-
       {/* ===== DONE ===== */}
-{step === "done" && (
-  <div style={{ ...card, textAlign: "center" }}>
-    <h2 className={tron.className} style={title}>
-      {metodoPago === "puerta" ? "RESERVA CONFIRMADA" : "PAGO RECIBIDO"}
-    </h2>
+      {step === "done" && (
+        <div style={{ ...card, textAlign: "center" }}>
+          <h2 className={tron.className} style={title}>
+            {metodoPago === "puerta" ? "RESERVA CONFIRMADA" : "PAGO RECIBIDO"}
+          </h2>
 
-    <p style={text}>
-      Código de referencia:
-      <br />
-      <b style={{ fontSize: 18 }}>{ticketCode}</b>
-    </p>
+          <p style={text}>
+            Código de referencia:
+            <br />
+            <b style={{ fontSize: 18 }}>{ticketCode}</b>
+          </p>
 
-    <div style={summaryBox}>
-      <p><b>Nombre:</b> {name}</p>
-      <p><b>Teléfono:</b> {phone}</p>
-      <p><b>Cantidad:</b> {qty}</p>
+          <div style={summaryBox}>
+            <p>
+              <b>Nombre:</b> {name}
+            </p>
+            <p>
+              <b>Teléfono:</b> {phone}
+            </p>
+            <p>
+              <b>Cantidad:</b> {qty}
+            </p>
+            <p>
+              <b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}
+            </p>
 
-      {metodoPago === "puerta" && (
-        <p>
-          <b>Total en puerta:</b>{" "}
-          <span style={{ color: "#00ffff" }}>${qty * 30}</span>
-        </p>
+            {metodoPago === "puerta" && (
+              <p>
+                <b>Total en puerta:</b>{" "}
+                <span style={{ color: "#ff5722" }}>${total}</span>
+              </p>
+            )}
+          </div>
+
+          <button
+            style={primaryBtn}
+            onClick={() => (window.location.href = "/events/zeta-grid-2")}
+          >
+            Volver al evento
+          </button>
+        </div>
       )}
-    </div>
 
-    <button
-      style={primaryBtn}
-      onClick={() => (window.location.href = "/events/zeta-tron")}
-    >
-      Volver al evento
-    </button>
-  </div>
-)}
-      
       {/* ===== FORM ===== */}
       {step === "form" && (
         <form onSubmit={goToReview} style={card}>
           <h1 className={tron.className} style={title}>
-            Zeta's "Welcome to the Grid"
+            Zeta'sGrid 2.0
           </h1>
 
           <p style={text}>
-            SAB-24-ENE-26 - 7:00pm
+            Viernes 6 de marzo 2026 · 7:00 PM
             <br />
-            Arecibo Country Club
-            <br />
-            <br />
-            <b>$15 · CASH BAR</b>
+            Bambalinas Música & Teatro, Aguada PR
             <br />
             <br />
-            TRON SHOW · Capítulo Zeta · ΦΣΑ
-             <br />
+            <b>TrowBack WelcomeNewbi Show</b>
+            <br />
+            <br />
+            PHI SIGMA ALPHA · Capítulo Zeta · ΦΣΑ
+            <br />
             Nos Reservamos el derecho de admisión
           </p>
-<input
-  type="text"
-  placeholder="Nombre completo"
-  value={name}
-  onChange={(e) => setName(e.target.value)}
-  autoComplete="off"
-  style={{
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#000",
-    color: "#0ff",
-    border: "1px solid #0ff",
-    boxSizing: "border-box",
-    outline: "none",
-    WebkitAppearance: "none",
-    WebkitBoxShadow: "0 0 0px 1000px #000 inset",
-  }}
-/>
-<input
-  type="tel"
-  placeholder="Teléfono"
-  value={phone}
-  inputMode="numeric"
-  autoComplete="off"
-  maxLength={10}
-  onChange={(e) => {
-    const onlyNums = e.target.value.replace(/\D/g, "");
-    setPhone(onlyNums);
-  }}
-  style={{
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#000",
-    color: "#0ff",
-    border: "1px solid #0ff",
-    boxSizing: "border-box",
-    outline: "none",
-    WebkitAppearance: "none",
-    WebkitBoxShadow: "0 0 0px 1000px #000 inset",
-  }}
-/>
 
-      
+          <input
+            type="text"
+            placeholder="Nombre completo"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="off"
+            style={input}
+          />
+
+          <input
+            type="tel"
+            placeholder="Teléfono"
+            value={phone}
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={10}
+            onChange={(e) => {
+              const onlyNums = e.target.value.replace(/\D/g, "");
+              setPhone(onlyNums);
+            }}
+            style={input}
+          />
 
           <label style={label}>Cantidad</label>
           <div
@@ -307,229 +291,217 @@ function goToReview(e: React.FormEvent) {
             </button>
           </div>
 
-<label
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: 14,
-    padding: "16px 18px",
-    borderRadius: 16,
-    background: guagua
-      ? "rgba(0,255,255,0.14)"
-      : "rgba(255,255,255,0.06)",
-    border: guagua
-      ? "1px solid rgba(0,255,255,0.70)"
-      : "1px solid rgba(255,255,255,0.14)",
-    boxShadow: guagua
-      ? "0 0 24px rgba(0,255,255,0.22)"
-      : "0 0 0 rgba(0,0,0,0)",
-    cursor: "pointer",
-    transition: "all 220ms ease",
-    marginBottom: 18,
-    userSelect: "none",
-  }}
->
-  {/* INPUT REAL (OCULTO) */}
-  <input
-    type="checkbox"
-    checked={guagua}
-    onChange={(e) => setGuagua(e.target.checked)}
-    style={{ display: "none" }}
-  />
+          {/* SELECTOR DE TIPO DE PRECIO */}
+          <label style={{ ...label, marginBottom: 8, display: "block" }}>
+            Tipo de taquilla
+          </label>
+          <div style={{ marginBottom: 20 }}>
+            {PRICE_TYPES.map((type) => (
+              <label
+                key={type.value}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "14px 16px",
+                  borderRadius: 12,
+                  background:
+                    priceType === type.value
+                      ? "rgba(255,87,34,0.14)"
+                      : "rgba(255,255,255,0.04)",
+                  border:
+                    priceType === type.value
+                      ? "1px solid rgba(255,87,34,0.70)"
+                      : "1px solid rgba(255,255,255,0.10)",
+                  boxShadow:
+                    priceType === type.value
+                      ? "0 0 24px rgba(255,87,34,0.22)"
+                      : "0 0 0 rgba(0,0,0,0)",
+                  cursor: "pointer",
+                  transition: "all 220ms ease",
+                  marginBottom: 10,
+                  userSelect: "none" as const,
+                }}
+              >
+                <input
+                  type="radio"
+                  name="priceType"
+                  value={type.value}
+                  checked={priceType === type.value}
+                  onChange={(e) => setPriceType(e.target.value as PriceType)}
+                  style={{ display: "none" }}
+                />
 
-  {/* CHECKBOX VISUAL */}
-  <div
-    style={{
-      width: 22,
-      height: 22,
-      borderRadius: 7,
-      border: "2px solid #0ff",
-      background: guagua ? "#0ff" : "transparent",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      transform: guagua ? "scale(1.02)" : "scale(1)",
-      transition: "all 180ms ease",
-      boxShadow: guagua ? "0 0 14px rgba(0,255,255,0.35)" : "none",
-      flex: "0 0 auto",
-    }}
-  >
-    {guagua && (
-      <span
-        style={{
-          color: "#000",
-          fontWeight: 900,
-          fontSize: 14,
-          lineHeight: 1,
-        }}
-      >
-        ✓
-      </span>
-    )}
-  </div>
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    border:
+                      priceType === type.value
+                        ? "2px solid #ff5722"
+                        : "2px solid rgba(255,255,255,0.3)",
+                    background:
+                      priceType === type.value ? "#ff5722" : "transparent",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 200ms ease",
+                    flexShrink: 0,
+                  }}
+                >
+                  {priceType === type.value && (
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: "#000",
+                      }}
+                    />
+                  )}
+                </div>
 
-  {/* ICONO */}
-  <div
-    style={{
-      width: 36,
-      height: 36,
-      borderRadius: 12,
-      background: guagua
-        ? "rgba(0,255,255,0.20)"
-        : "rgba(255,255,255,0.07)",
-      border: guagua
-        ? "1px solid rgba(0,255,255,0.35)"
-        : "1px solid rgba(255,255,255,0.10)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: 18,
-      boxShadow: guagua ? "0 0 18px rgba(0,255,255,0.18)" : "none",
-      transition: "all 220ms ease",
-      flex: "0 0 auto",
-    }}
-  >
-    🚍
-  </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600, fontSize: 15 }}>
+                    {type.label}
+                  </div>
+                  <div style={{ fontSize: 12, opacity: 0.7, marginTop: 2 }}>
+                    ${type.price} por taquilla
+                  </div>
+                </div>
 
-  {/* TEXTO */}
-  <div style={{ flex: 1 }}>
-    <div style={{ fontWeight: 800, letterSpacing: 0.2 }}>
-      Guagua desde Mayagüez <span style={{ opacity: 0.85 }}>(+$10)</span>
-    </div>
-    <div style={{ fontSize: 13, opacity: 0.86 }}>
-      Incluye transportación ida y vuelta + open bar en la guagua
-    </div>
-  </div>
+                <div style={{ fontWeight: 700, fontSize: 18, color: "#ff5722" }}>
+                  ${type.price}
+                </div>
+              </label>
+            ))}
+          </div>
 
-  {/* SUBTOTAL EN VIVO */}
-  <div style={{ textAlign: "right" }}>
-    <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 2 }}>
-      Extra
-    </div>
-    <div
-      style={{
-        fontWeight: 900,
-        letterSpacing: 0.4,
-        color: guagua ? "#0ff" : "#fff",
-        opacity: guagua ? 1 : 0.85,
-        transition: "all 220ms ease",
-        minWidth: 70,
-      }}
-    >
-      +${guagua ? qty * 10 : 0}
-    </div>
-  </div>
-</label>
+          <label style={label}>Relación / Organización</label>
+          <select
+            value={asociacion}
+            onChange={(e) => setAsociacion(e.target.value)}
+            style={select}
+          >
+            <option value="">Selecciona una opción</option>
+            <option value="Hermano">Hermano</option>
+            <option value="Asociado">Asociado</option>
+            <option value="Candidato">Candidato</option>
+            <option value="Neófito">Neófito</option>
+            <option value="General">Público General</option>
+          </select>
 
-          
-<label style={label}>Relación / Organización</label>
-<select
-  style={input}
-  value={asociacion}
-  onChange={(e) => setAsociacion(e.target.value)}
-  required
->
-  <option value="">Selecciona una opción</option>
-  <option value="Amigo/Familiar">Amigo/Familiar</option>
-  <option value="Phi Sigma Alpha">Phi Sigma Alpha</option>
-  <option value="Eta Gamma Delta">Eta Gamma Delta</option>
-  <option value="Mu Alpha Phi">Mu Alpha Phi</option>
-  <option value="Sigma Epsilon Chi">Sigma Epsilon Chi</option>
-  <option value="Otra">Otra</option>
-</select>
+          <label style={label}>¿Qué candidato te vendió la taquilla?</label>
+          <select
+            value={candidato}
+            onChange={(e) => setCandidato(e.target.value)}
+            style={select}
+          >
+            {CANDIDATOS.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
 
-
-        <label style={label}>¿Qué candidato te vendió la taquilla?</label>
-<select
-  style={input}
-  value={candidato}
-  onChange={(e) => setCandidato(e.target.value)}
-  required
->
-  <option value="">Selecciona una opción</option>
-  {CANDIDATOS.map((c) => (
-    <option key={c} value={c}>
-      {c}
-    </option>
-  ))}
-</select>
-
-          <button style={primaryBtn}>REVISAR COMPRA</button>
-
-          <button
-  type="button"
-  style={backBox}
-  onClick={() => (window.location.href = "/events/zeta-tron")}
->
-  ← Volver al inicio
-</button>
-          
+          <button type="submit" style={primaryBtn}>
+            REVISAR COMPRA
+          </button>
         </form>
       )}
 
       {/* ===== REVIEW ===== */}
-{step === "review" && (
-  <div style={card}>
-    <h2 className={tron.className} style={subtitle}>
-      CONFIRMA TU INFORMACIÓN
-    </h2>
+      {step === "review" && (
+        <div style={card}>
+          <h2 className={tron.className} style={subtitle}>
+            CONFIRMA TU INFORMACIÓN
+          </h2>
 
-    {/* ===== RESUMEN ===== */}
-    <div style={summaryBox}>
-      <p><b>Nombre:</b> {name}</p>
-      <p><b>Teléfono:</b> {phone}</p>
-      <p><b>Cantidad de taquillas:</b> {qty}</p>
-      <p><b>Total:</b> ${total}</p>
+          <div style={summaryBox}>
+            <p>
+              <b>Nombre:</b> {name}
+            </p>
+            <p>
+              <b>Teléfono:</b> {phone}
+            </p>
+            <p>
+              <b>Cantidad de taquillas:</b> {qty}
+            </p>
+            <p>
+              <b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}
+            </p>
+            <p>
+              <b>Total:</b> ${total}
+            </p>
 
-      {asociacion && <p><b>Asociación:</b> {asociacion}</p>}
+            {asociacion && (
+              <p>
+                <b>Asociación:</b> {asociacion}
+              </p>
+            )}
 
-      {candidato && candidato !== "Ninguno" ? (
-        <>
-          <p><b>Vendida por candidato:</b> Sí</p>
-          <p><b>Candidato:</b> {candidato}</p>
-        </>
-      ) : (
-        <p><b>Vendida por candidato:</b> No</p>
+            {candidato && candidato !== "Ninguno" ? (
+              <>
+                <p>
+                  <b>Vendida por candidato:</b> Sí
+                </p>
+                <p>
+                  <b>Candidato:</b> {candidato}
+                </p>
+              </>
+            ) : (
+              <p>
+                <b>Vendida por candidato:</b> No
+              </p>
+            )}
+          </div>
+
+          <p style={{ ...text, marginTop: 12 }}>
+            Verifica que toda la información esté correcta antes de continuar.
+          </p>
+
+          <hr
+            style={{
+              border: "1px solid rgba(255,87,34,0.4)",
+              margin: "20px 0",
+            }}
+          />
+
+          <h3 className={tron.className} style={{ marginBottom: 10 }}>
+            MÉTODO DE PAGO
+          </h3>
+
+          <button
+            style={primaryBtn}
+            type="button"
+            onClick={() => {
+              setMetodoPago("ath");
+              setReceipt(null);
+              setStep("ath");
+            }}
+          >
+            ATH Móvil · ${total}
+          </button>
+
+          <button
+            style={secondaryBtn}
+            type="button"
+            onClick={() => {
+              setMetodoPago("puerta");
+              setStep("puerta");
+            }}
+          >
+            Pagar en puerta · ${total}
+          </button>
+
+          <button type="button" onClick={() => setStep("form")} style={linkBtn}>
+            Editar información
+          </button>
+        </div>
       )}
-    </div>
 
-    <p style={{ ...text, marginTop: 12 }}>
-      Verifica que toda la información esté correcta antes de continuar.
-    </p>
-
-    <hr
-      style={{
-        border: "1px solid rgba(0,255,255,0.4)",
-        margin: "20px 0",
-      }}
-    />
-
-    {/* ===== MÉTODO DE PAGO ===== */}
-    <h3 className={tron.className} style={{ marginBottom: 10 }}>
-      MÉTODO DE PAGO
-    </h3>
-
-    <button
-      style={primaryBtn}
-      type="button"
-      onClick={() => {
-        setMetodoPago("ath");
-        setReceipt(null);
-        setStep("ath");
-      }}
-    >
-      ATH Móvil · ${totalATH}
-    </button>
-
-  
-
-    <button type="button" onClick={() => setStep("form")} style={linkBtn}>
-      Editar información
-    </button>
-  </div>
-)}
-          {/* ===== ATH ===== */}
+      {/* ===== ATH ===== */}
       {step === "ath" && (
         <div style={card}>
           <h2 className={tron.className} style={subtitle}>
@@ -537,7 +509,7 @@ function goToReview(e: React.FormEvent) {
           </h2>
 
           <p style={{ ...text, textAlign: "center" }}>
-            Envía <b>${totalATH}</b> a Kenneth Morales
+            Envía <b>${total}</b> a Kenneth Morales
           </p>
 
           <a
@@ -570,10 +542,10 @@ function goToReview(e: React.FormEvent) {
                 fontWeight: 700,
                 letterSpacing: 1,
                 cursor: "pointer",
-                color: copiado ? "#0f0" : "#00ffff",
+                color: copiado ? "#0f0" : "#ff5722",
                 textShadow: copiado
                   ? "0 0 20px rgba(0,255,0,0.9)"
-                  : "0 0 12px rgba(0,255,255,0.9)",
+                  : "0 0 12px rgba(255,87,34,0.9)",
                 transition: "all 0.3s ease",
               }}
             >
@@ -585,7 +557,7 @@ function goToReview(e: React.FormEvent) {
                 marginTop: 6,
                 fontSize: 12,
                 letterSpacing: 1,
-                color: copiado ? "#0f0" : "#7ffcff",
+                color: copiado ? "#0f0" : "#ffccbc",
                 opacity: 0.9,
                 transition: "all 0.3s ease",
               }}
@@ -632,22 +604,25 @@ function goToReview(e: React.FormEvent) {
           </h2>
 
           <div style={summaryBox}>
-  <p><b>Nombre:</b> {name}</p>
-  <p><b>Teléfono:</b> {phone}</p>
-  <p><b>Cantidad:</b> {qty}</p>
-  <p>
-    <b>Total a pagar en puerta:</b>{" "}
-    <span style={{ color: "#00ffff" }}>${totalPuerta}</span>
-  </p>
-</div>
+            <p>
+              <b>Nombre:</b> {name}
+            </p>
+            <p>
+              <b>Teléfono:</b> {phone}
+            </p>
+            <p>
+              <b>Cantidad:</b> {qty}
+            </p>
+            <p>
+              <b>Tipo:</b> {PRICE_TYPES.find((p) => p.value === priceType)?.label}
+            </p>
+            <p>
+              <b>Total a pagar en puerta:</b>{" "}
+              <span style={{ color: "#ff5722" }}>${total}</span>
+            </p>
+          </div>
 
-      
-
-          <button
-            style={primaryBtn}
-            onClick={confirmarPagoPuerta}
-            disabled={loading}
-          >
+          <button style={primaryBtn} onClick={confirmarPagoPuerta} disabled={loading}>
             Confirmar reserva
           </button>
 
@@ -663,10 +638,11 @@ function goToReview(e: React.FormEvent) {
 /* ================== STYLES ================== */
 const main = {
   minHeight: "100vh",
-  background: "radial-gradient(circle at top, #001a1a, #000)",
+  background: "radial-gradient(circle at top, #331100, #000)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  padding: "20px",
 };
 
 const card = {
@@ -675,86 +651,114 @@ const card = {
   padding: 32,
   borderRadius: 14,
   background: "rgba(0,0,0,0.65)",
-  border: "1px solid rgba(0,255,255,0.6)",
+  border: "1px solid rgba(255,87,34,0.6)",
   boxShadow:
-    "0 0 30px rgba(0,255,255,0.25), inset 0 0 20px rgba(0,255,255,0.15)",
+    "0 0 30px rgba(255,87,34,0.25), inset 0 0 20px rgba(255,87,34,0.15)",
   color: "#ffffff",
 };
 
 const title = {
   fontSize: 34,
   letterSpacing: 3,
-  color: "#00ffff",
+  color: "#ff5722",
   textAlign: "center" as const,
+  marginBottom: 16,
 };
 
 const subtitle = {
   fontSize: 22,
-  color: "#00ffff",
+  color: "#ff5722",
+  marginBottom: 16,
 };
 
 const text = {
   fontSize: 14,
   opacity: 0.9,
   marginBottom: 14,
+  textAlign: "center" as const,
 };
 
 const input = {
   width: "100%",
   padding: 12,
   marginBottom: 12,
-  background: "#050505",
-  color: "#ffffff",
-  border: "1px solid rgba(0,255,255,0.6)",
-  boxShadow: "0 0 12px rgba(0,255,255,0.25)",
+  background: "#000",
+  color: "#ff5722",
+  border: "1px solid rgba(255,87,34,0.6)",
+  boxShadow: "0 0 12px rgba(255,87,34,0.25)",
+  borderRadius: 8,
+  outline: "none",
+  WebkitAppearance: "none" as const,
+  WebkitBoxShadow: "0 0 0px 1000px #000 inset",
 };
 
 const label = {
   fontSize: 12,
   opacity: 0.75,
+  marginBottom: 6,
+  display: "block",
+};
+
+const select = {
+  width: "100%",
+  padding: 12,
+  marginBottom: 16,
+  background: "#000",
+  color: "#ff5722",
+  border: "1px solid rgba(255,87,34,0.6)",
+  borderRadius: 8,
+  outline: "none",
 };
 
 const primaryBtn = {
   width: "100%",
   padding: 14,
-  background: "#00ffff",
+  background: "#ff5722",
   color: "#000",
   fontWeight: 700,
   border: "none",
   borderRadius: 8,
   cursor: "pointer",
   marginTop: 10,
+  boxShadow: "0 0 20px rgba(255,87,34,0.4)",
+  transition: "all 0.2s ease",
 };
 
 const secondaryBtn = {
   ...primaryBtn,
-  background: "#ff4d00",
-  color: "#000",
+  background: "transparent",
+  color: "#ff5722",
+  border: "1px solid #ff5722",
+  boxShadow: "none",
 };
 
 const linkBtn = {
   marginTop: 14,
   background: "transparent",
-  color: "#9ff",
+  color: "#ffccbc",
   border: "none",
   cursor: "pointer",
   textDecoration: "underline",
+  width: "100%",
+  padding: 8,
 };
 
 const summaryBox = {
-  border: "1px solid rgba(0,255,255,0.4)",
+  border: "1px solid rgba(255,87,34,0.4)",
   padding: 16,
   marginTop: 16,
   marginBottom: 20,
+  borderRadius: 8,
+  background: "rgba(255,87,34,0.05)",
 };
 
 const qtyBtn = {
   width: 30,
   height: 30,
   borderRadius: 8,
-  border: "1px solid #0ff",
+  border: "1px solid #ff5722",
   background: "#000",
-  color: "#0ff",
+  color: "#ff5722",
   fontSize: 22,
   cursor: "pointer",
 };
@@ -765,14 +769,13 @@ const athBtn = {
   padding: "14px",
   background: "#ff5a1f",
   color: "#000",
-  fontWeight: "bold",
+  fontWeight: "bold" as const,
   borderRadius: 8,
   textAlign: "center" as const,
   textDecoration: "none",
   marginBottom: 12,
+  boxShadow: "0 0 20px rgba(255,90,31,0.4)",
 };
-
-
 
 const uploadWrapper = {
   display: "flex",
@@ -783,27 +786,11 @@ const uploadWrapper = {
 const uploadMini = {
   padding: "10px 16px",
   borderRadius: 999,
-  border: "1px dashed #0ff",
+  border: "1px dashed #ff5722",
   fontSize: 13,
-  color: "#9ff",
+  color: "#ffccbc",
   cursor: "pointer",
-  boxShadow: "0 0 10px rgba(0,255,255,0.25)",
+  boxShadow: "0 0 10px rgba(255,87,34,0.25)",
   transition: "all 0.25s ease",
   background: "rgba(0,0,0,0.6)",
-};
-
-
-const backBox = {
-  marginTop: 14,
-  width: "100%",
-  padding: 10,
-  background: "rgba(0,255,255,0.08)",
-  border: "1px solid rgba(0,255,255,0.4)",
-  borderRadius: 8,
-  color: "#9ff",
-  cursor: "pointer",
-  textAlign: "center" as const,
-  fontSize: 13,
-  letterSpacing: 1,
-  transition: "all 0.25s ease",
 };
