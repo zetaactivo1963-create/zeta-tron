@@ -85,7 +85,7 @@ export default function Home() {
               {EVENTOS.map((evento) => (
                 <Link 
                   key={evento.slug} 
-                  href={`/eventos/${evento.slug}`}
+                  href={`/events/${evento.slug}`}
                   style={ticketCard}
                 >
                   {/* Ticket perforations on left */}
