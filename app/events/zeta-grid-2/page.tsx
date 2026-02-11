@@ -40,15 +40,16 @@ export default function ZetaGrid2() {
               <h1 style={titleGrid}>GRID 2.0</h1>
             </div>
             
-            <h2 style={subtitle}>TrowBack WelcomeNewbie Show</h2>
+            <h2 style={subtitle}>Throwback WelcomeNewbies Show</h2>
             <h3 style={org}>PHI SIGMA ALPHA · Capítulo Zeta</h3>
 
-            {/* INFO */}
+            {/* INFO COMPLETA EN UN SOLO RECUADRO */}
             <div style={infoCard}>
               <div style={infoRow}>
                 <span style={infoIcon}>📅</span>
                 <span style={infoText}>Viernes 27 de febrero 2026 · 7:00 PM</span>
               </div>
+              
               <div style={infoRow}>
                 <span style={infoIcon}>📍</span>
                 <div>
@@ -56,11 +57,18 @@ export default function ZetaGrid2() {
                   <div style={infoSubtext}>Aguada, Puerto Rico</div>
                 </div>
               </div>
-            </div>
 
-            {/* NOTICE */}
-            <div style={noticeBox}>
-              <p style={noticeText}>Evento solo para Fraternos ΦΣΑ y damas</p>
+              <div style={infoDivider}></div>
+
+              <div style={infoRow}>
+                <span style={infoIcon}>👥</span>
+                <span style={infoText}>Evento solo para Fraternos ΦΣΑ y damas</span>
+              </div>
+
+              <div style={infoRow}>
+                <span style={infoIcon}>🍹</span>
+                <span style={infoText}>After Party OPEN BAR Incluido</span>
+              </div>
             </div>
 
             {/* PRECIOS */}
@@ -94,10 +102,9 @@ export default function ZetaGrid2() {
               </div>
             </div>
 
-            {/* OPEN BAR */}
-            <div style={openBarBanner}>
-              <div style={openBarGlow}></div>
-              <span style={openBarText}>🍹 After Party OPEN BAR Incluido 🍹</span>
+            {/* OPEN BAR - SIN RECUADRO */}
+            <div style={openBarText}>
+              🍹 OPEN BAR INCLUIDO 🍹
             </div>
 
             {/* CTA */}
@@ -121,20 +128,11 @@ const globalCSS = `
   @keyframes pulse {
     0%, 100% {
       opacity: 1;
-      transform: scale(1);
+      text-shadow: 0 0 30px rgba(255,87,34,0.9), 0 0 60px rgba(255,87,34,0.6);
     }
     50% {
-      opacity: 0.9;
-      transform: scale(1.02);
-    }
-  }
-  
-  @keyframes glow {
-    0%, 100% {
-      box-shadow: 0 0 20px rgba(255,87,34,0.4), inset 0 0 20px rgba(255,87,34,0.1);
-    }
-    50% {
-      box-shadow: 0 0 40px rgba(255,87,34,0.7), inset 0 0 30px rgba(255,87,34,0.2);
+      opacity: 0.85;
+      text-shadow: 0 0 40px rgba(255,87,34,1), 0 0 80px rgba(255,87,34,0.8);
     }
   }
 `;
@@ -273,12 +271,12 @@ const infoCard: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: 12,
-  padding: "20px 28px",
+  padding: "24px 28px",
   background: "rgba(0, 0, 0, 0.5)",
   borderRadius: 12,
   border: "1px solid rgba(255, 87, 34, 0.3)",
-  marginBottom: 20,
-  maxWidth: 500,
+  marginBottom: 28,
+  maxWidth: 520,
   width: "100%",
 };
 
@@ -290,7 +288,7 @@ const infoRow: React.CSSProperties = {
 };
 
 const infoIcon: React.CSSProperties = {
-  fontSize: 20,
+  fontSize: 18,
   flexShrink: 0,
 };
 
@@ -306,21 +304,10 @@ const infoSubtext: React.CSSProperties = {
   marginTop: 2,
 };
 
-const noticeBox: React.CSSProperties = {
-  padding: "12px 20px",
-  background: "rgba(255,87,34,0.1)",
-  border: "1px solid rgba(255,87,34,0.3)",
-  borderRadius: 8,
-  marginBottom: 24,
-  maxWidth: 500,
-  width: "100%",
-};
-
-const noticeText: React.CSSProperties = {
-  fontSize: 13,
-  margin: 0,
-  letterSpacing: 0.5,
-  opacity: 0.9,
+const infoDivider: React.CSSProperties = {
+  height: 1,
+  background: "rgba(255,87,34,0.25)",
+  margin: "6px 0",
 };
 
 const pricesCard: React.CSSProperties = {
@@ -330,8 +317,8 @@ const pricesCard: React.CSSProperties = {
   background: "rgba(0,0,0,0.6)",
   borderRadius: 12,
   border: "1px solid rgba(255,87,34,0.3)",
-  marginBottom: 24,
-  maxWidth: 500,
+  marginBottom: 28,
+  maxWidth: 520,
   width: "100%",
   backdropFilter: "blur(10px)",
 };
@@ -377,34 +364,15 @@ const priceDivider: React.CSSProperties = {
   margin: "4px 0",
 };
 
-const openBarBanner: React.CSSProperties = {
-  position: "relative",
-  padding: "16px 32px",
-  background: "rgba(255,87,34,0.15)",
-  borderRadius: 12,
-  border: "2px solid rgba(255,87,34,0.4)",
-  marginBottom: 32,
-  maxWidth: 500,
-  width: "100%",
-  overflow: "hidden",
-  animation: "glow 2s ease-in-out infinite",
-};
-
-const openBarGlow: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  background: "radial-gradient(circle, rgba(255,87,34,0.3) 0%, transparent 70%)",
-  animation: "pulse 3s ease-in-out infinite",
-};
-
 const openBarText: React.CSSProperties = {
-  position: "relative",
-  fontSize: 18,
+  fontSize: 24,
   fontWeight: 700,
-  letterSpacing: 2,
+  letterSpacing: 3,
   color: "#fff",
-  textShadow: "0 0 20px rgba(255, 87, 34, 0.9)",
-  display: "block",
+  textShadow: "0 0 30px rgba(255, 87, 34, 0.9), 0 0 60px rgba(255, 87, 34, 0.6)",
+  animation: "pulse 2.5s ease-in-out infinite",
+  marginBottom: 36,
+  textTransform: "uppercase",
 };
 
 const buyBtn: React.CSSProperties = {
