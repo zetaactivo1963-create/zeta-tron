@@ -59,7 +59,7 @@ export default function ZetaGrid2() {
             <p style={infoText}>📍 Bambalinas Música & Teatro</p>
             <p style={infoText}>Aguada, Puerto Rico</p>
             <p style={infoText}>Evento solo para Fraternos ΦΣΑ y damas</p>
-            <p style={infoText}>After Party O.B. incluido</p>
+            <p style={infoText}>After Party OPEN BAR. Incluido</p>
 
 
           </div>
