@@ -8,7 +8,7 @@ export default async function EventoPage({
   const { slug } = await params;
   
   if (slug === 'zeta-grid-2') {
-    redirect('/events/zeta-grid-2');
+    redirect('/eventos/zeta-grid-2');
   }
   
   redirect('/');
