@@ -363,13 +363,18 @@ export default function AdminPage() {
   /* ================== RENDER ================== */
   if (!authorized) {
     return (
-      <main style={main}>
-        <form onSubmit={handlePin} style={{ ...card, textAlign: "center" }}>
-          <div style={{ marginBottom: 24 }}>
-            <h1 style={{ color: "#e0e0e0", marginBottom: 8, fontSize: 28, fontWeight: 600 }}>
+      <main style={{...main, alignItems: "center"}}>
+        <form onSubmit={handlePin} style={{ 
+          ...card, 
+          textAlign: "center",
+          width: "100%",
+          maxWidth: "360px",
+        }}>
+          <div style={{ marginBottom: 20 }}>
+            <h1 style={{ color: "#e0e0e0", marginBottom: 6, fontSize: 26, fontWeight: 600, margin: 0 }}>
               ADMIN
             </h1>
-            <p style={{ color: "#909090", fontSize: 13, margin: 0 }}>
+            <p style={{ color: "#909090", fontSize: 13, margin: 0, marginTop: 4 }}>
               Zeta's Grid 2.0
             </p>
           </div>
@@ -378,10 +383,17 @@ export default function AdminPage() {
             placeholder="Ingresa el PIN"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            style={{...searchInput, textAlign: "center", fontSize: 16, padding: "14px"}}
+            style={{
+              ...searchInput, 
+              textAlign: "center", 
+              fontSize: 15, 
+              padding: "12px",
+              width: "100%",
+              marginBottom: 14,
+            }}
             autoFocus
           />
-          <button type="submit" style={{...registerPuertaBtn, marginTop: 16}}>
+          <button type="submit" style={{...registerPuertaBtn, margin: 0}}>
             Entrar
           </button>
         </form>
@@ -436,31 +448,32 @@ export default function AdminPage() {
         </div>
 
         {/* ===== DESGLOSE DINERO ===== */}
-        <details style={{ marginBottom: 20, color: "#0ff" }}>
-          <summary style={{ cursor: "pointer", fontSize: 14, opacity: 0.9 }}>
+        <details style={{ marginBottom: 20, color: "#d0d0d0" }}>
+          <summary style={{ cursor: "pointer", fontSize: 14, opacity: 0.85, fontWeight: 500 }}>
             📊 Ver desglose de dinero por tipo
           </summary>
           <div
             style={{
-              marginTop: 10,
-              padding: 12,
-              border: "1px solid rgba(0,255,255,0.3)",
-              borderRadius: 8,
+              marginTop: 12,
+              padding: 16,
+              border: "1px solid rgba(100,100,100,0.25)",
+              borderRadius: 10,
               fontSize: 13,
+              background: "rgba(30,30,30,0.4)",
             }}
           >
-            <p>
-              <b>Newbi's:</b> {ticketsPorTipo.newbies} x $15 = ${dineroPorTipo.newbies}
+            <p style={{ marginBottom: 8, color: "#c0c0c0" }}>
+              <b>Newbie's:</b> {ticketsPorTipo.newbies} x $15 = <span style={{ color: "#5fa3e8" }}>${dineroPorTipo.newbies}</span>
             </p>
-            <p>
-              <b>Pre-venta:</b> {ticketsPorTipo.preventa} x $20 = ${dineroPorTipo.preventa}
+            <p style={{ marginBottom: 8, color: "#c0c0c0" }}>
+              <b>Pre-venta:</b> {ticketsPorTipo.preventa} x $20 = <span style={{ color: "#5fa3e8" }}>${dineroPorTipo.preventa}</span>
             </p>
-            <p>
-              <b>Entrada:</b> {ticketsPorTipo.entrada} x $25 = ${dineroPorTipo.entrada}
+            <p style={{ marginBottom: 8, color: "#c0c0c0" }}>
+              <b>Entrada:</b> {ticketsPorTipo.entrada} x $25 = <span style={{ color: "#5fa3e8" }}>${dineroPorTipo.entrada}</span>
             </p>
-            <hr style={{ border: "1px solid rgba(0,255,255,0.3)", margin: "10px 0" }} />
-            <p>
-              <b>TOTAL:</b> ${totalDinero}
+            <hr style={{ border: "1px solid rgba(100,100,100,0.2)", margin: "12px 0" }} />
+            <p style={{ fontSize: 15, fontWeight: 600, color: "#e0e0e0" }}>
+              <b>TOTAL:</b> <span style={{ color: "#5fa3e8" }}>${totalDinero}</span>
             </p>
           </div>
         </details>
