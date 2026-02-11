@@ -50,15 +50,17 @@ export default function ZetaGrid2() {
           <div style={titleWrapper}>
             <h1 style={title}>ZETA'S GRID 2.0</h1>
           </div>
-          <h2 style={subtitle}>TrowBack WelcomeNewbie Show</h2>
+          <h2 style={subtitle}>ThrowBack WelcomeNewbies Show</h2>
           <h3 style={org}>PHI SIGMA ALPHA · Capítulo Zeta</h3>
 
           {/* INFO EVENTO */}
           <div style={infoBox}>
-            <p style={infoText}>📅 Viernes 6 de marzo 2026 · 7:00 PM</p>
+            <p style={infoText}>📅 Viernes 27 de febrero 2026 · 7:00 PM</p>
             <p style={infoText}>📍 Bambalinas Música & Teatro</p>
             <p style={infoText}>Aguada, Puerto Rico</p>
             <p style={infoText}>Evento solo para Fraternos ΦΣΑ y damas</p>
+            <p style={infoText}>After Party O.B. incluido</p>
+
 
           </div>
 
