@@ -274,6 +274,28 @@ export default function AdminPage() {
     }
   }
 
+  async function deleteTicket(ticket: Ticket) {
+    if (!confirm(`¿Seguro que quieres eliminar el ticket ${ticket.ticket_code}?`)) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.from("tickets").delete().eq("id", ticket.id);
+
+      if (error) {
+        alert("Error eliminando ticket");
+        console.error(error);
+      } else {
+        alert("Ticket eliminado exitosamente");
+      }
+
+      await fetchTickets();
+    } finally {
+      setLoading(false);
+    }
+  }
+
   /* ================== DERIVED LISTS ================== */
   const ticketsNoEntrados = useMemo(() => filteredTickets.filter((t) => !t.checked_in), [filteredTickets]);
   const ticketsEntrados = useMemo(() => filteredTickets.filter((t) => t.checked_in), [filteredTickets]);
@@ -342,16 +364,24 @@ export default function AdminPage() {
   if (!authorized) {
     return (
       <main style={main}>
-        <form onSubmit={handlePin} style={{ ...card, maxWidth: 360, textAlign: "center" }}>
-          <h1 style={{ color: "#0ff", marginBottom: 20 }}>ADMIN</h1>
+        <form onSubmit={handlePin} style={{ ...card, textAlign: "center" }}>
+          <div style={{ marginBottom: 24 }}>
+            <h1 style={{ color: "#e0e0e0", marginBottom: 8, fontSize: 28, fontWeight: 600 }}>
+              ADMIN
+            </h1>
+            <p style={{ color: "#909090", fontSize: 13, margin: 0 }}>
+              Zeta's Grid 2.0
+            </p>
+          </div>
           <input
             type="password"
-            placeholder="PIN"
+            placeholder="Ingresa el PIN"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            style={searchInput}
+            style={{...searchInput, textAlign: "center", fontSize: 16, padding: "14px"}}
+            autoFocus
           />
-          <button type="submit" style={registerPuertaBtn}>
+          <button type="submit" style={{...registerPuertaBtn, marginTop: 16}}>
             Entrar
           </button>
         </form>
@@ -376,10 +406,17 @@ export default function AdminPage() {
       <div style={{ width: "100%", maxWidth: 1400 }}>
         {/* ===== TOP HEADER ===== */}
         <div style={topHeader}>
-          <h1 style={{ margin: 0, color: "#0ff" }}>ADMIN ZETA'S GRID 2.0</h1>
-          <button style={refreshBtn} onClick={fetchTickets}>
-            ⟳ Refrescar
-          </button>
+          <h1 style={{ margin: 0, color: "#e0e0e0", fontSize: 24, fontWeight: 600 }}>
+            ADMIN ZETA'S GRID 2.0
+          </h1>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ ...statPill, background: "rgba(74,144,226,0.15)", borderColor: "rgba(74,144,226,0.3)", color: "#5fa3e8", fontWeight: 700, fontSize: 16 }}>
+              💰 Total: ${totalDinero}
+            </div>
+            <button style={refreshBtn} onClick={fetchTickets}>
+              ⟳ Refrescar
+            </button>
+          </div>
         </div>
 
         {/* ===== STATS ===== */}
@@ -395,12 +432,6 @@ export default function AdminPage() {
           </div>
           <div style={statPill}>
             <b>Entrada ($25):</b> {ticketsPorTipo.entrada}
-          </div>
-
-          <div style={statsRight}>
-            <div style={{ ...statPill, background: "rgba(0,255,0,0.1)", borderColor: "#0f0" }}>
-              <b>Total dinero:</b> ${totalDinero}
-            </div>
           </div>
         </div>
 
@@ -578,11 +609,28 @@ export default function AdminPage() {
                           )}
 
                           {t.status === "aprobado" && (
+                            <>
+                              <button
+                                style={{ ...actionBtn, background: "#ffc107", color: "#000" }}
+                                onClick={() => checkIn(t)}
+                              >
+                                CHECK-IN
+                              </button>
+                              <button
+                                style={{ ...actionBtn, background: "#dc3545", color: "#fff" }}
+                                onClick={() => deleteTicket(t)}
+                              >
+                                🗑️ Eliminar
+                              </button>
+                            </>
+                          )}
+
+                          {t.status === "rechazado" && (
                             <button
-                              style={{ ...actionBtn, background: "#ff0", color: "#000" }}
-                              onClick={() => checkIn(t)}
+                              style={{ ...actionBtn, background: "#dc3545", color: "#fff" }}
+                              onClick={() => deleteTicket(t)}
                             >
-                              CHECK-IN
+                              🗑️ Eliminar
                             </button>
                           )}
                         </td>
@@ -673,11 +721,28 @@ export default function AdminPage() {
                       )}
 
                       {t.status === "aprobado" && (
+                        <>
+                          <button
+                            style={{ ...actionBtnMobile, background: "#ffc107", color: "#000" }}
+                            onClick={() => checkIn(t)}
+                          >
+                            ⚡ CHECK-IN
+                          </button>
+                          <button
+                            style={{ ...actionBtnMobile, background: "#dc3545", color: "#fff" }}
+                            onClick={() => deleteTicket(t)}
+                          >
+                            🗑️ Eliminar ticket
+                          </button>
+                        </>
+                      )}
+
+                      {t.status === "rechazado" && (
                         <button
-                          style={{ ...actionBtnMobile, background: "#ff0", color: "#000" }}
-                          onClick={() => checkIn(t)}
+                          style={{ ...actionBtnMobile, background: "#dc3545", color: "#fff" }}
+                          onClick={() => deleteTicket(t)}
                         >
-                          ⚡ CHECK-IN
+                          🗑️ Eliminar ticket
                         </button>
                       )}
                     </div>
@@ -737,6 +802,12 @@ export default function AdminPage() {
                             onClick={() => undoCheckIn(t)}
                           >
                             Revertir
+                          </button>
+                          <button
+                            style={{ ...actionBtn, background: "#dc3545", color: "#fff" }}
+                            onClick={() => deleteTicket(t)}
+                          >
+                            🗑️
                           </button>
                         </td>
                       </tr>
@@ -802,6 +873,12 @@ export default function AdminPage() {
                     >
                       ↩ Revertir entrada
                     </button>
+                    <button
+                      style={{ ...actionBtnMobile, background: "#dc3545", color: "#fff", marginTop: 8 }}
+                      onClick={() => deleteTicket(t)}
+                    >
+                      🗑️ Eliminar ticket
+                    </button>
                   </div>
                 ))
               )}
@@ -810,13 +887,13 @@ export default function AdminPage() {
         </div>
 
         {/* ===== PAGO EN PUERTA ===== */}
-        <div style={{ marginTop: 50, borderTop: "1px solid rgba(0,255,255,0.35)", paddingTop: 20 }}>
-          <h2 style={{ margin: 0, color: "#0ff" }}>Pago en la puerta</h2>
+        <div style={{ marginTop: 50, borderTop: "1px solid rgba(100,100,100,0.2)", paddingTop: 20 }}>
+          <h2 style={{ margin: 0, color: "#e0e0e0", fontWeight: 600, fontSize: 18 }}>Pago en la puerta</h2>
 
-          <p style={{ marginTop: 10, opacity: 0.9, color: "#bff" }}>
-            Pagos en puerta registrados: <b>{totalPuertaCantidad}</b>
+          <p style={{ marginTop: 10, opacity: 0.9, color: "#b0b0b0", fontSize: 14 }}>
+            Pagos en puerta registrados: <b style={{color: "#e0e0e0"}}>{totalPuertaCantidad}</b>
             <br />
-            Total cobrado en puerta: <b>${totalPuertaMonto}</b>
+            Total cobrado en puerta: <b style={{color: "#5fa3e8"}}>${totalPuertaMonto}</b>
           </p>
 
           <button
@@ -862,18 +939,20 @@ export default function AdminPage() {
 /* ================== STYLES ================== */
 const main: React.CSSProperties = {
   minHeight: "100vh",
-  background: "#000",
-  color: "#0ff",
+  background: "#0a0a0a",
+  color: "#e0e0e0",
   display: "flex",
   justifyContent: "center",
   padding: 16,
 };
 
 const card = {
-  padding: 24,
-  borderRadius: 12,
-  background: "rgba(0,0,0,0.8)",
-  border: "1px solid rgba(0,255,255,0.4)",
+  padding: 32,
+  borderRadius: 16,
+  background: "rgba(20,20,20,0.95)",
+  border: "1px solid rgba(100,100,100,0.3)",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+  maxWidth: 400,
 };
 
 const topHeader: React.CSSProperties = {
@@ -882,24 +961,26 @@ const topHeader: React.CSSProperties = {
   justifyContent: "space-between",
   gap: 12,
   flexWrap: "wrap",
-  marginBottom: 10,
+  marginBottom: 20,
 };
 
 const refreshBtn: React.CSSProperties = {
   background: "transparent",
-  border: "1px solid rgba(0,255,255,0.55)",
-  color: "#0ff",
-  padding: "8px 12px",
-  borderRadius: 10,
+  border: "1px solid rgba(150,150,150,0.4)",
+  color: "#d0d0d0",
+  padding: "8px 16px",
+  borderRadius: 8,
   cursor: "pointer",
-  fontWeight: 700,
+  fontWeight: 600,
+  transition: "all 0.2s",
+  fontSize: 14,
 };
 
 const stats: React.CSSProperties = {
   display: "flex",
   gap: 12,
   alignItems: "center",
-  marginBottom: 18,
+  marginBottom: 20,
   flexWrap: "wrap",
 };
 
@@ -912,40 +993,44 @@ const statsRight: React.CSSProperties = {
 };
 
 const statPill: React.CSSProperties = {
-  border: "1px solid rgba(0,255,255,0.35)",
-  borderRadius: 12,
-  padding: "10px 12px",
-  background: "rgba(0,255,255,0.05)",
-  color: "#bff",
-  fontSize: 14,
+  border: "1px solid rgba(100,100,100,0.3)",
+  borderRadius: 10,
+  padding: "10px 14px",
+  background: "rgba(40,40,40,0.6)",
+  color: "#d0d0d0",
+  fontSize: 13,
+  fontWeight: 500,
 };
 
 const searchInput: React.CSSProperties = {
-  background: "#000",
-  color: "#0ff",
-  border: "1px solid #0ff",
-  padding: "10px 12px",
-  borderRadius: 10,
+  background: "rgba(20,20,20,0.8)",
+  color: "#e0e0e0",
+  border: "1px solid rgba(100,100,100,0.3)",
+  padding: "10px 14px",
+  borderRadius: 8,
   outline: "none",
   minWidth: 240,
   width: "min(360px, 100%)",
+  fontSize: 14,
 };
 
 const select: React.CSSProperties = {
-  background: "#000",
-  color: "#0ff",
-  border: "1px solid #0ff",
-  padding: 10,
-  borderRadius: 10,
+  background: "rgba(20,20,20,0.8)",
+  color: "#e0e0e0",
+  border: "1px solid rgba(100,100,100,0.3)",
+  padding: "10px 14px",
+  borderRadius: 8,
   outline: "none",
   minWidth: 180,
+  fontSize: 14,
 };
 
 const tableWrap: React.CSSProperties = {
   width: "100%",
   overflowX: "auto",
-  border: "1px solid rgba(0,255,255,0.25)",
+  border: "1px solid rgba(100,100,100,0.2)",
   borderRadius: 12,
+  background: "rgba(15,15,15,0.6)",
 };
 
 const table: React.CSSProperties = {
@@ -955,43 +1040,51 @@ const table: React.CSSProperties = {
 };
 
 const th: React.CSSProperties = {
-  padding: "10px 10px",
-  borderBottom: "1px solid rgba(0,255,255,0.25)",
-  fontSize: 13,
-  color: "#9ff",
+  padding: "12px 16px",
+  borderBottom: "1px solid rgba(100,100,100,0.2)",
+  fontSize: 12,
+  color: "#a0a0a0",
   position: "sticky",
   top: 0,
-  background: "#000",
+  background: "rgba(15,15,15,0.95)",
   zIndex: 1,
+  textAlign: "center" as const,
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: 0.5,
 };
 
 const td: React.CSSProperties = {
-  padding: "10px 10px",
-  borderBottom: "1px solid rgba(0,255,255,0.12)",
+  padding: "12px 16px",
+  borderBottom: "1px solid rgba(80,80,80,0.15)",
   fontSize: 13,
-  color: "#dff",
-  verticalAlign: "top",
+  color: "#d0d0d0",
+  verticalAlign: "middle" as const,
+  textAlign: "center" as const,
 };
 
 const actionBtn: React.CSSProperties = {
-  padding: "10px 12px",
-  fontSize: 13,
-  borderRadius: 10,
-  minWidth: 95,
-  marginRight: 8,
-  marginBottom: 6,
+  padding: "8px 14px",
+  fontSize: 12,
+  borderRadius: 6,
+  minWidth: 90,
+  marginRight: 6,
+  marginBottom: 4,
   border: "none",
   cursor: "pointer",
-  fontWeight: 800,
+  fontWeight: 700,
+  transition: "all 0.2s",
 };
 
 const actionBtnMobile: React.CSSProperties = {
   width: "100%",
-  padding: "12px 14px",
-  borderRadius: 12,
+  padding: "12px 16px",
+  borderRadius: 8,
   border: "none",
   cursor: "pointer",
-  fontWeight: 900,
+  fontWeight: 700,
+  fontSize: 13,
+  transition: "all 0.2s",
 };
 
 const sectionHeaderRow: React.CSSProperties = {
@@ -1000,60 +1093,67 @@ const sectionHeaderRow: React.CSSProperties = {
   justifyContent: "space-between",
   gap: 12,
   flexWrap: "wrap",
-  marginBottom: 10,
+  marginBottom: 12,
 };
 
 const sectionTitle: React.CSSProperties = {
   margin: 0,
-  color: "#bff",
+  color: "#e0e0e0",
   fontSize: 18,
+  fontWeight: 600,
 };
 
 const emptyBox: React.CSSProperties = {
-  padding: 14,
-  border: "1px dashed rgba(0,255,255,0.35)",
-  borderRadius: 12,
-  color: "#9ff",
-  background: "rgba(0,255,255,0.05)",
+  padding: 20,
+  border: "1px dashed rgba(100,100,100,0.3)",
+  borderRadius: 10,
+  color: "#a0a0a0",
+  background: "rgba(30,30,30,0.3)",
+  textAlign: "center" as const,
+  fontSize: 13,
 };
 
 const registerPuertaBtn: React.CSSProperties = {
-  background: "#0ff",
-  color: "#000",
-  padding: "12px 14px",
-  fontWeight: 900,
+  background: "#4a90e2",
+  color: "#fff",
+  padding: "14px 20px",
+  fontWeight: 700,
   border: "none",
   cursor: "pointer",
-  borderRadius: 12,
+  borderRadius: 8,
   width: "100%",
   maxWidth: 420,
+  fontSize: 14,
+  transition: "all 0.2s",
+  boxShadow: "0 2px 8px rgba(74,144,226,0.3)",
 };
 
 const overlay: React.CSSProperties = {
   position: "fixed",
   inset: 0,
-  background: "rgba(0,0,0,0.9)",
+  background: "rgba(0,0,0,0.85)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   zIndex: 999,
+  backdropFilter: "blur(4px)",
 };
 
 const loaderBox: React.CSSProperties = {
   textAlign: "center",
-  color: "#0ff",
-  padding: 18,
-  border: "1px solid rgba(0,255,255,0.45)",
-  borderRadius: 14,
-  background: "rgba(0,0,0,0.55)",
+  color: "#e0e0e0",
+  padding: 24,
+  border: "1px solid rgba(100,100,100,0.3)",
+  borderRadius: 12,
+  background: "rgba(20,20,20,0.95)",
 };
 
 const spinnerCSS = `
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(0,255,255,0.2);
-  border-top: 3px solid #0ff;
+  border: 3px solid rgba(150,150,150,0.2);
+  border-top: 3px solid #e0e0e0;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 12px;
@@ -1062,10 +1162,11 @@ const spinnerCSS = `
 `;
 
 const cardRow: React.CSSProperties = {
-  border: "1px solid rgba(0,255,255,0.25)",
-  borderRadius: 16,
-  padding: 14,
-  background: "rgba(0,255,255,0.04)",
+  border: "1px solid rgba(100,100,100,0.2)",
+  borderRadius: 12,
+  padding: 16,
+  background: "rgba(25,25,25,0.6)",
+  marginBottom: 12,
 };
 
 const cardRowTop: React.CSSProperties = {
@@ -1073,22 +1174,22 @@ const cardRowTop: React.CSSProperties = {
   justifyContent: "space-between",
   alignItems: "flex-start",
   gap: 12,
-  paddingBottom: 10,
-  borderBottom: "1px solid rgba(0,255,255,0.15)",
+  paddingBottom: 12,
+  borderBottom: "1px solid rgba(100,100,100,0.15)",
 };
 
 const cardRowBody: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: 10,
-  paddingTop: 10,
+  paddingTop: 12,
 };
 
 const cardRowActions: React.CSSProperties = {
   marginTop: 12,
   display: "flex",
   flexDirection: "column",
-  gap: 10,
+  gap: 8,
 };
 
 const cardField: React.CSSProperties = {
@@ -1099,25 +1200,33 @@ const cardField: React.CSSProperties = {
 
 const cardLabel: React.CSSProperties = {
   fontSize: 12,
-  opacity: 0.75,
-  color: "#9ff",
+  opacity: 0.7,
+  color: "#a0a0a0",
 };
 
 const cardValue: React.CSSProperties = {
   fontSize: 13,
-  fontWeight: 700,
-  color: "#dff",
+  fontWeight: 600,
+  color: "#e0e0e0",
   textAlign: "right",
 };
 
 const refreshBtnInline = {
-  padding: "6px 10px",
-  background: "#000",
-  color: "#0ff",
-  border: "1px solid #0ff",
+  padding: "6px 12px",
+  background: "rgba(30,30,30,0.8)",
+  color: "#d0d0d0",
+  border: "1px solid rgba(100,100,100,0.3)",
   borderRadius: 6,
   cursor: "pointer",
-  fontSize: 14,
+  fontSize: 13,
+  fontWeight: 600,
+  transition: "all 0.2s",
+};
+
+const deleteBtn: React.CSSProperties = {
+  ...actionBtn,
+  background: "#dc3545",
+  color: "#fff",
 };
 
 const responsiveCSS = `
