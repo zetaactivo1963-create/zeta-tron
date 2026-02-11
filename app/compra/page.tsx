@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -17,24 +18,16 @@ const ui = Inter({
 });
 
 /* ================== DATA ================== */
-const CANDIDATOS = [
-  "Ninguno",
-  "Adrian Monagas",
-  "Alexander Jaime",
-  "Daniel Beltrán",
-  "Dereck Pérez",
-  "Gohan Martínez",
-  "Ian Pérez",
-  "Isaac Vizcarrondo",
-  "Jatniel Justiniano",
-  "Marcos Marcial",
-  "Marcos Juarbe",
-  "Ricardo Matías",
-  "Zabdiel Rodríguez",
+const ORGANIZACIONES = [
+  "Mu Alpha Phi",
+  "Eta Gamma Delta",
+  "Sigma Epsilon Chi",
+  "Phi Sigma Alpha",
+  "Amistad",
 ];
 
 const PRICE_TYPES = [
-  { value: "newbies", label: "All Newbi's", price: 15 },
+  { value: "newbies", label: "All Newbie's", price: 15 },
   { value: "preventa", label: "Pre-venta", price: 20 },
   { value: "entrada", label: "Entrada", price: 25 },
 ];
@@ -53,7 +46,6 @@ export default function Compra() {
   const [qty, setQty] = useState(1);
   const [priceType, setPriceType] = useState<PriceType>("preventa"); // Default: pre-venta
   const [asociacion, setAsociacion] = useState("");
-  const [candidato, setCandidato] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
@@ -73,6 +65,11 @@ export default function Compra() {
 
     if (phone.length !== 10) {
       alert("El teléfono debe tener 10 dígitos");
+      return;
+    }
+
+    if (!asociacion) {
+      alert("Debes seleccionar una organización");
       return;
     }
 
@@ -114,7 +111,6 @@ export default function Compra() {
         status: "pendiente",
         proof_url: publicData.publicUrl,
         asociacion,
-        candidato: candidato || "Ninguno",
         price_type: priceType,
       });
 
@@ -146,7 +142,6 @@ export default function Compra() {
         payment_method: "puerta",
         status: "pendiente",
         asociacion,
-        candidato: candidato || "Ninguno",
         price_type: priceType,
       });
 
@@ -378,35 +373,31 @@ export default function Compra() {
             ))}
           </div>
 
-          <label style={label}>Relación / Organización</label>
+          <label style={label}>Organización *</label>
           <select
             value={asociacion}
             onChange={(e) => setAsociacion(e.target.value)}
             style={select}
+            required
           >
-            <option value="">Selecciona una opción</option>
-            <option value="Hermano">Hermano</option>
-            <option value="Asociado">Asociado</option>
-            <option value="Candidato">Candidato</option>
-            <option value="Neófito">Neófito</option>
-            <option value="General">Público General</option>
-          </select>
-
-          <label style={label}>¿Qué candidato te vendió la taquilla?</label>
-          <select
-            value={candidato}
-            onChange={(e) => setCandidato(e.target.value)}
-            style={select}
-          >
-            {CANDIDATOS.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            <option value="">Selecciona una organización</option>
+            {ORGANIZACIONES.map((org) => (
+              <option key={org} value={org}>
+                {org}
               </option>
             ))}
           </select>
 
           <button type="submit" style={primaryBtn}>
             REVISAR COMPRA
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            style={secondaryBtn}
+          >
+            Regresar
           </button>
         </form>
       )}
@@ -437,22 +428,7 @@ export default function Compra() {
 
             {asociacion && (
               <p>
-                <b>Asociación:</b> {asociacion}
-              </p>
-            )}
-
-            {candidato && candidato !== "Ninguno" ? (
-              <>
-                <p>
-                  <b>Vendida por candidato:</b> Sí
-                </p>
-                <p>
-                  <b>Candidato:</b> {candidato}
-                </p>
-              </>
-            ) : (
-              <p>
-                <b>Vendida por candidato:</b> No
+                <b>Organización:</b> {asociacion}
               </p>
             )}
           </div>
