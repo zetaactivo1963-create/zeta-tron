@@ -1,8 +1,11 @@
 :root {
   --bg: #0b0e13;
-  --text: #eaeaf0;
-  --muted: #9aa0aa;
-  --accent: #4f7cff; /* neutral */
+  --text: #ffeae6;
+  --muted: #ffaa99;
+  --accent: #ff4500; /* rojo-naranja neón */
+  --neon-red: #ff1744;
+  --neon-orange: #ff5722;
+  --glow-red: rgba(255, 23, 68, 0.6);
 }
 
 * {
@@ -17,11 +20,10 @@ html, body {
   font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
-
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
-  -webkit-text-fill-color: #0ff !important;
+  -webkit-text-fill-color: #ff5722 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
