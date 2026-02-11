@@ -19,14 +19,14 @@ const EVENTOS = [
     slug: "zeta-grid-2",
     title: "Zeta's Grid 2.0",
     subtitle: "TrowBack WelcomeNewbie Show",
-    date: "6 MAR",
-    year: "2026",
+    date: "6 de marzo, 2026",
     time: "7:00 PM",
     location: "Bambalinas Música & Teatro",
     city: "Aguada, PR",
     priceFrom: 15,
     organization: "PHI SIGMA ALPHA · ZETA",
     category: "GREEK LIFE",
+    image: "/eventos/zeta-grid-2.jpg", // Pon imagen en /public/eventos/
     featured: true,
   },
   // Agrega más eventos aquí
@@ -44,10 +44,6 @@ export default function Home() {
               <div className={rajdhani.className} style={logoText}>TICKETEDY</div>
               <div style={logoSubtext}>Event Ticketing Platform</div>
             </div>
-          </Link>
-          
-          <Link href="/admin" style={adminBtn}>
-            Admin Access
           </Link>
         </div>
       </header>
@@ -88,6 +84,11 @@ export default function Home() {
                   href={`/events/${evento.slug}`}
                   style={ticketCard}
                 >
+                  {/* Background Image */}
+                  <div style={ticketImageBg}>
+                    <div style={ticketImageOverlay}></div>
+                  </div>
+
                   {/* Ticket perforations on left */}
                   <div style={ticketPerforations}>
                     {[...Array(12)].map((_, i) => (
@@ -97,7 +98,6 @@ export default function Home() {
 
                   {/* Main ticket content */}
                   <div style={ticketMain}>
-                    {/* Category badge */}
                     {evento.featured && (
                       <div style={featuredBadge}>⭐ FEATURED</div>
                     )}
@@ -117,11 +117,10 @@ export default function Home() {
 
                     <div style={ticketDetails}>
                       <div style={ticketDetail}>
-                        <span style={ticketDetailIcon}>📍</span>
+                        <span style={ticketDetailIcon}>📅</span>
                         <div>
-                          <div style={ticketDetailLabel}>VENUE</div>
-                          <div style={ticketDetailValue}>{evento.location}</div>
-                          <div style={ticketDetailSub}>{evento.city}</div>
+                          <div style={ticketDetailLabel}>DATE</div>
+                          <div style={ticketDetailValue}>{evento.date}</div>
                         </div>
                       </div>
 
@@ -131,6 +130,15 @@ export default function Home() {
                           <div style={ticketDetailLabel}>TIME</div>
                           <div style={ticketDetailValue}>{evento.time}</div>
                         </div>
+                      </div>
+                    </div>
+
+                    <div style={ticketDetail}>
+                      <span style={ticketDetailIcon}>📍</span>
+                      <div>
+                        <div style={ticketDetailLabel}>VENUE</div>
+                        <div style={ticketDetailValue}>{evento.location}</div>
+                        <div style={ticketDetailSub}>{evento.city}</div>
                       </div>
                     </div>
 
@@ -144,17 +152,6 @@ export default function Home() {
                       <div style={getTicketsBtn}>
                         GET TICKETS →
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Date stub (right side) */}
-                  <div style={ticketStub}>
-                    <div style={stubContent}>
-                      <div className={rajdhani.className} style={stubDate}>
-                        {evento.date}
-                      </div>
-                      <div style={stubYear}>{evento.year}</div>
-                      <div style={stubIcon}>🎫</div>
                     </div>
                   </div>
 
@@ -190,14 +187,12 @@ export default function Home() {
             <div style={footerLinks}>
               <div style={footerSection}>
                 <h4 style={footerSectionTitle}>Platform</h4>
-                <Link href="/admin" style={footerLink}>Admin Portal</Link>
-                <Link href="#" style={footerLink}>Create Event</Link>
+                <a href="/admin" style={footerLink}>Admin Portal</a>
               </div>
 
               <div style={footerSection}>
                 <h4 style={footerSectionTitle}>Support</h4>
-                <Link href="#" style={footerLink}>Contact Us</Link>
-                <Link href="#" style={footerLink}>Help Center</Link>
+                <a href="mailto:info@ticketedy.com" style={footerLink}>Contact Us</a>
               </div>
             </div>
           </div>
@@ -234,7 +229,7 @@ const headerContent: React.CSSProperties = {
   margin: "0 auto",
   padding: "0 24px",
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "center",
   alignItems: "center",
 };
 
@@ -265,19 +260,6 @@ const logoSubtext: React.CSSProperties = {
   letterSpacing: 1,
   textTransform: "uppercase" as const,
   marginTop: 2,
-};
-
-const adminBtn: React.CSSProperties = {
-  padding: "8px 20px",
-  background: "transparent",
-  border: "1px solid rgba(255,255,255,0.2)",
-  color: "#fff",
-  textDecoration: "none",
-  fontSize: 13,
-  fontWeight: 600,
-  borderRadius: 6,
-  transition: "all 0.2s",
-  letterSpacing: 0.5,
 };
 
 const hero: React.CSSProperties = {
@@ -357,8 +339,8 @@ const eventsGrid: React.CSSProperties = {
 
 const ticketCard: React.CSSProperties = {
   position: "relative",
-  background: "linear-gradient(135deg, rgba(30,30,30,0.9) 0%, rgba(20,20,20,0.9) 100%)",
-  borderRadius: 12,
+  background: "linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(20,20,20,0.95) 100%)",
+  borderRadius: 16,
   overflow: "hidden",
   display: "flex",
   textDecoration: "none",
@@ -366,7 +348,23 @@ const ticketCard: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.08)",
   transition: "all 0.3s ease",
   cursor: "pointer",
-  minHeight: 240,
+  minHeight: 280,
+};
+
+const ticketImageBg: React.CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  backgroundImage: "url('/eventos/zeta-grid-2.jpg')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  opacity: 0.15,
+  zIndex: 0,
+};
+
+const ticketImageOverlay: React.CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  background: "linear-gradient(90deg, rgba(10,10,10,0.95) 60%, rgba(10,10,10,0.7) 100%)",
 };
 
 const ticketPerforations: React.CSSProperties = {
@@ -379,7 +377,8 @@ const ticketPerforations: React.CSSProperties = {
   flexDirection: "column",
   justifyContent: "space-around",
   alignItems: "center",
-  background: "rgba(0,0,0,0.3)",
+  background: "rgba(0,0,0,0.5)",
+  zIndex: 1,
 };
 
 const perforation: React.CSSProperties = {
@@ -391,17 +390,19 @@ const perforation: React.CSSProperties = {
 };
 
 const ticketMain: React.CSSProperties = {
+  position: "relative",
+  zIndex: 1,
   flex: 1,
   padding: "28px 32px 28px 44px",
   display: "flex",
   flexDirection: "column",
-  gap: 16,
+  gap: 14,
 };
 
 const featuredBadge: React.CSSProperties = {
   position: "absolute",
   top: 20,
-  right: 140,
+  right: 40,
   background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
   color: "#000",
   padding: "6px 14px",
@@ -409,18 +410,20 @@ const featuredBadge: React.CSSProperties = {
   fontSize: 10,
   fontWeight: 700,
   letterSpacing: 1,
+  zIndex: 2,
 };
 
 const ticketHeader: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 12,
+  flexWrap: "wrap",
 };
 
 const categoryTag: React.CSSProperties = {
-  background: "rgba(139,92,246,0.15)",
-  border: "1px solid rgba(139,92,246,0.3)",
-  color: "#a78bfa",
+  background: "rgba(139,92,246,0.25)",
+  border: "1px solid rgba(139,92,246,0.4)",
+  color: "#c4b5fd",
   padding: "4px 10px",
   borderRadius: 4,
   fontSize: 10,
@@ -430,7 +433,7 @@ const categoryTag: React.CSSProperties = {
 
 const ticketOrg: React.CSSProperties = {
   fontSize: 11,
-  color: "#666",
+  color: "#888",
   fontWeight: 600,
   letterSpacing: 1,
   textTransform: "uppercase" as const,
@@ -442,29 +445,31 @@ const ticketTitle: React.CSSProperties = {
   margin: 0,
   color: "#fff",
   letterSpacing: 0.5,
+  textShadow: "0 2px 8px rgba(0,0,0,0.5)",
 };
 
 const ticketSubtitle: React.CSSProperties = {
   fontSize: 14,
-  color: "#999",
+  color: "#aaa",
   margin: 0,
-  marginTop: -8,
+  marginTop: -6,
 };
 
 const ticketDetails: React.CSSProperties = {
   display: "flex",
-  gap: 32,
-  marginTop: 8,
+  gap: 24,
+  marginTop: 4,
+  flexWrap: "wrap",
 };
 
 const ticketDetail: React.CSSProperties = {
   display: "flex",
-  gap: 12,
+  gap: 10,
   alignItems: "flex-start",
 };
 
 const ticketDetailIcon: React.CSSProperties = {
-  fontSize: 20,
+  fontSize: 18,
   marginTop: 2,
 };
 
@@ -486,7 +491,7 @@ const ticketDetailValue: React.CSSProperties = {
 
 const ticketDetailSub: React.CSSProperties = {
   fontSize: 12,
-  color: "#888",
+  color: "#999",
   marginTop: 2,
 };
 
@@ -496,7 +501,7 @@ const ticketFooter: React.CSSProperties = {
   alignItems: "center",
   marginTop: "auto",
   paddingTop: 16,
-  borderTop: "1px solid rgba(255,255,255,0.08)",
+  borderTop: "1px solid rgba(255,255,255,0.1)",
 };
 
 const priceLabel: React.CSSProperties = {
@@ -517,51 +522,15 @@ const priceValue: React.CSSProperties = {
 };
 
 const getTicketsBtn: React.CSSProperties = {
-  padding: "10px 24px",
+  padding: "12px 28px",
   background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
   color: "#fff",
   fontSize: 13,
   fontWeight: 700,
-  borderRadius: 6,
+  borderRadius: 8,
   letterSpacing: 0.5,
   transition: "all 0.2s",
-};
-
-const ticketStub: React.CSSProperties = {
-  width: 110,
-  background: "rgba(0,0,0,0.4)",
-  borderLeft: "1px dashed rgba(255,255,255,0.15)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexShrink: 0,
-};
-
-const stubContent: React.CSSProperties = {
-  textAlign: "center",
-  transform: "rotate(-90deg)",
-  whiteSpace: "nowrap" as const,
-};
-
-const stubDate: React.CSSProperties = {
-  fontSize: 28,
-  fontWeight: 700,
-  color: "#fff",
-  letterSpacing: 2,
-  marginBottom: 4,
-};
-
-const stubYear: React.CSSProperties = {
-  fontSize: 12,
-  color: "#666",
-  fontWeight: 600,
-  letterSpacing: 2,
-  marginBottom: 8,
-};
-
-const stubIcon: React.CSSProperties = {
-  fontSize: 20,
-  opacity: 0.5,
+  boxShadow: "0 4px 12px rgba(139,92,246,0.3)",
 };
 
 const emptyState: React.CSSProperties = {
