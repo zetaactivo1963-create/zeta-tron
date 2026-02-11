@@ -362,7 +362,7 @@ export default function Compra() {
           </div>
 
           <p style={{ ...text, marginTop: 12, marginBottom: 20 }}>
-            📅 <b>Viernes 6 de marzo 2026 · 7:00 PM</b>
+            📅 <b>Viernes 27 de febrero 2026 · 7:00 PM</b>
             <br />
             📍 Bambalinas Música & Teatro, Aguada PR
           </p>
