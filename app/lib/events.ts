@@ -17,7 +17,7 @@ export const EVENTS: EventItem[] = [
     title: "Zeta'sGrid 2.0 & TrowBack WelcomeNewbi Show",
     date: "Viernes 6 de marzo 2026 · 7:00 PM",
     location: "Bambalinas Música & Teatro, Aguada PR",
-    price: 15, // base price para display
+    price: 15,
     priceNewbies: 15,
     pricePreSale: 20,
     priceRegular: 25,
