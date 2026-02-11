@@ -460,16 +460,6 @@ export default function Compra() {
             ATH Móvil · ${total}
           </button>
 
-          <button
-            style={secondaryBtn}
-            type="button"
-            onClick={() => {
-              setMetodoPago("puerta");
-              setStep("puerta");
-            }}
-          >
-            Pagar en puerta · ${total}
-          </button>
 
           <button type="button" onClick={() => setStep("form")} style={linkBtn}>
             Editar información
