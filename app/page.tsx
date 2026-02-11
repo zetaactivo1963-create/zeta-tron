@@ -13,7 +13,7 @@ const inter = Inter({
   weight: ["400", "500", "600"],
 });
 
-// EVENTOS - Aquí agregas/editas los eventos fácilmente
+// EVENTOS
 const EVENTOS = [
   {
     slug: "zeta-grid-2",
@@ -26,187 +26,436 @@ const EVENTOS = [
     priceFrom: 15,
     organization: "PHI SIGMA ALPHA · ZETA",
     category: "GREEK LIFE",
-    image: "/eventos/zeta-grid-2.jpg", // Pon imagen en /public/eventos/
+    image: "/eventos/zeta-grid-2.jpg",
     featured: true,
   },
-  // Agrega más eventos aquí
 ];
 
 export default function Home() {
   return (
-    <main className={inter.className} style={main}>
-      {/* HEADER */}
-      <header style={header}>
-        <div style={headerContent}>
-          <Link href="/" style={logo}>
-            <div style={logoIcon}>🎫</div>
-            <div>
-              <div className={rajdhani.className} style={logoText}>TICKETEDY</div>
-              <div style={logoSubtext}>Event Ticketing Platform</div>
-            </div>
-          </Link>
-        </div>
-      </header>
-
-      {/* HERO */}
-      <section style={hero}>
-        <div style={heroContent}>
-          <h1 className={rajdhani.className} style={heroTitle}>
-            Your Ticket to <span style={heroAccent}>Unforgettable</span> Events
-          </h1>
-          <p style={heroSubtitle}>
-            Discover and secure your spot at the hottest events in Puerto Rico
-          </p>
-        </div>
-      </section>
-
-      {/* EVENTOS */}
-      <section style={eventsSection}>
-        <div style={container}>
-          <div style={sectionHeader}>
-            <h2 className={rajdhani.className} style={sectionTitle}>
-              UPCOMING EVENTS
-            </h2>
-            <div style={sectionLine}></div>
+    <>
+      <style>{responsiveCSS}</style>
+      <main className={inter.className} style={main}>
+        {/* HEADER */}
+        <header style={header}>
+          <div style={headerContent}>
+            <Link href="/" style={logo}>
+              <div style={logoIcon}>🎫</div>
+              <div>
+                <div className={rajdhani.className} style={logoText}>TICKETEDY</div>
+                <div style={logoSubtext}>Event Ticketing</div>
+              </div>
+            </Link>
           </div>
+        </header>
 
-          {EVENTOS.length === 0 ? (
-            <div style={emptyState}>
-              <div style={emptyIcon}>🎫</div>
-              <p style={emptyText}>No events available at the moment</p>
-              <p style={emptySubtext}>Check back soon for upcoming events!</p>
+        {/* HERO */}
+        <section style={hero}>
+          <div style={heroContent}>
+            <h1 className={rajdhani.className} style={heroTitle}>
+              Your Ticket to <span style={heroAccent}>Unforgettable</span> Events
+            </h1>
+            <p style={heroSubtitle}>
+              Discover and secure your spot at the hottest events in Puerto Rico
+            </p>
+          </div>
+        </section>
+
+        {/* EVENTOS */}
+        <section style={eventsSection}>
+          <div style={container}>
+            <div style={sectionHeader}>
+              <h2 className={rajdhani.className} style={sectionTitle}>
+                UPCOMING EVENTS
+              </h2>
+              <div style={sectionLine}></div>
             </div>
-          ) : (
-            <div style={eventsGrid}>
-              {EVENTOS.map((evento) => (
-                <Link 
-                  key={evento.slug} 
-                  href={`/events/${evento.slug}`}
-                  style={ticketCard}
-                >
-                  {/* Background Image */}
-                  <div style={ticketImageBg}>
-                    <div style={ticketImageOverlay}></div>
-                  </div>
 
-                  {/* Ticket perforations on left */}
-                  <div style={ticketPerforations}>
-                    {[...Array(12)].map((_, i) => (
-                      <div key={i} style={perforation}></div>
-                    ))}
-                  </div>
+            {EVENTOS.length === 0 ? (
+              <div style={emptyState}>
+                <div style={emptyIcon}>🎫</div>
+                <p style={emptyText}>No events available</p>
+                <p style={emptySubtext}>Check back soon!</p>
+              </div>
+            ) : (
+              <div style={eventsGrid}>
+                {EVENTOS.map((evento) => (
+                  <Link 
+                    key={evento.slug} 
+                    href={`/events/${evento.slug}`}
+                    className="ticket-card"
+                  >
+                    {/* Background */}
+                    <div className="ticket-bg"></div>
 
-                  {/* Main ticket content */}
-                  <div style={ticketMain}>
-                    {evento.featured && (
-                      <div style={featuredBadge}>⭐ FEATURED</div>
-                    )}
-                    
-                    <div style={ticketHeader}>
-                      <div style={categoryTag}>{evento.category}</div>
-                      <div style={ticketOrg}>{evento.organization}</div>
+                    {/* Left perforations */}
+                    <div className="ticket-perforations ticket-perforations-left">
+                      {[...Array(10)].map((_, i) => (
+                        <div key={i} className="perforation"></div>
+                      ))}
                     </div>
 
-                    <h3 className={rajdhani.className} style={ticketTitle}>
-                      {evento.title}
-                    </h3>
-                    
-                    {evento.subtitle && (
-                      <p style={ticketSubtitle}>{evento.subtitle}</p>
-                    )}
+                    {/* Content */}
+                    <div className="ticket-main">
+                      {evento.featured && (
+                        <div className="featured-badge">⭐ FEATURED</div>
+                      )}
+                      
+                      <div className="ticket-header">
+                        <div className="category-tag">{evento.category}</div>
+                        <div className="ticket-org">{evento.organization}</div>
+                      </div>
 
-                    <div style={ticketDetails}>
-                      <div style={ticketDetail}>
-                        <span style={ticketDetailIcon}>📅</span>
+                      <h3 className={`${rajdhani.className} ticket-title`}>
+                        {evento.title}
+                      </h3>
+                      
+                      {evento.subtitle && (
+                        <p className="ticket-subtitle">{evento.subtitle}</p>
+                      )}
+
+                      <div className="ticket-details">
+                        <div className="ticket-detail">
+                          <span>📅</span>
+                          <div>
+                            <div className="detail-label">DATE</div>
+                            <div className="detail-value">{evento.date}</div>
+                          </div>
+                        </div>
+
+                        <div className="ticket-detail">
+                          <span>🕒</span>
+                          <div>
+                            <div className="detail-label">TIME</div>
+                            <div className="detail-value">{evento.time}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="ticket-detail">
+                        <span>📍</span>
                         <div>
-                          <div style={ticketDetailLabel}>DATE</div>
-                          <div style={ticketDetailValue}>{evento.date}</div>
+                          <div className="detail-label">VENUE</div>
+                          <div className="detail-value">{evento.location}</div>
+                          <div className="detail-sub">{evento.city}</div>
                         </div>
                       </div>
 
-                      <div style={ticketDetail}>
-                        <span style={ticketDetailIcon}>🕒</span>
+                      <div className="ticket-footer">
                         <div>
-                          <div style={ticketDetailLabel}>TIME</div>
-                          <div style={ticketDetailValue}>{evento.time}</div>
+                          <div className="price-label">FROM</div>
+                          <div className={`${rajdhani.className} price-value`}>
+                            ${evento.priceFrom}
+                          </div>
+                        </div>
+                        <div className="get-tickets-btn">
+                          GET TICKETS →
                         </div>
                       </div>
                     </div>
 
-                    <div style={ticketDetail}>
-                      <span style={ticketDetailIcon}>📍</span>
-                      <div>
-                        <div style={ticketDetailLabel}>VENUE</div>
-                        <div style={ticketDetailValue}>{evento.location}</div>
-                        <div style={ticketDetailSub}>{evento.city}</div>
-                      </div>
+                    {/* Right perforations */}
+                    <div className="ticket-perforations ticket-perforations-right">
+                      {[...Array(10)].map((_, i) => (
+                        <div key={i} className="perforation"></div>
+                      ))}
                     </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
 
-                    <div style={ticketFooter}>
-                      <div>
-                        <div style={priceLabel}>FROM</div>
-                        <div className={rajdhani.className} style={priceValue}>
-                          ${evento.priceFrom}
-                        </div>
-                      </div>
-                      <div style={getTicketsBtn}>
-                        GET TICKETS →
-                      </div>
-                    </div>
+        {/* FOOTER */}
+        <footer style={footer}>
+          <div style={container}>
+            <div style={footerContent}>
+              <div style={footerBrand}>
+                <div style={footerLogo}>
+                  <div style={logoIcon}>🎫</div>
+                  <div className={rajdhani.className} style={footerLogoText}>
+                    TICKETEDY
                   </div>
+                </div>
+                <p style={footerDesc}>
+                  Premium event ticketing platform serving Puerto Rico's vibrant event scene.
+                </p>
+              </div>
 
-                  {/* Perforations on right */}
-                  <div style={{...ticketPerforations, right: 0, left: 'auto'}}>
-                    {[...Array(12)].map((_, i) => (
-                      <div key={i} style={perforation}></div>
-                    ))}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={footer}>
-        <div style={container}>
-          <div style={footerContent}>
-            <div style={footerBrand}>
-              <div style={footerLogo}>
-                <div style={logoIcon}>🎫</div>
-                <div className={rajdhani.className} style={footerLogoText}>
-                  TICKETEDY
+              <div style={footerLinks}>
+                <div style={footerSection}>
+                  <h4 style={footerSectionTitle}>Contact</h4>
+                  <a href="mailto:info@ticketedy.com" style={footerLink}>info@ticketedy.com</a>
                 </div>
               </div>
-              <p style={footerDesc}>
-                Premium event ticketing platform serving Puerto Rico's vibrant event scene.
-              </p>
             </div>
 
-            <div style={footerLinks}>
-              <div style={footerSection}>
-                <h4 style={footerSectionTitle}>Platform</h4>
-                <a href="/admin" style={footerLink}>Admin Portal</a>
-              </div>
-
-              <div style={footerSection}>
-                <h4 style={footerSectionTitle}>Support</h4>
-                <a href="mailto:info@ticketedy.com" style={footerLink}>Contact Us</a>
-              </div>
+            <div style={footerBottom}>
+              <p style={footerCopy}>© 2026 Ticketedy. All rights reserved.</p>
             </div>
           </div>
-
-          <div style={footerBottom}>
-            <p style={footerCopy}>© 2026 Ticketedy. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </main>
+        </footer>
+      </main>
+    </>
   );
 }
 
 /* ==================== STYLES ==================== */
+
+const responsiveCSS = `
+  .ticket-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(20,20,20,0.95) 100%);
+    borderRadius: 16px;
+    overflow: hidden;
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 280px;
+  }
+
+  .ticket-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(139,92,246,0.2);
+  }
+
+  .ticket-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('/eventos/zeta-grid-2.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    z-index: 0;
+  }
+
+  .ticket-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(10,10,10,0.95) 60%, rgba(10,10,10,0.7) 100%);
+  }
+
+  .ticket-perforations {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 1;
+  }
+
+  .ticket-perforations-left { left: 0; }
+  .ticket-perforations-right { right: 0; }
+
+  .perforation {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0a0a0a;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .ticket-main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: 28px 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: -12px;
+    right: 16px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #000;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .ticket-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .category-tag {
+    background: rgba(139,92,246,0.25);
+    border: 1px solid rgba(139,92,246,0.4);
+    color: #c4b5fd;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .ticket-org {
+    font-size: 11px;
+    color: #888;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .ticket-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .ticket-subtitle {
+    font-size: 14px;
+    color: #aaa;
+    margin: 0;
+    margin-top: -6px;
+  }
+
+  .ticket-details {
+    display: flex;
+    gap: 20px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+
+  .ticket-detail {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .ticket-detail span {
+    font-size: 18px;
+    margin-top: 2px;
+  }
+
+  .detail-label {
+    font-size: 9px;
+    color: #666;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .detail-value {
+    font-size: 14px;
+    color: #e0e0e0;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .detail-sub {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  .ticket-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .price-label {
+    font-size: 10px;
+    color: #666;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .price-value {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .get-tickets-btn {
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+  }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .ticket-card {
+      min-height: auto;
+      flex-direction: column;
+    }
+
+    .ticket-perforations {
+      display: none;
+    }
+
+    .ticket-main {
+      padding: 24px 20px;
+      gap: 12px;
+    }
+
+    .featured-badge {
+      top: 16px;
+      right: 16px;
+      font-size: 9px;
+      padding: 5px 10px;
+    }
+
+    .ticket-title {
+      font-size: 22px;
+    }
+
+    .ticket-subtitle {
+      font-size: 13px;
+    }
+
+    .ticket-details {
+      gap: 16px;
+    }
+
+    .detail-value {
+      font-size: 13px;
+    }
+
+    .price-value {
+      font-size: 28px;
+    }
+
+    .get-tickets-btn {
+      padding: 10px 20px;
+      font-size: 12px;
+    }
+  }
+`;
 
 const main: React.CSSProperties = {
   minHeight: "100vh",
@@ -263,7 +512,7 @@ const logoSubtext: React.CSSProperties = {
 };
 
 const hero: React.CSSProperties = {
-  padding: "100px 24px 80px",
+  padding: "80px 24px 60px",
   textAlign: "center",
   background: "linear-gradient(180deg, rgba(139,92,246,0.08) 0%, rgba(10,10,10,0) 100%)",
   borderBottom: "1px solid rgba(255,255,255,0.05)",
@@ -275,7 +524,7 @@ const heroContent: React.CSSProperties = {
 };
 
 const heroTitle: React.CSSProperties = {
-  fontSize: 56,
+  fontSize: 48,
   fontWeight: 700,
   margin: 0,
   marginBottom: 20,
@@ -292,15 +541,15 @@ const heroAccent: React.CSSProperties = {
 };
 
 const heroSubtitle: React.CSSProperties = {
-  fontSize: 18,
+  fontSize: 16,
   color: "#999",
   margin: 0,
   fontWeight: 400,
 };
 
 const eventsSection: React.CSSProperties = {
-  padding: "80px 24px",
-  minHeight: "60vh",
+  padding: "60px 24px",
+  minHeight: "50vh",
 };
 
 const container: React.CSSProperties = {
@@ -309,12 +558,12 @@ const container: React.CSSProperties = {
 };
 
 const sectionHeader: React.CSSProperties = {
-  marginBottom: 48,
+  marginBottom: 40,
   position: "relative",
 };
 
 const sectionTitle: React.CSSProperties = {
-  fontSize: 32,
+  fontSize: 28,
   fontWeight: 700,
   letterSpacing: 2,
   color: "#fff",
@@ -337,205 +586,9 @@ const eventsGrid: React.CSSProperties = {
   margin: "0 auto",
 };
 
-const ticketCard: React.CSSProperties = {
-  position: "relative",
-  background: "linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(20,20,20,0.95) 100%)",
-  borderRadius: 16,
-  overflow: "hidden",
-  display: "flex",
-  textDecoration: "none",
-  color: "inherit",
-  border: "1px solid rgba(255,255,255,0.08)",
-  transition: "all 0.3s ease",
-  cursor: "pointer",
-  minHeight: 280,
-};
-
-const ticketImageBg: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  backgroundImage: "url('/eventos/zeta-grid-2.jpg')",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  opacity: 0.15,
-  zIndex: 0,
-};
-
-const ticketImageOverlay: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  background: "linear-gradient(90deg, rgba(10,10,10,0.95) 60%, rgba(10,10,10,0.7) 100%)",
-};
-
-const ticketPerforations: React.CSSProperties = {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  bottom: 0,
-  width: 20,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-around",
-  alignItems: "center",
-  background: "rgba(0,0,0,0.5)",
-  zIndex: 1,
-};
-
-const perforation: React.CSSProperties = {
-  width: 8,
-  height: 8,
-  borderRadius: "50%",
-  background: "#0a0a0a",
-  border: "1px solid rgba(255,255,255,0.1)",
-};
-
-const ticketMain: React.CSSProperties = {
-  position: "relative",
-  zIndex: 1,
-  flex: 1,
-  padding: "28px 32px 28px 44px",
-  display: "flex",
-  flexDirection: "column",
-  gap: 14,
-};
-
-const featuredBadge: React.CSSProperties = {
-  position: "absolute",
-  top: 20,
-  right: 40,
-  background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
-  color: "#000",
-  padding: "6px 14px",
-  borderRadius: 20,
-  fontSize: 10,
-  fontWeight: 700,
-  letterSpacing: 1,
-  zIndex: 2,
-};
-
-const ticketHeader: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 12,
-  flexWrap: "wrap",
-};
-
-const categoryTag: React.CSSProperties = {
-  background: "rgba(139,92,246,0.25)",
-  border: "1px solid rgba(139,92,246,0.4)",
-  color: "#c4b5fd",
-  padding: "4px 10px",
-  borderRadius: 4,
-  fontSize: 10,
-  fontWeight: 700,
-  letterSpacing: 1,
-};
-
-const ticketOrg: React.CSSProperties = {
-  fontSize: 11,
-  color: "#888",
-  fontWeight: 600,
-  letterSpacing: 1,
-  textTransform: "uppercase" as const,
-};
-
-const ticketTitle: React.CSSProperties = {
-  fontSize: 28,
-  fontWeight: 700,
-  margin: 0,
-  color: "#fff",
-  letterSpacing: 0.5,
-  textShadow: "0 2px 8px rgba(0,0,0,0.5)",
-};
-
-const ticketSubtitle: React.CSSProperties = {
-  fontSize: 14,
-  color: "#aaa",
-  margin: 0,
-  marginTop: -6,
-};
-
-const ticketDetails: React.CSSProperties = {
-  display: "flex",
-  gap: 24,
-  marginTop: 4,
-  flexWrap: "wrap",
-};
-
-const ticketDetail: React.CSSProperties = {
-  display: "flex",
-  gap: 10,
-  alignItems: "flex-start",
-};
-
-const ticketDetailIcon: React.CSSProperties = {
-  fontSize: 18,
-  marginTop: 2,
-};
-
-const ticketDetailLabel: React.CSSProperties = {
-  fontSize: 9,
-  color: "#666",
-  fontWeight: 700,
-  letterSpacing: 1,
-  marginBottom: 4,
-  textTransform: "uppercase" as const,
-};
-
-const ticketDetailValue: React.CSSProperties = {
-  fontSize: 14,
-  color: "#e0e0e0",
-  fontWeight: 600,
-  lineHeight: 1.3,
-};
-
-const ticketDetailSub: React.CSSProperties = {
-  fontSize: 12,
-  color: "#999",
-  marginTop: 2,
-};
-
-const ticketFooter: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginTop: "auto",
-  paddingTop: 16,
-  borderTop: "1px solid rgba(255,255,255,0.1)",
-};
-
-const priceLabel: React.CSSProperties = {
-  fontSize: 10,
-  color: "#666",
-  fontWeight: 700,
-  letterSpacing: 1,
-  marginBottom: 4,
-};
-
-const priceValue: React.CSSProperties = {
-  fontSize: 32,
-  fontWeight: 700,
-  background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-};
-
-const getTicketsBtn: React.CSSProperties = {
-  padding: "12px 28px",
-  background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
-  color: "#fff",
-  fontSize: 13,
-  fontWeight: 700,
-  borderRadius: 8,
-  letterSpacing: 0.5,
-  transition: "all 0.2s",
-  boxShadow: "0 4px 12px rgba(139,92,246,0.3)",
-};
-
 const emptyState: React.CSSProperties = {
   textAlign: "center",
-  padding: "80px 24px",
+  padding: "60px 24px",
 };
 
 const emptyIcon: React.CSSProperties = {
@@ -561,15 +614,15 @@ const emptySubtext: React.CSSProperties = {
 const footer: React.CSSProperties = {
   background: "rgba(15,15,15,0.8)",
   borderTop: "1px solid rgba(255,255,255,0.08)",
-  padding: "60px 24px 24px",
-  marginTop: 80,
+  padding: "40px 24px 24px",
+  marginTop: 60,
 };
 
 const footerContent: React.CSSProperties = {
   display: "grid",
   gridTemplateColumns: "1.5fr 1fr",
-  gap: 60,
-  marginBottom: 40,
+  gap: 40,
+  marginBottom: 30,
   maxWidth: 900,
 };
 
@@ -601,9 +654,9 @@ const footerDesc: React.CSSProperties = {
 };
 
 const footerLinks: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: 32,
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
 };
 
 const footerSection: React.CSSProperties = {
@@ -630,7 +683,7 @@ const footerLink: React.CSSProperties = {
 };
 
 const footerBottom: React.CSSProperties = {
-  paddingTop: 24,
+  paddingTop: 20,
   borderTop: "1px solid rgba(255,255,255,0.08)",
 };
 
