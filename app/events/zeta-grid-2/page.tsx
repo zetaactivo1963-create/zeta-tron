@@ -48,8 +48,7 @@ export default function ZetaGrid2() {
         {/* CONTENIDO */}
         <div style={content}>
           <div style={titleWrapper}>
-            <h1 style={title}>ZETA'S</h1>
-            <h1 style={titleGrid}>GRID 2.0</h1>
+            <h1 style={title}>ZETA'S GRID 2.0</h1>
           </div>
           <h2 style={subtitle}>TrowBack WelcomeNewbie Show</h2>
           <h3 style={org}>PHI SIGMA ALPHA · Capítulo Zeta</h3>
@@ -243,9 +242,9 @@ const priceValue = {
 const openBarBox = {
   marginTop: 8,
   marginBottom: 32,
-  padding: "14px 32px",
+  padding: "8px 20px",
   background: "linear-gradient(135deg, rgba(255, 23, 68, 0.25), rgba(255, 87, 34, 0.25))",
-  borderRadius: 12,
+  borderRadius: 8,
   border: "2px solid #ff5722",
   boxShadow: "0 0 40px rgba(255, 87, 34, 0.5), inset 0 0 20px rgba(255, 23, 68, 0.2)",
   animation: "pulse 2s ease-in-out infinite",
@@ -253,9 +252,9 @@ const openBarBox = {
 
 const openBarText = {
   fontFamily: "'Rajdhani', sans-serif",
-  fontSize: 32,
+  fontSize: 22,
   fontWeight: 700,
-  letterSpacing: 6,
+  letterSpacing: 4,
   color: "#fff",
   textTransform: "uppercase" as const,
   textShadow: "0 0 30px rgba(255, 87, 34, 0.9), 0 0 15px rgba(255, 23, 68, 0.7)",
