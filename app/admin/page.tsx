@@ -198,23 +198,31 @@ export default function AdminPage() {
       }
 
       // WhatsApp SOLO si es aprobado
-      if (status === "aprobado") {
-        const phoneClean = (ticket.phone ?? "").replace(/\D/g, "");
-        const priceValue = getPriceValue(ticket.price_type);
-        const mensaje = encodeURIComponent(
-          `ZETA'S GRID 2.0 🚀\n` +
-            `TrowBack WelcomeNewbi Show\n\n` +
-            `Código: ${ticket.ticket_code}\n` +
-            `Nombre: ${ticket.name}\n` +
-            `Cantidad: ${ticket.qty}\n` +
-            `Tipo: ${formatPriceType(ticket.price_type)}\n\n` +
-            `Presenta este mensaje en la entrada`
-        );
+if (status === "aprobado") {
+  const phoneClean = (ticket.phone ?? "").replace(/\D/g, "");
+  const priceValue = getPriceValue(ticket.price_type);
+  const mensaje = encodeURIComponent(
+    `ZETA'S GRID 2.0 🚀\n` +
+      `Throwback WelcomeNewbies Show\n\n` +
+      `Código: ${ticket.ticket_code}\n` +
+      `Nombre: ${ticket.name}\n` +
+      `Cantidad: ${ticket.qty}\n` +
+      `Tipo: ${formatPriceType(ticket.price_type)}\n\n` +
+      `Presenta este mensaje en la entrada`
+  );
 
-        window.open(`https://wa.me/1${phoneClean}?text=${mensaje}`, '_blank');
-      }
+  // Primero actualiza los datos
+  await fetchTickets();
+  
+  // Luego redirige a WhatsApp
+  setTimeout(() => {
+    window.location.href = `https://wa.me/1${phoneClean}?text=${mensaje}`;
+  }, 300);
+  
+  return; // No ejecutar fetchTickets de nuevo abajo
+}
 
-      await fetchTickets();
+await fetchTickets();
     } finally {
       setLoading(false);
     }
