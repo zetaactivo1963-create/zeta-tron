@@ -211,7 +211,7 @@ export default function AdminPage() {
             `Presenta este mensaje en la entrada`
         );
 
-        window.location.href = `https://wa.me/1${phoneClean}?text=${mensaje}`;
+        window.open(`https://wa.me/1${phoneClean}?text=${mensaje}`, '_blank');
       }
 
       await fetchTickets();
