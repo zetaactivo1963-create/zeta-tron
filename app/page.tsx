@@ -22,10 +22,11 @@ const EVENTOS = [
   title: "98ª Convención Anual",
   subtitle: "Join us for the 98th Annual Convention",
   date: "Oct 9-11, 2026",
-  time: "Todo el día",
+  time: "Varios Horarios",
   venue: "Costa Bahía Convention Center",
   city: "Guayanilla, PR",
-  price: 200,
+  priceFrom: 75,
+  organization: "PHI SIGMA ALPHA",
   image: "/eventos/convencion-98.jpg",
   featured: true,
 },
@@ -42,7 +43,7 @@ const EVENTOS = [
     organization: "PHI SIGMA ALPHA · ZETA",
     category: "GREEK LIFE",
     image: "/eventos/zeta-grid-2.jpg",
-    featured: true,
+    featured: false,
   },
 ];
 
