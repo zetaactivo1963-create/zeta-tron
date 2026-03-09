@@ -15,6 +15,21 @@ const inter = Inter({
 
 // EVENTOS
 const EVENTOS = [
+
+{
+  slug: "sigma-convention-98",
+  org: "PHI SIGMA ALPHA",
+  title: "98ª Convención Anual",
+  subtitle: "Join us for the 98th Annual Convention",
+  date: "Oct 9-11, 2026",
+  time: "Todo el día",
+  venue: "Costa Bahía Convention Center",
+  city: "Guayanilla, PR",
+  price: 200,
+  image: "/eventos/convencion-98.jpg",
+  featured: true,
+}
+  
   {
     slug: "zeta-grid-2",
     title: "Zeta's Grid 2.0",
