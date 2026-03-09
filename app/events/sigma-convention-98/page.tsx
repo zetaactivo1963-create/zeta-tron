@@ -78,60 +78,54 @@ export default function SigmaConvention98() {
               <div style={pricingSection}>
                 <h3 style={pricingTitle}>TARIFAS DE CONVENCIÓN</h3>
                 
-                <div style={priceGrid}>
-                  {/* PRECIO ESPECIAL */}
-                  <div style={priceColumn}>
-                    <div style={priceHeader}>
-                      <div style={priceHeaderTitle}>PRECIO ESPECIAL</div>
-                      <div style={priceHeaderDate}>Hasta 11 de Abril</div>
-                    </div>
-                    
-                    <div style={priceRow}>
-                      <div style={priceType}>Activo - Solo</div>
-                      <div style={priceAmount}>$200</div>
-                    </div>
-                    <div style={priceRow}>
-                      <div style={priceType}>Activo - Pareja</div>
-                      <div style={priceAmount}>$350</div>
-                    </div>
-                    <div style={priceRow}>
-                      <div style={priceType}>Militante - Solo</div>
-                      <div style={priceAmount}>$225</div>
-                    </div>
-                    <div style={priceRow}>
-                      <div style={priceType}>Militante - Pareja</div>
-                      <div style={priceAmount}>$400</div>
-                    </div>
+                <div style={priceNotice}>
+                  💰 Precio Especial hasta 11 de abril - Precio Regular hasta 19 de septiembre
+                </div>
+
+                <div style={priceSimpleGrid}>
+                  <div style={priceCard}>
+                    <div style={priceCardTitle}>ACTIVO - Individual</div>
+                    <div style={priceCardAmount}>$200 → $225</div>
+                    <div style={priceCardLabel}>Especial → Regular</div>
                   </div>
 
-                  {/* PRECIO REGULAR */}
-                  <div style={priceColumn}>
-                    <div style={priceHeader}>
-                      <div style={priceHeaderTitle}>PRECIO REGULAR</div>
-                      <div style={priceHeaderDate}>Hasta 19 de Septiembre</div>
-                    </div>
-                    
-                    <div style={priceRow}>
-                      <div style={priceType}>Activo - Solo</div>
-                      <div style={priceAmount}>$225</div>
-                    </div>
-                    <div style={priceRow}>
-                      <div style={priceType}>Activo - Pareja</div>
-                      <div style={priceAmount}>$450</div>
-                    </div>
-                    <div style={priceRow}>
-                      <div style={priceType}>Militante - Solo</div>
-                      <div style={priceAmount}>$250</div>
-                    </div>
-                    <div style={priceRow}>
-                      <div style={priceType}>Militante - Pareja</div>
-                      <div style={priceAmount}>$500</div>
-                    </div>
+                  <div style={priceCard}>
+                    <div style={priceCardTitle}>ACTIVO - Pareja</div>
+                    <div style={priceCardAmount}>$350 → $450</div>
+                    <div style={priceCardLabel}>Especial → Regular</div>
+                  </div>
+
+                  <div style={priceCard}>
+                    <div style={priceCardTitle}>MILITANTE - Individual</div>
+                    <div style={priceCardAmount}>$225 → $250</div>
+                    <div style={priceCardLabel}>Especial → Regular</div>
+                  </div>
+
+                  <div style={priceCard}>
+                    <div style={priceCardTitle}>MILITANTE - Pareja</div>
+                    <div style={priceCardAmount}>$400 → $500</div>
+                    <div style={priceCardLabel}>Especial → Regular</div>
                   </div>
                 </div>
 
                 <div style={feeNotice}>
                   + 3% cargo por servicio
+                </div>
+              </div>
+
+              {/* HOTEL INFO */}
+              <div style={hotelSection}>
+                <h3 style={hotelTitle}>🏨 HOTEL DE LA CONVENCIÓN</h3>
+                <p style={hotelName}>Costa Bahía Beach Resort</p>
+                <p style={hotelDetail}>Desde $160.00 por noche + impuestos (8% + 11%)</p>
+                <p style={hotelDetail}>Incluye: Desayuno, Restaurant, Piscina, Internet, Self Parking</p>
+                <p style={hotelDetail}>Persona adicional: $20.00 + impuestos por persona/noche</p>
+                <p style={hotelDetail}>(Máximo 4 personas por habitación)</p>
+                
+                <div style={hotelNote}>
+                  📞 Reservaciones: 787-221-6835
+                  <br />
+                  Código: FRATERNIDAD PHI SIGMA ALPHA
                 </div>
               </div>
 
@@ -393,55 +387,93 @@ const pricingTitle: React.CSSProperties = {
   textAlign: "center",
 };
 
-const priceGrid: React.CSSProperties = {
+const priceNotice: React.CSSProperties = {
+  textAlign: "center",
+  fontSize: 14,
+  padding: "12px",
+  background: "rgba(212,175,55,0.15)",
+  borderRadius: 8,
+  marginBottom: 24,
+  border: "1px solid rgba(212,175,55,0.3)",
+};
+
+const priceSimpleGrid: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: 24,
+  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  gap: 16,
   marginBottom: 16,
 };
 
-const priceColumn: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 12,
+const priceCard: React.CSSProperties = {
+  background: "rgba(212,175,55,0.1)",
+  padding: "20px",
+  borderRadius: 10,
+  border: "1px solid rgba(212,175,55,0.3)",
+  textAlign: "center",
 };
 
-const priceHeader: React.CSSProperties = {
-  background: "rgba(212,175,55,0.2)",
-  padding: "12px",
-  borderRadius: 8,
-  marginBottom: 8,
-};
-
-const priceHeaderTitle: React.CSSProperties = {
-  fontSize: 16,
-  fontWeight: 700,
-  color: "#d4af37",
-  marginBottom: 4,
-};
-
-const priceHeaderDate: React.CSSProperties = {
-  fontSize: 12,
+const priceCardTitle: React.CSSProperties = {
+  fontSize: 14,
+  fontWeight: 600,
+  marginBottom: 12,
   opacity: 0.9,
 };
 
-const priceRow: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  padding: "10px 12px",
-  background: "rgba(255,255,255,0.05)",
-  borderRadius: 6,
-};
-
-const priceType: React.CSSProperties = {
-  fontSize: 14,
-  opacity: 0.95,
-};
-
-const priceAmount: React.CSSProperties = {
-  fontSize: 16,
+const priceCardAmount: React.CSSProperties = {
+  fontSize: 22,
   fontWeight: 700,
   color: "#d4af37",
+  marginBottom: 8,
+};
+
+const priceCardLabel: React.CSSProperties = {
+  fontSize: 11,
+  opacity: 0.7,
+  textTransform: "uppercase",
+  letterSpacing: 1,
+};
+
+const hotelSection: React.CSSProperties = {
+  background: "rgba(0,0,0,0.5)",
+  padding: "28px",
+  borderRadius: 12,
+  border: "1px solid rgba(255,255,255,0.15)",
+  marginBottom: 32,
+  maxWidth: 700,
+  width: "100%",
+};
+
+const hotelTitle: React.CSSProperties = {
+  fontSize: 20,
+  fontWeight: 700,
+  marginBottom: 16,
+  color: "#d4af37",
+  letterSpacing: 1,
+  textAlign: "center",
+};
+
+const hotelName: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 600,
+  marginBottom: 12,
+  textAlign: "center",
+};
+
+const hotelDetail: React.CSSProperties = {
+  fontSize: 14,
+  opacity: 0.9,
+  marginBottom: 8,
+  textAlign: "center",
+};
+
+const hotelNote: React.CSSProperties = {
+  marginTop: 16,
+  padding: "12px",
+  background: "rgba(212,175,55,0.1)",
+  borderRadius: 8,
+  fontSize: 13,
+  textAlign: "center",
+  border: "1px solid rgba(212,175,55,0.2)",
 };
 
 const feeNotice: React.CSSProperties = {
@@ -477,4 +509,3 @@ const adminLink: React.CSSProperties = {
   borderBottom: "1px solid rgba(212,175,55,0.3)",
   paddingBottom: 2,
 };
-
