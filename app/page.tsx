@@ -28,7 +28,7 @@ const EVENTOS = [
   price: 200,
   image: "/eventos/convencion-98.jpg",
   featured: true,
-}
+},
   
   {
     slug: "zeta-grid-2",
