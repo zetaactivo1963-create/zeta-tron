@@ -45,6 +45,7 @@ export default function CompraConvencion() {
   
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [capitulo, setCapitulo] = useState("");
@@ -251,6 +252,17 @@ export default function CompraConvencion() {
             required
           />
 
+          <label style={label}>Código postal *</label>
+          <input
+            type="text"
+            placeholder="00000"
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
+            style={input}
+            maxLength={5}
+            required
+          />
+
           <label style={label}>Email *</label>
           <input
             type="email"
@@ -277,14 +289,28 @@ export default function CompraConvencion() {
           />
 
           <label style={label}>Capítulo *</label>
-          <input
-            type="text"
-            placeholder="Tu capítulo"
+          <select
             value={capitulo}
             onChange={(e) => setCapitulo(e.target.value)}
             style={input}
             required
-          />
+          >
+            <option value="">Selecciona tu capítulo</option>
+            <option value="Alpha Activo">Alpha Activo</option>
+            <option value="Alpha Boriquen">Alpha Boriquen</option>
+            <option value="Beta Activo">Beta Activo</option>
+            <option value="Beta Boriquen">Beta Boriquen</option>
+            <option value="Gamma Activo">Gamma Activo</option>
+            <option value="Gamma Boriquen">Gamma Boriquen</option>
+            <option value="Zeta Activo">Zeta Activo</option>
+            <option value="Delta Boriquen">Delta Boriquen</option>
+            <option value="Ypsilon Boriquen">Ypsilon Boriquen</option>
+            <option value="Kappa Boriquen">Kappa Boriquen</option>
+            <option value="Alpha Columbia Boriquen">Alpha Columbia Boriquen</option>
+            <option value="Omega Columbia Boriquen">Omega Columbia Boriquen</option>
+            <option value="Tau Columbia Boriquen">Tau Columbia Boriquen</option>
+            <option value="Pasivo">Pasivo</option>
+          </select>
 
           <label style={label}>Actualmente soy: *</label>
           <div style={{display: "flex", gap: 16, marginBottom: 20}}>
@@ -482,25 +508,27 @@ export default function CompraConvencion() {
           </h2>
 
           <p style={{ ...text, textAlign: "center", fontSize: 18, fontWeight: 600 }}>
-            Envía <span style={{color: "#d4af37"}}>${total.toFixed(2)}</span> a Kenneth Morales
+            Envía <span style={{color: "#d4af37"}}>${total.toFixed(2)}</span> a:
+            <br />
+            <b>phisigmaalpha</b> (ATH Móvil Business)
           </p>
 
           <a
-            href="https://athm-ulink-prod-static-website.s3.amazonaws.com/qr-code?content=74ff061b98d7ab2708799bcd255ebef8f923d29c3248bf5b518b8be08e2055a8"
+          href="https://www.athmovil.com/pay?publicToken=YOUR_BUSINESS_TOKEN"
             target="_blank"
             rel="noopener noreferrer"
             style={athBtn}
           >
-            Pagar por ATH Móvil
+            Pagar por ATH Móvil Business
           </a>
 
           <div style={{ fontSize: 15, opacity: 0.9, marginTop: 10, textAlign: "center" }}>
-            <span
-              onClick={() => {
-                navigator.clipboard.writeText("9392533384");
-                setCopiado(true);
-                setTimeout(() => setCopiado(false), 2000);
-              }}
+              <span
+                onClick={() => {
+                  navigator.clipboard.writeText("phisigmaalpha");
+                  setCopiado(true);
+                  setTimeout(() => setCopiado(false), 2000);
+                }}
               style={{
                 display: "inline-block",
                 marginTop: 10,
@@ -513,7 +541,7 @@ export default function CompraConvencion() {
                 transition: "all 0.3s ease",
               }}
             >
-              (939) 253-3384
+              phisigmaalpha
             </span>
 
             <div
