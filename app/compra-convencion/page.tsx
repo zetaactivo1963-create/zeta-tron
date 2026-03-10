@@ -1,22 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Rajdhani, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
+import Link from "next/link";
 
-const rajdhani = Rajdhani({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 type Step = "form" | "review" | "payment" | "done";
-type Status = "activo" | "militante";
-type Attendees = "solo" | "pareja";
-type PurchaseType = "convencion" | "eventos";
 
 // PRECIOS
 const PRICES = {
@@ -35,9 +26,8 @@ const PRICES = {
   },
 };
 
-const FEE_PERCENT = 0.03; // 3%
+const FEE_PERCENT = 0.03;
 
-// Determinar si estamos en precio especial o regular
 function getCurrentPriceType(): "especial" | "regular" {
   const now = new Date();
   const cutoff = new Date("2026-04-11T23:59:59");
@@ -45,56 +35,43 @@ function getCurrentPriceType(): "especial" | "regular" {
 }
 
 export default function CompraConvencion() {
-  const [copiado, setCopiado] = useState(false);
   const [step, setStep] = useState<Step>("form");
+  const [loading, setLoading] = useState(false);
   
+  // Datos personales
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [capitulo, setCapitulo] = useState("");
-  const [status, setStatus] = useState<Status>("activo");
-  const [attendees, setAttendees] = useState<Attendees>("solo");
   
-  // Nuevo: tipo de compra
-  const [purchaseType, setPurchaseType] = useState<PurchaseType>("convencion");
+  // Tipo de inscripción
+  const [purchaseType, setPurchaseType] = useState<"convencion" | "eventos">("convencion");
+  const [status, setStatus] = useState<"activo" | "militante">("activo");
+  const [attendees, setAttendees] = useState<"solo" | "pareja">("solo");
   
-  // Eventos adicionales (SOLO si compra eventos individuales)
+  // Eventos sociales
   const [gala, setGala] = useState(false);
   const [cena, setCena] = useState(false);
   const [brunch, setBrunch] = useState(false);
   
-  // Hotel
-  const [hotelReservation, setHotelReservation] = useState<"si" | "no" | "">(""); 
-  
-  // Menores
+  // Hotel y otros
+  const [hotelReservation, setHotelReservation] = useState<"si" | "no" | "">("");
   const [totalPeople, setTotalPeople] = useState("");
   const [minors, setMinors] = useState("");
   
+  // Pago
+  const [paymentMethod, setPaymentMethod] = useState<"ath" | "tarjeta" | "efectivo" | "paypal" | "cheque">("ath");
   const [receipt, setReceipt] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const [ticketCode, setTicketCode] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"ath" | "stripe">("ath");
-  
-  // Alert state
-  const [alert, setAlert] = useState<{show: boolean, message: string}>({show: false, message: ""});
 
-  // Precio automático según fecha
   const priceType = getCurrentPriceType();
 
-  function showAlert(message: string) {
-    setAlert({show: true, message});
-    setTimeout(() => setAlert({show: false, message: ""}), 3000);
-  }
-
-  // CÁLCULOS
   const subtotal = (() => {
     if (purchaseType === "convencion") {
-      // Solo paquete de convención
       return PRICES[priceType][status][attendees];
     } else {
-      // Solo eventos individuales
       let total = 0;
       if (gala) total += PRICES.eventos.gala[attendees];
       if (cena) total += PRICES.eventos.cena[attendees];
@@ -110,32 +87,32 @@ export default function CompraConvencion() {
     e.preventDefault();
 
     if (name.trim().length < 3) {
-      showAlert("Por favor escribe tu nombre completo");
+      alert("Por favor escribe tu nombre completo");
       return;
     }
 
     if (!email.includes("@")) {
-      showAlert("Email inválido");
+      alert("Email inválido");
       return;
     }
 
     if (phone.length !== 10) {
-      showAlert("El teléfono debe tener 10 dígitos");
+      alert("El teléfono debe tener 10 dígitos");
       return;
     }
 
     if (!capitulo) {
-      showAlert("Debes seleccionar tu capítulo");
+      alert("Debes seleccionar tu capítulo");
       return;
     }
 
     if (!hotelReservation) {
-      showAlert("Indica si reservaste habitación en el hotel");
+      alert("Indica si reservaste habitación");
       return;
     }
 
     if (purchaseType === "eventos" && !gala && !cena && !brunch) {
-      showAlert("Debes seleccionar al menos un evento");
+      alert("Debes seleccionar al menos un evento");
       return;
     }
 
@@ -144,7 +121,7 @@ export default function CompraConvencion() {
 
   async function confirmarPago() {
     if (paymentMethod === "ath" && !receipt) {
-      showAlert("Debes subir la evidencia de pago ATH Móvil");
+      alert("Debes subir la evidencia de pago ATH Móvil");
       return;
     }
 
@@ -177,13 +154,12 @@ export default function CompraConvencion() {
         event_slug: "sigma-convention-98",
         name,
         phone,
-        email: email,
+        email,
         qty: attendees === "solo" ? 1 : 2,
         payment_method: paymentMethod,
-        status: paymentMethod === "stripe" ? "aprobado" : "pendiente",
+        status: "pendiente",
         proof_url: proofUrl,
         
-        // Datos específicos convención
         address: `${address}, ${zipCode}`,
         capitulo,
         member_status: status,
@@ -196,10 +172,9 @@ export default function CompraConvencion() {
         total_people: totalPeople ? parseInt(totalPeople) : null,
         minors_count: minors ? parseInt(minors) : null,
         
-        // Montos
-        subtotal: subtotal,
-        fee: fee,
-        total: total,
+        subtotal,
+        fee,
+        total,
       });
 
       if (insertError) throw insertError;
@@ -208,7 +183,7 @@ export default function CompraConvencion() {
       setStep("done");
     } catch (err) {
       console.error(err);
-      showAlert("Error procesando el pago");
+      alert("Error procesando la inscripción");
     } finally {
       setLoading(false);
     }
@@ -216,550 +191,581 @@ export default function CompraConvencion() {
 
   return (
     <main style={main} className={inter.className}>
-      {/* ALERT */}
-      {alert.show && (
-        <div style={alertBox}>
-          <span style={alertIcon}>⚠️</span>
-          <span>{alert.message}</span>
+      {loading && (
+        <div style={loadingOverlay}>
+          <div style={spinner} />
+          <p>Procesando inscripción...</p>
         </div>
       )}
 
       {/* DONE */}
       {step === "done" && (
-        <div style={{ ...card, textAlign: "center" }}>
-          <h2 className={rajdhani.className} style={title}>
-            ¡INSCRIPCIÓN RECIBIDA!
-          </h2>
+        <div style={container}>
+          <div style={card}>
+            <div style={successIcon}>✅</div>
+            <h1 style={successTitle}>¡Inscripción Recibida!</h1>
+            <p style={successText}>
+              Tu código de confirmación es:
+            </p>
+            <div style={codeBox}>{ticketCode}</div>
 
-          <p style={text}>
-            Código de confirmación:
-            <br />
-            <b style={{ fontSize: 20, color: "#d4af37" }}>{ticketCode}</b>
-          </p>
+            <div style={summaryBox}>
+              <h3 style={summaryTitle}>Resumen de tu inscripción</h3>
+              <div style={summaryRow}>
+                <span>Nombre:</span>
+                <strong>{name}</strong>
+              </div>
+              <div style={summaryRow}>
+                <span>Email:</span>
+                <strong>{email}</strong>
+              </div>
+              <div style={summaryRow}>
+                <span>Capítulo:</span>
+                <strong>{capitulo}</strong>
+              </div>
+              {purchaseType === "convencion" ? (
+                <div style={summaryRow}>
+                  <span>Paquete:</span>
+                  <strong>{status.toUpperCase()} - {attendees === "solo" ? "Individual" : "Pareja"}</strong>
+                </div>
+              ) : (
+                <div style={summaryRow}>
+                  <span>Eventos:</span>
+                  <strong>
+                    {gala && "Gala "}
+                    {cena && "Cena "}
+                    {brunch && "Brunch"}
+                  </strong>
+                </div>
+              )}
+              <div style={{...summaryRow, marginTop: 16, paddingTop: 16, borderTop: "2px solid #dee2e6"}}>
+                <span style={{fontSize: 18}}>Total pagado:</span>
+                <strong style={{fontSize: 20, color: "#0056b3"}}>${total.toFixed(2)}</strong>
+              </div>
+            </div>
 
-          <div style={summaryBox}>
-            <p><b>Nombre:</b> {name}</p>
-            <p><b>Email:</b> {email}</p>
-            <p><b>Capítulo:</b> {capitulo}</p>
-            
-            {purchaseType === "convencion" ? (
-              <>
-                <p><b>Paquete:</b> {status.toUpperCase()} - {attendees === "solo" ? "Individual" : "Pareja"}</p>
-                <p><b>Precio:</b> {priceType === "especial" ? "Especial" : "Regular"}</p>
-              </>
-            ) : (
-              <>
-                <p><b>Eventos seleccionados:</b></p>
-                {gala && <p>✓ Gala Viernes</p>}
-                {cena && <p>✓ Cena Sábado</p>}
-                {brunch && <p>✓ Brunch Domingo</p>}
-              </>
-            )}
-            
-            <p><b>Hotel:</b> {hotelReservation === "si" ? "Sí reservó" : "No reservó"}</p>
-            
-            <hr style={{border: "1px solid rgba(212,175,55,0.3)", margin: "12px 0"}} />
-            <p style={{fontSize: 16}}><b>Total pagado:</b> <span style={{color: "#d4af37"}}>${total.toFixed(2)}</span></p>
+            <p style={infoText}>
+              Recibirás confirmación por email una vez sea aprobado tu pago.
+            </p>
+
+            <Link href="/events/sigma-convention-98">
+              <button style={primaryButton}>Volver al evento</button>
+            </Link>
           </div>
-
-          <p style={{...text, fontSize: 13, marginTop: 16}}>
-            Recibirás confirmación por email una vez sea {paymentMethod === "ath" ? "aprobado tu pago" : "procesado el pago"}.
-          </p>
-
-          <button
-            style={primaryBtn}
-            onClick={() => (window.location.href = "/events/sigma-convention-98")}
-          >
-            Volver al evento
-          </button>
         </div>
       )}
 
       {/* FORM */}
       {step === "form" && (
-        <form onSubmit={goToReview} style={card}>
-          <h1 className={rajdhani.className} style={title}>
-            98ª Convención Anual ΦΣΑ
-          </h1>
-
-          <p style={text}>
-            9-11 de octubre 2026
-            <br />
-            Costa Bahía Convention Center, Guayanilla PR
-          </p>
-
-          {/* TIPO DE COMPRA */}
-          <label style={label}>¿Qué deseas comprar? *</label>
-          <div style={{display: "flex", flexDirection: "column", gap: 12, marginBottom: 24}}>
-            <label style={radioLabelBlock}>
-              <input
-                type="radio"
-                checked={purchaseType === "convencion"}
-                onChange={() => setPurchaseType("convencion")}
-              />
-              <div style={{marginLeft: 12}}>
-                <div style={{fontWeight: 600}}>Paquete de Convención</div>
-                <div style={{fontSize: 13, opacity: 0.8}}>Acceso completo a los 3 días de convención</div>
-              </div>
-            </label>
-            <label style={radioLabelBlock}>
-              <input
-                type="radio"
-                checked={purchaseType === "eventos"}
-                onChange={() => setPurchaseType("eventos")}
-              />
-              <div style={{marginLeft: 12}}>
-                <div style={{fontWeight: 600}}>Solo eventos sociales</div>
-                <div style={{fontSize: 13, opacity: 0.8}}>Gala, Cena y/o Brunch (sin convención)</div>
-              </div>
-            </label>
-          </div>
-
-          <label style={label}>Nombre completo *</label>
-          <input
-            type="text"
-            placeholder="Tu nombre completo"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={input}
-            required
-          />
-
-          <label style={label}>Dirección postal *</label>
-          <input
-            type="text"
-            placeholder="Dirección completa"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            style={input}
-            required
-          />
-
-          <label style={label}>Código postal *</label>
-          <input
-            type="text"
-            placeholder="00000"
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value.replace(/\D/g, ""))}
-            style={input}
-            maxLength={5}
-            required
-          />
-
-          <label style={label}>Email *</label>
-          <input
-            type="email"
-            placeholder="tu@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={input}
-            required
-          />
-
-          <label style={label}>Teléfono *</label>
-          <input
-            type="tel"
-            placeholder="Teléfono (10 dígitos)"
-            value={phone}
-            inputMode="numeric"
-            maxLength={10}
-            onChange={(e) => {
-              const onlyNums = e.target.value.replace(/\D/g, "");
-              setPhone(onlyNums);
-            }}
-            style={input}
-            required
-          />
-
-          <label style={label}>Capítulo *</label>
-          <select
-            value={capitulo}
-            onChange={(e) => setCapitulo(e.target.value)}
-            style={input}
-            required
-          >
-            <option value="">Selecciona tu capítulo</option>
-            <option value="Alpha Activo">Alpha Activo</option>
-            <option value="Alpha Boriquen">Alpha Boriquen</option>
-            <option value="Beta Activo">Beta Activo</option>
-            <option value="Beta Boriquen">Beta Boriquen</option>
-            <option value="Gamma Activo">Gamma Activo</option>
-            <option value="Gamma Boriquen">Gamma Boriquen</option>
-            <option value="Zeta Activo">Zeta Activo</option>
-            <option value="Delta Boriquen">Delta Boriquen</option>
-            <option value="Ypsilon Boriquen">Ypsilon Boriquen</option>
-            <option value="Kappa Boriquen">Kappa Boriquen</option>
-            <option value="Alpha Columbia Boriquen">Alpha Columbia Boriquen</option>
-            <option value="Omega Columbia Boriquen">Omega Columbia Boriquen</option>
-            <option value="Tau Columbia Boriquen">Tau Columbia Boriquen</option>
-            <option value="Pasivo">Pasivo</option>
-          </select>
-
-          <label style={label}>Actualmente soy: *</label>
-          <div style={{display: "flex", gap: 16, marginBottom: 20}}>
-            <label style={radioLabel}>
-              <input
-                type="radio"
-                checked={status === "activo"}
-                onChange={() => setStatus("activo")}
-              />
-              <span style={{marginLeft: 8}}>Activo</span>
-            </label>
-            <label style={radioLabel}>
-              <input
-                type="radio"
-                checked={status === "militante"}
-                onChange={() => setStatus("militante")}
-              />
-              <span style={{marginLeft: 8}}>Militante</span>
-            </label>
-          </div>
-
-          <label style={label}>Asistencia: *</label>
-          <div style={{display: "flex", gap: 16, marginBottom: 20}}>
-            <label style={radioLabel}>
-              <input
-                type="radio"
-                checked={attendees === "solo"}
-                onChange={() => setAttendees("solo")}
-              />
-              <span style={{marginLeft: 8}}>Individual</span>
-            </label>
-            <label style={radioLabel}>
-              <input
-                type="radio"
-                checked={attendees === "pareja"}
-                onChange={() => setAttendees("pareja")}
-              />
-              <span style={{marginLeft: 8}}>Pareja</span>
-            </label>
-          </div>
-
-          {purchaseType === "convencion" && (
-            <div style={packageBox}>
-              <div style={{fontWeight: 700, marginBottom: 8, color: "#d4af37"}}>
-                Paquete seleccionado:
-              </div>
-              <div style={{fontSize: 18, fontWeight: 600}}>
-                {status.toUpperCase()} - {attendees === "solo" ? "Individual" : "Pareja"}
-              </div>
-              <div style={{fontSize: 14, opacity: 0.8, marginTop: 4}}>
-                Precio {priceType === "especial" ? "Especial" : "Regular"}
-              </div>
-              <div style={{fontSize: 24, fontWeight: 700, color: "#d4af37", marginTop: 8}}>
-                ${PRICES[priceType][status][attendees]}
-              </div>
+        <div style={container}>
+          <div style={formCard}>
+            <div style={formHeader}>
+              <h1 style={formTitle}>Inscripción Convención 98</h1>
+              <p style={formSubtitle}>9-11 de octubre 2026 • Costa Bahía, Guayanilla PR</p>
             </div>
-          )}
 
-          {purchaseType === "eventos" && (
-            <>
-              <label style={{...label, marginTop: 0, display: "block"}}>
-                Selecciona los eventos: *
-              </label>
-              
-              <label style={checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={gala}
-                  onChange={(e) => setGala(e.target.checked)}
-                />
-                <span style={{marginLeft: 10}}>
-                  Gala - Viernes PM 
-                  <span style={{color: "#d4af37", marginLeft: 8, fontWeight: 700}}>
-                    ${PRICES.eventos.gala[attendees]}
-                  </span>
-                </span>
-              </label>
+            <form onSubmit={goToReview}>
+              {/* TIPO DE INSCRIPCIÓN */}
+              <div style={section}>
+                <h2 style={sectionTitle}>1. Tipo de Inscripción</h2>
+                
+                <div style={radioGroup}>
+                  <label style={radioCard}>
+                    <input
+                      type="radio"
+                      checked={purchaseType === "convencion"}
+                      onChange={() => setPurchaseType("convencion")}
+                      style={radio}
+                    />
+                    <div>
+                      <div style={radioTitle}>Paquete de Convención</div>
+                      <div style={radioDesc}>Acceso completo a los 3 días de convención</div>
+                    </div>
+                  </label>
 
-              <label style={checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={cena}
-                  onChange={(e) => setCena(e.target.checked)}
-                />
-                <span style={{marginLeft: 10}}>
-                  Cena - Sábado PM
-                  <span style={{color: "#d4af37", marginLeft: 8, fontWeight: 700}}>
-                    ${PRICES.eventos.cena[attendees]}
-                  </span>
-                </span>
-              </label>
+                  <label style={radioCard}>
+                    <input
+                      type="radio"
+                      checked={purchaseType === "eventos"}
+                      onChange={() => setPurchaseType("eventos")}
+                      style={radio}
+                    />
+                    <div>
+                      <div style={radioTitle}>Solo Eventos Sociales</div>
+                      <div style={radioDesc}>Gala, Cena y/o Brunch (sin convención)</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
 
-              <label style={checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={brunch}
-                  onChange={(e) => setBrunch(e.target.checked)}
-                />
-                <span style={{marginLeft: 10}}>
-                  Brunch - Domingo AM
-                  <span style={{color: "#d4af37", marginLeft: 8, fontWeight: 700}}>
-                    ${PRICES.eventos.brunch[attendees]}
-                  </span>
-                </span>
-              </label>
-            </>
-          )}
+              {/* DATOS PERSONALES */}
+              <div style={section}>
+                <h2 style={sectionTitle}>2. Información del Participante</h2>
+                
+                <div style={formGroup}>
+                  <label style={label}>Nombre completo *</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    style={input}
+                    placeholder="Nombre y apellidos"
+                    required
+                  />
+                </div>
 
-          {/* MENORES */}
-          <label style={label}>Cantidad de personas en su taquilla *</label>
-          <input
-            type="number"
-            placeholder="Incluyéndolo a usted y menores de edad"
-            value={totalPeople}
-            onChange={(e) => setTotalPeople(e.target.value)}
-            style={input}
-            min="1"
-            required
-          />
+                <div style={formGrid}>
+                  <div style={formGroup}>
+                    <label style={label}>Email *</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      style={input}
+                      placeholder="tu@email.com"
+                      required
+                    />
+                  </div>
 
-          <label style={label}>¿Cuántos menores estarán en su taquilla?</label>
-          <input
-            type="number"
-            placeholder="0"
-            value={minors}
-            onChange={(e) => setMinors(e.target.value)}
-            style={input}
-            min="0"
-          />
+                  <div style={formGroup}>
+                    <label style={label}>Teléfono *</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                      style={input}
+                      placeholder="7871234567"
+                      maxLength={10}
+                      required
+                    />
+                  </div>
+                </div>
 
-          {/* HOTEL */}
-          <label style={label}>¿Reservó o reservará habitación en el hotel de la convención? *</label>
-          <div style={{display: "flex", gap: 16, marginBottom: 20}}>
-            <label style={radioLabel}>
-              <input
-                type="radio"
-                checked={hotelReservation === "si"}
-                onChange={() => setHotelReservation("si")}
-              />
-              <span style={{marginLeft: 8}}>Sí</span>
-            </label>
-            <label style={radioLabel}>
-              <input
-                type="radio"
-                checked={hotelReservation === "no"}
-                onChange={() => setHotelReservation("no")}
-              />
-              <span style={{marginLeft: 8}}>No</span>
-            </label>
+                <div style={formGroup}>
+                  <label style={label}>Dirección Postal *</label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    style={input}
+                    placeholder="Calle, pueblo, estado"
+                    required
+                  />
+                </div>
+
+                <div style={formGroup}>
+                  <label style={label}>Código Postal *</label>
+                  <input
+                    type="text"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value.replace(/\D/g, ""))}
+                    style={{...input, maxWidth: 200}}
+                    placeholder="00000"
+                    maxLength={5}
+                    required
+                  />
+                </div>
+
+                <div style={formGroup}>
+                  <label style={label}>Capítulo *</label>
+                  <select
+                    value={capitulo}
+                    onChange={(e) => setCapitulo(e.target.value)}
+                    style={input}
+                    required
+                  >
+                    <option value="">Selecciona tu capítulo</option>
+                    <option value="Alpha Activo">Alpha Activo</option>
+                    <option value="Alpha Boriquen">Alpha Boriquen</option>
+                    <option value="Beta Activo">Beta Activo</option>
+                    <option value="Beta Boriquen">Beta Boriquen</option>
+                    <option value="Gamma Activo">Gamma Activo</option>
+                    <option value="Gamma Boriquen">Gamma Boriquen</option>
+                    <option value="Zeta Activo">Zeta Activo</option>
+                    <option value="Delta Boriquen">Delta Boriquen</option>
+                    <option value="Ypsilon Boriquen">Ypsilon Boriquen</option>
+                    <option value="Kappa Boriquen">Kappa Boriquen</option>
+                    <option value="Alpha Columbia Boriquen">Alpha Columbia Boriquen</option>
+                    <option value="Omega Columbia Boriquen">Omega Columbia Boriquen</option>
+                    <option value="Tau Columbia Boriquen">Tau Columbia Boriquen</option>
+                    <option value="Pasivo">Pasivo</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* DETALLES DE INSCRIPCIÓN */}
+              <div style={section}>
+                <h2 style={sectionTitle}>3. Detalles de Inscripción</h2>
+
+                <div style={formGrid}>
+                  <div style={formGroup}>
+                    <label style={label}>Actualmente soy: *</label>
+                    <div style={{display: "flex", gap: 16}}>
+                      <label style={checkLabel}>
+                        <input
+                          type="radio"
+                          checked={status === "activo"}
+                          onChange={() => setStatus("activo")}
+                        />
+                        <span>Activo</span>
+                      </label>
+                      <label style={checkLabel}>
+                        <input
+                          type="radio"
+                          checked={status === "militante"}
+                          onChange={() => setStatus("militante")}
+                        />
+                        <span>Militante</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div style={formGroup}>
+                    <label style={label}>Asistencia: *</label>
+                    <div style={{display: "flex", gap: 16}}>
+                      <label style={checkLabel}>
+                        <input
+                          type="radio"
+                          checked={attendees === "solo"}
+                          onChange={() => setAttendees("solo")}
+                        />
+                        <span>Individual</span>
+                      </label>
+                      <label style={checkLabel}>
+                        <input
+                          type="radio"
+                          checked={attendees === "pareja"}
+                          onChange={() => setAttendees("pareja")}
+                        />
+                        <span>Pareja</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {purchaseType === "convencion" && (
+                  <div style={priceBox}>
+                    <div style={priceBoxTitle}>Paquete seleccionado</div>
+                    <div style={priceBoxCategory}>{status.toUpperCase()} - {attendees === "solo" ? "Individual" : "Pareja"}</div>
+                    <div style={priceBoxType}>Precio {priceType === "especial" ? "Especial" : "Regular"}</div>
+                    <div style={priceBoxAmount}>${PRICES[priceType][status][attendees]}</div>
+                  </div>
+                )}
+
+                {purchaseType === "eventos" && (
+                  <div style={formGroup}>
+                    <label style={label}>Selecciona los eventos: *</label>
+                    <div style={{display: "flex", flexDirection: "column", gap: 12}}>
+                      <label style={checkboxCard}>
+                        <input
+                          type="checkbox"
+                          checked={gala}
+                          onChange={(e) => setGala(e.target.checked)}
+                        />
+                        <div style={{flex: 1}}>
+                          <strong>Gala - Viernes PM</strong>
+                          <div style={{fontSize: 14, opacity: 0.7}}>Individual: $125 • Pareja: $190</div>
+                        </div>
+                      </label>
+
+                      <label style={checkboxCard}>
+                        <input
+                          type="checkbox"
+                          checked={cena}
+                          onChange={(e) => setCena(e.target.checked)}
+                        />
+                        <div style={{flex: 1}}>
+                          <strong>Cena - Sábado PM</strong>
+                          <div style={{fontSize: 14, opacity: 0.7}}>Individual: $90 • Pareja: $175</div>
+                        </div>
+                      </label>
+
+                      <label style={checkboxCard}>
+                        <input
+                          type="checkbox"
+                          checked={brunch}
+                          onChange={(e) => setBrunch(e.target.checked)}
+                        />
+                        <div style={{flex: 1}}>
+                          <strong>Brunch - Domingo AM</strong>
+                          <div style={{fontSize: 14, opacity: 0.7}}>Individual: $75 • Pareja: $140</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                <div style={formGrid}>
+                  <div style={formGroup}>
+                    <label style={label}>Cantidad de personas en su taquilla *</label>
+                    <input
+                      type="number"
+                      value={totalPeople}
+                      onChange={(e) => setTotalPeople(e.target.value)}
+                      style={input}
+                      placeholder="Incluyendo menores"
+                      min="1"
+                      required
+                    />
+                  </div>
+
+                  <div style={formGroup}>
+                    <label style={label}>¿Cuántos menores de edad?</label>
+                    <input
+                      type="number"
+                      value={minors}
+                      onChange={(e) => setMinors(e.target.value)}
+                      style={input}
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div style={formGroup}>
+                  <label style={label}>¿Reservó habitación en el hotel? *</label>
+                  <div style={{display: "flex", gap: 16}}>
+                    <label style={checkLabel}>
+                      <input
+                        type="radio"
+                        checked={hotelReservation === "si"}
+                        onChange={() => setHotelReservation("si")}
+                      />
+                      <span>Sí</span>
+                    </label>
+                    <label style={checkLabel}>
+                      <input
+                        type="radio"
+                        checked={hotelReservation === "no"}
+                        onChange={() => setHotelReservation("no")}
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* TOTAL */}
+              <div style={totalSection}>
+                <div style={totalRow}>
+                  <span>Subtotal:</span>
+                  <span>${subtotal}</span>
+                </div>
+                <div style={totalRow}>
+                  <span>Cargo por servicio (3%):</span>
+                  <span>${fee.toFixed(2)}</span>
+                </div>
+                <div style={{...totalRow, ...totalFinal}}>
+                  <span>TOTAL A PAGAR:</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <button type="submit" style={primaryButton}>
+                REVISAR INSCRIPCIÓN
+              </button>
+            </form>
           </div>
-
-          <div style={totalBox}>
-            <div style={totalRow}>
-              <span>Subtotal:</span>
-              <span>${subtotal}</span>
-            </div>
-            <div style={totalRow}>
-              <span>Cargo por servicio (3%):</span>
-              <span>${fee.toFixed(2)}</span>
-            </div>
-            <div style={{...totalRow, fontSize: 20, fontWeight: 700, color: "#d4af37", marginTop: 8, paddingTop: 12, borderTop: "1px solid rgba(212,175,55,0.3)"}}>
-              <span>TOTAL:</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <p style={requiredNote}>* Campo obligatorio</p>
-
-          <button type="submit" style={primaryBtn}>
-            REVISAR INSCRIPCIÓN
-          </button>
-        </form>
+        </div>
       )}
 
       {/* REVIEW */}
       {step === "review" && (
-        <div style={card}>
-          <h2 className={rajdhani.className} style={subtitle}>
-            CONFIRMA TU INFORMACIÓN
-          </h2>
+        <div style={container}>
+          <div style={formCard}>
+            <h1 style={formTitle}>Confirma tu Información</h1>
 
-          <div style={summaryBox}>
-            <p><b>Nombre:</b> {name}</p>
-            <p><b>Email:</b> {email}</p>
-            <p><b>Teléfono:</b> {phone}</p>
-            <p><b>Dirección:</b> {address}, {zipCode}</p>
-            <p><b>Capítulo:</b> {capitulo}</p>
-            <p><b>Status:</b> {status.toUpperCase()}</p>
-            
-            {purchaseType === "convencion" ? (
-              <>
-                <p><b>Paquete:</b> {priceType === "especial" ? "ESPECIAL" : "REGULAR"} - {attendees === "solo" ? "Individual" : "Pareja"}</p>
-                <p><b>Precio:</b> ${PRICES[priceType][status][attendees]}</p>
-              </>
-            ) : (
-              <>
-                <hr style={{border: "1px solid rgba(212,175,55,0.2)", margin: "12px 0"}} />
-                <p style={{fontWeight: 700, marginBottom: 8}}>Eventos seleccionados:</p>
-                {gala && <p>✓ Gala Viernes PM - ${PRICES.eventos.gala[attendees]}</p>}
-                {cena && <p>✓ Cena Sábado PM - ${PRICES.eventos.cena[attendees]}</p>}
-                {brunch && <p>✓ Brunch Domingo AM - ${PRICES.eventos.brunch[attendees]}</p>}
-              </>
-            )}
-            
-            <p><b>Personas en taquilla:</b> {totalPeople}</p>
-            {minors && <p><b>Menores:</b> {minors}</p>}
-            <p><b>Hotel:</b> {hotelReservation === "si" ? "Sí reservó" : "No reservó"}</p>
+            <div style={reviewSection}>
+              <h3 style={reviewTitle}>Datos Personales</h3>
+              <div style={reviewGrid}>
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Nombre:</span>
+                  <span style={reviewValue}>{name}</span>
+                </div>
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Email:</span>
+                  <span style={reviewValue}>{email}</span>
+                </div>
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Teléfono:</span>
+                  <span style={reviewValue}>{phone}</span>
+                </div>
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Dirección:</span>
+                  <span style={reviewValue}>{address}, {zipCode}</span>
+                </div>
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Capítulo:</span>
+                  <span style={reviewValue}>{capitulo}</span>
+                </div>
+              </div>
+            </div>
 
-            <hr style={{border: "1px solid rgba(212,175,55,0.3)", margin: "12px 0"}} />
-            <p><b>Subtotal:</b> ${subtotal}</p>
-            <p><b>Cargo por servicio (3%):</b> ${fee.toFixed(2)}</p>
-            <p style={{fontSize: 18, fontWeight: 700, color: "#d4af37"}}>
-              <b>TOTAL A PAGAR:</b> ${total.toFixed(2)}
-            </p>
+            <div style={reviewSection}>
+              <h3 style={reviewTitle}>Inscripción</h3>
+              <div style={reviewGrid}>
+                {purchaseType === "convencion" ? (
+                  <>
+                    <div style={reviewItem}>
+                      <span style={reviewLabel}>Paquete:</span>
+                      <span style={reviewValue}>{status.toUpperCase()} - {attendees === "solo" ? "Individual" : "Pareja"}</span>
+                    </div>
+                    <div style={reviewItem}>
+                      <span style={reviewLabel}>Precio:</span>
+                      <span style={reviewValue}>{priceType === "especial" ? "Especial" : "Regular"} - ${PRICES[priceType][status][attendees]}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div style={reviewItem}>
+                    <span style={reviewLabel}>Eventos:</span>
+                    <span style={reviewValue}>
+                      {gala && "Gala "}
+                      {cena && "Cena "}
+                      {brunch && "Brunch"}
+                    </span>
+                  </div>
+                )}
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Personas:</span>
+                  <span style={reviewValue}>{totalPeople} {minors && `(${minors} menores)`}</span>
+                </div>
+                <div style={reviewItem}>
+                  <span style={reviewLabel}>Hotel:</span>
+                  <span style={reviewValue}>{hotelReservation === "si" ? "Sí reservó" : "No reservó"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={totalSection}>
+              <div style={totalRow}>
+                <span>Subtotal:</span>
+                <span>${subtotal}</span>
+              </div>
+              <div style={totalRow}>
+                <span>Cargo por servicio (3%):</span>
+                <span>${fee.toFixed(2)}</span>
+              </div>
+              <div style={{...totalRow, ...totalFinal}}>
+                <span>TOTAL A PAGAR:</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <button style={primaryButton} onClick={() => setStep("payment")}>
+              CONTINUAR AL PAGO
+            </button>
+            <button style={secondaryButton} onClick={() => setStep("form")}>
+              Editar Información
+            </button>
           </div>
-
-          <button
-            style={primaryBtn}
-            type="button"
-            onClick={() => setStep("payment")}
-          >
-            CONTINUAR AL PAGO
-          </button>
-
-          <button type="button" onClick={() => setStep("form")} style={linkBtn}>
-            Editar información
-          </button>
         </div>
       )}
 
       {/* PAYMENT */}
       {step === "payment" && (
-        <div style={card}>
-          <h2 className={rajdhani.className} style={subtitle}>
-            MÉTODO DE PAGO
-          </h2>
+        <div style={container}>
+          <div style={formCard}>
+            <h1 style={formTitle}>Método de Pago</h1>
+            <p style={{textAlign: "center", fontSize: 18, marginBottom: 32}}>
+              Total a pagar: <strong style={{color: "#0056b3", fontSize: 24}}>${total.toFixed(2)}</strong>
+            </p>
 
-          <p style={{ ...text, textAlign: "center", fontSize: 18, fontWeight: 600 }}>
-            Total: <span style={{color: "#d4af37"}}>${total.toFixed(2)}</span>
-          </p>
+            <div style={section}>
+              <h3 style={sectionTitle}>Selecciona tu método de pago</h3>
 
-          {/* Selector de método */}
-          <div style={{display: "flex", flexDirection: "column", gap: 12, marginBottom: 24}}>
-            <label style={radioLabelBlock}>
-              <input
-                type="radio"
-                checked={paymentMethod === "ath"}
-                onChange={() => setPaymentMethod("ath")}
-              />
-              <div style={{marginLeft: 12}}>
-                <div style={{fontWeight: 600}}>ATH Móvil Business</div>
-                <div style={{fontSize: 13, opacity: 0.8}}>Pago instantáneo</div>
-              </div>
-            </label>
-            <label style={radioLabelBlock}>
-              <input
-                type="radio"
-                checked={paymentMethod === "stripe"}
-                onChange={() => setPaymentMethod("stripe")}
-              />
-              <div style={{marginLeft: 12}}>
-                <div style={{fontWeight: 600}}>Tarjeta de Crédito/Débito</div>
-                <div style={{fontSize: 13, opacity: 0.8}}>Procesado por Stripe (próximamente)</div>
-              </div>
-            </label>
-          </div>
-
-          {paymentMethod === "ath" && (
-            <>
-              <a
-                href="https://www.athmovil.com/pay?publicToken=phisigmaalpha"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={athBtn}
-              >
-                Pagar por ATH Móvil Business
-              </a>
-
-              <div style={{ fontSize: 15, opacity: 0.9, marginTop: 10, textAlign: "center" }}>
-                <span
-                  onClick={() => {
-                    navigator.clipboard.writeText("phisigmaalpha");
-                    setCopiado(true);
-                    setTimeout(() => setCopiado(false), 2000);
-                  }}
-                  style={{
-                    display: "inline-block",
-                    marginTop: 10,
-                    fontSize: 22,
-                    fontWeight: 700,
-                    letterSpacing: 1,
-                    cursor: "pointer",
-                    color: copiado ? "#0f0" : "#d4af37",
-                    textShadow: copiado ? "0 0 20px rgba(0,255,0,0.9)" : "0 0 12px rgba(212,175,55,0.9)",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  phisigmaalpha
-                </span>
-
-                <div
-                  style={{
-                    marginTop: 6,
-                    fontSize: 12,
-                    letterSpacing: 1,
-                    color: copiado ? "#0f0" : "#999",
-                    opacity: 0.9,
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {copiado ? "✓ COPIADO" : "👆 TOCA PARA COPIAR"}
-                </div>
-
-                <div style={{ marginTop: 12, fontSize: 13, opacity: 0.8 }}>
-                  Adjunta confirmación de pago para continuar
-                </div>
-              </div>
-
-              <div style={uploadWrapper}>
-                <label style={uploadMini}>
+              <div style={paymentGrid}>
+                <label style={paymentCard}>
                   <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
+                    type="radio"
+                    checked={paymentMethod === "ath"}
+                    onChange={() => setPaymentMethod("ath")}
+                    style={radio}
                   />
-                  {receipt ? (
-                    <span style={{ color: "#0f0" }}>✔ Evidencia cargada</span>
-                  ) : (
-                    <span>📤 Subir evidencia</span>
-                  )}
+                  <div>
+                    <div style={paymentTitle}>💳 ATH Móvil Business</div>
+                    <div style={paymentDesc}>Pago instantáneo</div>
+                  </div>
+                </label>
+
+                <label style={paymentCard}>
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "tarjeta"}
+                    onChange={() => setPaymentMethod("tarjeta")}
+                    style={radio}
+                  />
+                  <div>
+                    <div style={paymentTitle}>💳 Tarjeta (Visa/MasterCard)</div>
+                    <div style={paymentDesc}>Próximamente</div>
+                  </div>
+                </label>
+
+                <label style={paymentCard}>
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "paypal"}
+                    onChange={() => setPaymentMethod("paypal")}
+                    style={radio}
+                  />
+                  <div>
+                    <div style={paymentTitle}>💵 PayPal</div>
+                    <div style={paymentDesc}>Paga en 3 plazos</div>
+                  </div>
                 </label>
               </div>
 
-              <button style={primaryBtn} onClick={confirmarPago} disabled={loading}>
-                {loading ? "Subiendo..." : "Confirmar pago"}
-              </button>
-            </>
-          )}
+              {paymentMethod === "ath" && (
+                <div style={athSection}>
+                  <h3 style={{marginBottom: 16, textAlign: "center"}}>Paga con ATH Móvil Business</h3>
+                  <p style={{textAlign: "center", marginBottom: 24}}>
+                    Envía <strong>${total.toFixed(2)}</strong> a:
+                  </p>
+                  <div style={athUsername}>phisigmaalpha</div>
+                  <p style={{textAlign: "center", fontSize: 14, opacity: 0.7, marginBottom: 24}}>
+                    Toca para copiar el username
+                  </p>
 
-          {paymentMethod === "stripe" && (
-            <>
-              <div style={{
-                padding: 20,
-                background: "rgba(212,175,55,0.1)",
-                border: "1px solid rgba(212,175,55,0.3)",
-                borderRadius: 10,
-                textAlign: "center",
-                marginBottom: 20,
-              }}>
-                <p style={{margin: 0, fontSize: 14}}>
-                  El pago con tarjeta estará disponible próximamente.
-                  <br />
-                  Por ahora, usa ATH Móvil Business.
-                </p>
-              </div>
+                  <div style={uploadSection}>
+                    <label style={uploadButton}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
+                      />
+                      {receipt ? (
+                        <span style={{color: "#28a745"}}>✓ Evidencia cargada: {receipt.name}</span>
+                      ) : (
+                        <span>📤 Subir evidencia de pago</span>
+                      )}
+                    </label>
+                  </div>
 
-              <button style={{...primaryBtn, opacity: 0.5, cursor: "not-allowed"}} disabled>
-                Pagar con tarjeta (próximamente)
-              </button>
-            </>
-          )}
+                  <button style={primaryButton} onClick={confirmarPago} disabled={!receipt || loading}>
+                    {loading ? "Procesando..." : "CONFIRMAR PAGO"}
+                  </button>
+                </div>
+              )}
 
-          <button type="button" style={linkBtn} onClick={() => setStep("review")}>
-            Volver
-          </button>
+              {paymentMethod === "tarjeta" && (
+                <div style={disabledSection}>
+                  <p>El pago con tarjeta estará disponible próximamente.</p>
+                  <p>Por favor usa ATH Móvil Business.</p>
+                </div>
+              )}
+
+              {paymentMethod === "paypal" && (
+                <div style={disabledSection}>
+                  <p>El pago con PayPal estará disponible próximamente.</p>
+                  <p>Por favor usa ATH Móvil Business.</p>
+                </div>
+              )}
+            </div>
+
+            <button style={secondaryButton} onClick={() => setStep("review")}>
+              Volver
+            </button>
+          </div>
         </div>
       )}
     </main>
@@ -768,226 +774,411 @@ export default function CompraConvencion() {
 
 /* ==================== STYLES ==================== */
 
-const main = {
+const main: React.CSSProperties = {
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #0a0a14 0%, #1a1a2e 100%)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
+  background: "#f8f9fa",
   padding: "40px 20px",
-  position: "relative" as const,
 };
 
-const alertBox = {
-  position: "fixed" as const,
-  top: 20,
-  left: "50%",
-  transform: "translateX(-50%)",
-  background: "rgba(212,175,55,0.95)",
-  color: "#000",
-  padding: "16px 24px",
+const container: React.CSSProperties = {
+  maxWidth: 800,
+  margin: "0 auto",
+};
+
+const formCard: React.CSSProperties = {
+  background: "#fff",
   borderRadius: 12,
-  boxShadow: "0 4px 20px rgba(212,175,55,0.5)",
-  zIndex: 9999,
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  padding: 40,
+};
+
+const card: React.CSSProperties = {
+  background: "#fff",
+  borderRadius: 12,
+  padding: 48,
+  textAlign: "center",
+};
+
+const formHeader: React.CSSProperties = {
+  marginBottom: 40,
+  textAlign: "center",
+  borderBottom: "2px solid #dee2e6",
+  paddingBottom: 24,
+};
+
+const formTitle: React.CSSProperties = {
+  fontSize: 32,
+  fontWeight: 700,
+  marginBottom: 8,
+  color: "#1a1a2e",
+};
+
+const formSubtitle: React.CSSProperties = {
+  fontSize: 16,
+  color: "#6c757d",
+};
+
+const section: React.CSSProperties = {
+  marginBottom: 40,
+};
+
+const sectionTitle: React.CSSProperties = {
+  fontSize: 20,
+  fontWeight: 700,
+  marginBottom: 20,
+  color: "#1a1a2e",
+};
+
+const formGroup: React.CSSProperties = {
+  marginBottom: 20,
+};
+
+const formGrid: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 20,
+};
+
+const label: React.CSSProperties = {
+  display: "block",
+  marginBottom: 8,
+  fontWeight: 600,
+  fontSize: 14,
+  color: "#495057",
+};
+
+const input: React.CSSProperties = {
+  width: "100%",
+  padding: 12,
+  border: "1px solid #ced4da",
+  borderRadius: 6,
+  fontSize: 15,
+  outline: "none",
+  transition: "border 0.2s",
+};
+
+const radioGroup: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const radioCard: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 12,
-  fontWeight: 600,
+  padding: 16,
+  border: "2px solid #dee2e6",
+  borderRadius: 8,
+  cursor: "pointer",
+  transition: "all 0.2s",
+};
+
+const radio: React.CSSProperties = {
+  width: 20,
+  height: 20,
+  cursor: "pointer",
+};
+
+const radioTitle: React.CSSProperties = {
+  fontWeight: 700,
+  fontSize: 16,
+  marginBottom: 4,
+};
+
+const radioDesc: React.CSSProperties = {
+  fontSize: 14,
+  color: "#6c757d",
+};
+
+const checkLabel: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  cursor: "pointer",
   fontSize: 15,
-  maxWidth: "90%",
 };
 
-const alertIcon = {
-  fontSize: 20,
+const checkboxCard: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  padding: 16,
+  border: "1px solid #dee2e6",
+  borderRadius: 8,
+  cursor: "pointer",
 };
 
-const card = {
-  width: "100%",
-  maxWidth: 600,
-  padding: 40,
-  borderRadius: 16,
-  background: "rgba(15,15,25,0.95)",
-  border: "1px solid rgba(212,175,55,0.3)",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-  color: "#ffffff",
+const priceBox: React.CSSProperties = {
+  padding: 24,
+  background: "#e7f3ff",
+  border: "2px solid #0056b3",
+  borderRadius: 8,
+  textAlign: "center",
+  marginTop: 20,
 };
 
-const title = {
-  fontSize: 32,
-  letterSpacing: 2,
-  color: "#d4af37",
-  textAlign: "center" as const,
+const priceBoxTitle: React.CSSProperties = {
+  fontSize: 14,
+  color: "#6c757d",
+  marginBottom: 8,
+  textTransform: "uppercase",
+  letterSpacing: 1,
+};
+
+const priceBoxCategory: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 700,
+  marginBottom: 4,
+};
+
+const priceBoxType: React.CSSProperties = {
+  fontSize: 14,
+  opacity: 0.7,
   marginBottom: 12,
 };
 
-const subtitle = {
-  fontSize: 24,
-  color: "#d4af37",
-  marginBottom: 20,
-  textAlign: "center" as const,
+const priceBoxAmount: React.CSSProperties = {
+  fontSize: 32,
+  fontWeight: 700,
+  color: "#0056b3",
 };
 
-const text = {
-  fontSize: 14,
-  opacity: 0.9,
-  marginBottom: 24,
-  textAlign: "center" as const,
-  lineHeight: 1.6,
-};
-
-const input = {
-  width: "100%",
-  padding: 12,
-  marginBottom: 16,
-  background: "#0a0a14",
-  color: "#d4af37",
-  border: "1px solid rgba(212,175,55,0.4)",
+const totalSection: React.CSSProperties = {
+  padding: 24,
+  background: "#f8f9fa",
   borderRadius: 8,
-  outline: "none",
-  fontSize: 15,
+  marginBottom: 32,
 };
 
-const label = {
-  fontSize: 13,
-  opacity: 0.8,
-  marginBottom: 8,
-  display: "block",
-  color: "#d4af37",
-  fontWeight: 600,
-};
-
-const radioLabel = {
-  display: "flex",
-  alignItems: "center",
-  cursor: "pointer",
-  fontSize: 15,
-};
-
-const radioLabelBlock = {
-  display: "flex",
-  alignItems: "center",
-  padding: "12px",
-  background: "rgba(212,175,55,0.05)",
-  borderRadius: 8,
-  border: "1px solid rgba(212,175,55,0.2)",
-  cursor: "pointer",
-  fontSize: 15,
-};
-
-const checkboxLabel = {
-  display: "flex",
-  alignItems: "center",
-  padding: "12px",
-  marginBottom: 10,
-  background: "rgba(212,175,55,0.05)",
-  borderRadius: 8,
-  border: "1px solid rgba(212,175,55,0.2)",
-  cursor: "pointer",
-  fontSize: 15,
-};
-
-const packageBox = {
-  padding: 20,
-  background: "rgba(212,175,55,0.1)",
-  border: "1px solid rgba(212,175,55,0.3)",
-  borderRadius: 10,
-  marginBottom: 16,
-  textAlign: "center" as const,
-};
-
-const totalBox = {
-  marginTop: 24,
-  marginBottom: 20,
-  padding: 20,
-  background: "rgba(0,0,0,0.3)",
-  borderRadius: 10,
-  border: "1px solid rgba(212,175,55,0.3)",
-};
-
-const totalRow = {
+const totalRow: React.CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
-  marginBottom: 8,
+  marginBottom: 12,
   fontSize: 16,
 };
 
-const requiredNote = {
-  fontSize: 12,
-  color: "#999",
-  fontStyle: "italic",
-  marginTop: -12,
-  marginBottom: 20,
+const totalFinal: React.CSSProperties = {
+  fontSize: 20,
+  fontWeight: 700,
+  color: "#0056b3",
+  paddingTop: 12,
+  borderTop: "2px solid #dee2e6",
+  marginTop: 12,
 };
 
-const primaryBtn = {
+const primaryButton: React.CSSProperties = {
   width: "100%",
   padding: 16,
-  background: "linear-gradient(135deg, #d4af37 0%, #f4e5a1 50%, #d4af37 100%)",
-  color: "#000",
-  fontWeight: 700,
+  background: "#0056b3",
+  color: "#fff",
   border: "none",
-  borderRadius: 10,
-  cursor: "pointer",
-  marginTop: 10,
+  borderRadius: 8,
   fontSize: 16,
-  letterSpacing: 1,
-  boxShadow: "0 4px 16px rgba(212,175,55,0.3)",
-  transition: "all 0.2s ease",
-};
-
-const linkBtn = {
-  marginTop: 16,
-  background: "transparent",
-  color: "#d4af37",
-  border: "none",
+  fontWeight: 700,
   cursor: "pointer",
-  textDecoration: "underline",
+  transition: "all 0.2s",
+  marginBottom: 12,
+};
+
+const secondaryButton: React.CSSProperties = {
   width: "100%",
-  padding: 10,
-  fontSize: 14,
+  padding: 16,
+  background: "transparent",
+  color: "#6c757d",
+  border: "1px solid #dee2e6",
+  borderRadius: 8,
+  fontSize: 16,
+  fontWeight: 600,
+  cursor: "pointer",
+  transition: "all 0.2s",
 };
 
-const summaryBox = {
-  border: "1px solid rgba(212,175,55,0.3)",
+const reviewSection: React.CSSProperties = {
+  marginBottom: 32,
+  padding: 24,
+  background: "#f8f9fa",
+  borderRadius: 8,
+};
+
+const reviewTitle: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 700,
+  marginBottom: 16,
+  color: "#1a1a2e",
+};
+
+const reviewGrid: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+};
+
+const reviewItem: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+};
+
+const reviewLabel: React.CSSProperties = {
+  fontSize: 14,
+  color: "#6c757d",
+};
+
+const reviewValue: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 600,
+  textAlign: "right",
+};
+
+const paymentGrid: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  marginBottom: 32,
+};
+
+const paymentCard: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  padding: 16,
+  border: "2px solid #dee2e6",
+  borderRadius: 8,
+  cursor: "pointer",
+};
+
+const paymentTitle: React.CSSProperties = {
+  fontWeight: 700,
+  fontSize: 16,
+  marginBottom: 4,
+};
+
+const paymentDesc: React.CSSProperties = {
+  fontSize: 14,
+  color: "#6c757d",
+};
+
+const athSection: React.CSSProperties = {
+  padding: 24,
+  background: "#f8f9fa",
+  borderRadius: 8,
+  marginTop: 24,
+};
+
+const athUsername: React.CSSProperties = {
+  fontSize: 28,
+  fontWeight: 700,
+  color: "#0056b3",
+  textAlign: "center",
   padding: 20,
-  marginTop: 16,
-  marginBottom: 24,
-  borderRadius: 10,
-  background: "rgba(212,175,55,0.05)",
-  fontSize: 14,
-  lineHeight: 1.8,
+  background: "#fff",
+  borderRadius: 8,
+  border: "2px solid #0056b3",
+  cursor: "pointer",
+  marginBottom: 8,
 };
 
-const athBtn = {
+const uploadSection: React.CSSProperties = {
+  marginBottom: 24,
+};
+
+const uploadButton: React.CSSProperties = {
   display: "block",
   width: "100%",
-  padding: "16px",
-  background: "linear-gradient(135deg, #d4af37 0%, #f4e5a1 100%)",
-  color: "#000",
-  fontWeight: "bold" as const,
-  borderRadius: 10,
-  textAlign: "center" as const,
-  textDecoration: "none",
-  marginBottom: 16,
-  fontSize: 16,
-  boxShadow: "0 4px 16px rgba(212,175,55,0.4)",
-};
-
-const uploadWrapper = {
-  display: "flex",
-  justifyContent: "center",
-  marginTop: 20,
-  marginBottom: 20,
-};
-
-const uploadMini = {
-  padding: "12px 20px",
-  borderRadius: 999,
-  border: "1px dashed #d4af37",
-  fontSize: 14,
-  color: "#d4af37",
+  padding: 16,
+  background: "#fff",
+  border: "2px dashed #0056b3",
+  borderRadius: 8,
+  textAlign: "center",
   cursor: "pointer",
-  boxShadow: "0 0 10px rgba(212,175,55,0.2)",
-  transition: "all 0.25s ease",
-  background: "rgba(212,175,55,0.1)",
+  fontSize: 15,
+  fontWeight: 600,
+  color: "#0056b3",
+  transition: "all 0.2s",
+};
+
+const disabledSection: React.CSSProperties = {
+  padding: 32,
+  textAlign: "center",
+  background: "#fff3cd",
+  borderRadius: 8,
+  marginTop: 24,
+};
+
+const successIcon: React.CSSProperties = {
+  fontSize: 64,
+  marginBottom: 24,
+};
+
+const successTitle: React.CSSProperties = {
+  fontSize: 32,
+  fontWeight: 700,
+  marginBottom: 16,
+  color: "#28a745",
+};
+
+const successText: React.CSSProperties = {
+  fontSize: 16,
+  marginBottom: 16,
+  color: "#6c757d",
+};
+
+const codeBox: React.CSSProperties = {
+  fontSize: 28,
+  fontWeight: 700,
+  color: "#0056b3",
+  padding: 20,
+  background: "#e7f3ff",
+  borderRadius: 8,
+  marginBottom: 32,
+};
+
+const summaryBox: React.CSSProperties = {
+  padding: 24,
+  background: "#f8f9fa",
+  borderRadius: 8,
+  marginBottom: 32,
+  textAlign: "left",
+};
+
+const summaryTitle: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 700,
+  marginBottom: 16,
+};
+
+const summaryRow: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: 12,
+  fontSize: 15,
+};
+
+const infoText: React.CSSProperties = {
+  fontSize: 14,
+  color: "#6c757d",
+  marginBottom: 32,
+};
+
+const loadingOverlay: React.CSSProperties = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.7)",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "#fff",
+  zIndex: 9999,
+};
+
+const spinner: React.CSSProperties = {
+  width: 50,
+  height: 50,
+  border: "4px solid rgba(255,255,255,0.3)",
+  borderTop: "4px solid #fff",
+  borderRadius: "50%",
+  animation: "spin 1s linear infinite",
+  marginBottom: 16,
 };
