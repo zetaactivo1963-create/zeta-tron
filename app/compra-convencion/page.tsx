@@ -194,33 +194,10 @@ export default function CompraConvencion() {
 
       {/* HEADER */}
       <header style={header}>
-        <div style={headerLeft}>
-          {step === "form" && (
-            <Link href="/events/sigma-convention-98" style={backButton}>
-              <span style={backArrow}>←</span>
-              <span>VOLVER AL EVENTO</span>
-            </Link>
-          )}
-          {step === "review" && (
-            <button onClick={() => setStep("form")} style={backButton}>
-              <span style={backArrow}>←</span>
-              <span>VOLVER A EDITAR</span>
-            </button>
-          )}
-          {step === "payment" && (
-            <button onClick={() => setStep("review")} style={backButton}>
-              <span style={backArrow}>←</span>
-              <span>VOLVER A REVISAR</span>
-            </button>
-          )}
-        </div>
-        
         <Link href="/" style={logoLink}>
           <span style={logoIcon}>🎫</span>
           <span style={logoText}>TICKETEDY</span>
         </Link>
-        
-        <div style={{width: 200}}></div>
       </header>
 
       {/* DONE */}
@@ -305,6 +282,13 @@ export default function CompraConvencion() {
                     <div style={optionTitle}>Solo Eventos Sociales</div>
                     <div style={optionDesc}>Gala, Cena y/o Brunch</div>
                   </div>
+                </div>
+
+                <div style={backButtonContainer}>
+                  <Link href="/events/sigma-convention-98" style={backButton}>
+                    <span style={backArrow}>←</span>
+                    <span>VOLVER</span>
+                  </Link>
                 </div>
               </div>
 
@@ -395,6 +379,13 @@ export default function CompraConvencion() {
                     <option value="Tau Columbia Boriquen">Tau Columbia Boriquen</option>
                     <option value="Pasivo">Pasivo</option>
                   </select>
+                </div>
+
+                <div style={backButtonContainer}>
+                  <Link href="/events/sigma-convention-98" style={backButton}>
+                    <span style={backArrow}>←</span>
+                    <span>VOLVER</span>
+                  </Link>
                 </div>
               </div>
 
@@ -519,6 +510,13 @@ export default function CompraConvencion() {
                     </div>
                   </div>
                 </div>
+
+                <div style={backButtonContainer}>
+                  <Link href="/events/sigma-convention-98" style={backButton}>
+                    <span style={backArrow}>←</span>
+                    <span>VOLVER</span>
+                  </Link>
+                </div>
               </div>
 
               {/* TOTAL */}
@@ -630,6 +628,13 @@ export default function CompraConvencion() {
             <button style={primaryButton} onClick={() => setStep("payment")}>
               CONTINUAR AL PAGO
             </button>
+
+            <div style={backButtonContainer}>
+              <button onClick={() => setStep("form")} style={backButton}>
+                <span style={backArrow}>←</span>
+                <span>VOLVER</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -726,6 +731,13 @@ export default function CompraConvencion() {
                 </div>
               )}
             </div>
+
+            <div style={backButtonContainer}>
+              <button onClick={() => setStep("review")} style={backButton}>
+                <span style={backArrow}>←</span>
+                <span>VOLVER</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -754,14 +766,14 @@ const animationCSS = `
 const main: React.CSSProperties = {
   minHeight: "100vh",
   background: "#0f1729",
-  padding: "0 0 60px 0",
+  paddingBottom: 60,
 };
 
 const header: React.CSSProperties = {
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "center",
   alignItems: "center",
-  padding: "20px 40px",
+  padding: "24px 40px",
   background: "rgba(15,23,41,0.95)",
   borderBottom: "1px solid rgba(212,175,55,0.3)",
   backdropFilter: "blur(10px)",
@@ -770,33 +782,35 @@ const header: React.CSSProperties = {
   zIndex: 100,
 };
 
-const headerLeft: React.CSSProperties = {
-  width: 200,
-};
-
 const logoLink: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: 12,
   textDecoration: "none",
   color: "#fff",
 };
 
 const logoIcon: React.CSSProperties = {
-  fontSize: 28,
+  fontSize: 32,
 };
 
 const logoText: React.CSSProperties = {
-  fontSize: 24,
+  fontSize: 28,
   fontWeight: 700,
   letterSpacing: 2,
+};
+
+const backButtonContainer: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "center",
+  marginTop: 32,
 };
 
 const backButton: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   gap: 10,
-  padding: "12px 24px",
+  padding: "12px 32px",
   background: "rgba(212,175,55,0.1)",
   border: "2px solid #d4af37",
   borderRadius: 8,
@@ -847,6 +861,8 @@ const formSubtitle: React.CSSProperties = {
 
 const section: React.CSSProperties = {
   marginBottom: 40,
+  paddingBottom: 40,
+  borderBottom: "1px solid rgba(212,175,55,0.2)",
 };
 
 const sectionTitle: React.CSSProperties = {
@@ -1283,3 +1299,4 @@ const spinner: React.CSSProperties = {
   borderRadius: "50%",
   animation: "spin 1s linear infinite",
 };
+
