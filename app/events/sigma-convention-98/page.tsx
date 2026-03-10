@@ -25,10 +25,6 @@ export default function SigmaConvention98() {
       
       {/* HEADER */}
       <header style={header}>
-        <Link href="/" style={backButton}>
-          <span style={backArrow}>←</span>
-          <span>VOLVER AL INICIO</span>
-        </Link>
         <Link href="/" style={logoLink}>
           <span style={logoIcon}>🎫</span>
           <span style={logoText}>TICKETEDY</span>
@@ -199,7 +195,8 @@ export default function SigmaConvention98() {
       {/* HOSPEDAJE - HOTEL */}
       <section style={sectionDark}>
         <div style={container}>
-          <h2 style={sectionTitle}>HOSPEDAJE EN COSTA BAHÍA</h2>
+          <h2 style={sectionTitle}>TARIFAS DE HOSPEDAJE</h2>
+          <p style={hotelSubtitle}>Hotel Costa Bahía - Convention Center & Casino</p>
           
           {/* Galería de fotos */}
           <div style={photoGallery}>
@@ -235,11 +232,11 @@ export default function SigmaConvention98() {
               <span style={{fontSize: 14, opacity: 0.7}}>Más 8% hotel fee + 11% impuesto gubernamental</span>
             </p>
             
-            <div style={hotelFeatures}>
-              <div style={hotelFeature}>Desayuno incluido</div>
-              <div style={hotelFeature}>Piscina estilo laguna</div>
-              <div style={hotelFeature}>Wi-Fi gratis</div>
-              <div style={hotelFeature}>Estacionamiento</div>
+            <div style={hotelFeaturesList}>
+              <div style={hotelFeatureItem}>✓ Desayuno incluido</div>
+              <div style={hotelFeatureItem}>✓ Piscina estilo laguna</div>
+              <div style={hotelFeatureItem}>✓ Wi-Fi gratis</div>
+              <div style={hotelFeatureItem}>✓ Estacionamiento</div>
             </div>
 
             <div style={hotelContact}>
@@ -360,52 +357,31 @@ const main: React.CSSProperties = {
 
 const header: React.CSSProperties = {
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "center",
   alignItems: "center",
-  padding: "20px 40px",
+  padding: "24px 40px",
   background: "rgba(15,23,41,0.95)",
   borderBottom: "1px solid rgba(212,175,55,0.3)",
+  backdropFilter: "blur(10px)",
   position: "sticky",
   top: 0,
   zIndex: 100,
-  backdropFilter: "blur(10px)",
-};
-
-const backButton: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  padding: "12px 24px",
-  background: "rgba(212,175,55,0.1)",
-  border: "2px solid #d4af37",
-  borderRadius: 8,
-  color: "#d4af37",
-  textDecoration: "none",
-  fontSize: 14,
-  fontWeight: 700,
-  letterSpacing: 1,
-  transition: "all 0.3s",
-};
-
-const backArrow: React.CSSProperties = {
-  fontSize: 20,
-  fontWeight: 700,
 };
 
 const logoLink: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: 12,
   textDecoration: "none",
   color: "#fff",
 };
 
 const logoIcon: React.CSSProperties = {
-  fontSize: 28,
+  fontSize: 32,
 };
 
 const logoText: React.CSSProperties = {
-  fontSize: 24,
+  fontSize: 28,
   fontWeight: 700,
   letterSpacing: 2,
 };
@@ -522,6 +498,14 @@ const sectionSubtitle: React.CSSProperties = {
   textAlign: "center",
   marginBottom: 48,
   opacity: 0.8,
+};
+
+const hotelSubtitle: React.CSSProperties = {
+  fontSize: 18,
+  textAlign: "center",
+  marginBottom: 48,
+  opacity: 0.9,
+  fontWeight: 500,
 };
 
 const presidentCard: React.CSSProperties = {
@@ -733,20 +717,23 @@ const hotelRate: React.CSSProperties = {
   marginBottom: 32,
 };
 
-const hotelFeatures: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-  gap: 16,
+const hotelFeaturesList: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
   marginBottom: 32,
+  maxWidth: 500,
+  margin: "0 auto 32px",
 };
 
-const hotelFeature: React.CSSProperties = {
-  padding: 16,
+const hotelFeatureItem: React.CSSProperties = {
+  padding: 14,
   background: "rgba(212,175,55,0.1)",
   borderRadius: 8,
-  fontSize: 15,
-  fontWeight: 600,
+  fontSize: 16,
+  fontWeight: 500,
   border: "1px solid rgba(212,175,55,0.3)",
+  textAlign: "left",
 };
 
 const hotelContact: React.CSSProperties = {
