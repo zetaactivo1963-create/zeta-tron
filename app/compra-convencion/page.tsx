@@ -194,10 +194,33 @@ export default function CompraConvencion() {
 
       {/* HEADER */}
       <header style={header}>
-        <Link href="/events/sigma-convention-98" style={backButton}>
-          <span style={backArrow}>←</span>
-          <span>VOLVER AL EVENTO</span>
+        <div style={headerLeft}>
+          {step === "form" && (
+            <Link href="/events/sigma-convention-98" style={backButton}>
+              <span style={backArrow}>←</span>
+              <span>VOLVER AL EVENTO</span>
+            </Link>
+          )}
+          {step === "review" && (
+            <button onClick={() => setStep("form")} style={backButton}>
+              <span style={backArrow}>←</span>
+              <span>VOLVER A EDITAR</span>
+            </button>
+          )}
+          {step === "payment" && (
+            <button onClick={() => setStep("review")} style={backButton}>
+              <span style={backArrow}>←</span>
+              <span>VOLVER A REVISAR</span>
+            </button>
+          )}
+        </div>
+        
+        <Link href="/" style={logoLink}>
+          <span style={logoIcon}>🎫</span>
+          <span style={logoText}>TICKETEDY</span>
         </Link>
+        
+        <div style={{width: 200}}></div>
       </header>
 
       {/* DONE */}
@@ -526,11 +549,6 @@ export default function CompraConvencion() {
       {step === "review" && (
         <div style={container}>
           <div style={formCard}>
-            <Link href="#" onClick={(e) => { e.preventDefault(); setStep("form"); }} style={backButtonInline}>
-              <span style={backArrow}>←</span>
-              <span>EDITAR INFORMACIÓN</span>
-            </Link>
-
             <h1 style={formTitle}>Confirma tu Información</h1>
 
             <div style={reviewSection}>
@@ -620,11 +638,6 @@ export default function CompraConvencion() {
       {step === "payment" && (
         <div style={container}>
           <div style={formCard}>
-            <Link href="#" onClick={(e) => { e.preventDefault(); setStep("review"); }} style={backButtonInline}>
-              <span style={backArrow}>←</span>
-              <span>VOLVER</span>
-            </Link>
-
             <h1 style={formTitle}>Método de Pago</h1>
             <p style={{textAlign: "center", fontSize: 20, marginBottom: 40}}>
               Total a pagar: <strong style={{color: "#d4af37", fontSize: 28}}>${total.toFixed(2)}</strong>
@@ -650,24 +663,39 @@ export default function CompraConvencion() {
 
               {paymentMethod === "ath" && (
                 <div style={athSection}>
-                  <h3 style={{marginBottom: 20, textAlign: "center", fontSize: 20}}>Paga con ATH Móvil Business</h3>
-                  <p style={{textAlign: "center", marginBottom: 24, fontSize: 16}}>
-                    Envía <strong style={{color: "#d4af37"}}>${total.toFixed(2)}</strong> a:
-                  </p>
-                  <div 
-                    style={athUsername}
-                    onClick={() => {
-                      navigator.clipboard.writeText("phisigmaalpha");
-                      alert("Username copiado: phisigmaalpha");
-                    }}
-                  >
-                    phisigmaalpha
+                  <h3 style={athTitle}>Paga con ATH Móvil Business</h3>
+                  
+                  <div style={athAmountBox}>
+                    <div style={athAmountLabel}>Total a enviar:</div>
+                    <div style={athAmountValue}>${total.toFixed(2)}</div>
                   </div>
-                  <p style={{textAlign: "center", fontSize: 13, opacity: 0.7, marginBottom: 32}}>
-                    Toca para copiar el username
-                  </p>
+
+                  <div style={athUsernameSection}>
+                    <div style={athUsernameLabel}>Enviar a:</div>
+                    <div 
+                      style={athUsernameBox}
+                      onClick={() => {
+                        navigator.clipboard.writeText("phisigmaalpha");
+                        alert("✓ Username copiado: phisigmaalpha");
+                      }}
+                    >
+                      <span style={athUsername}>phisigmaalpha</span>
+                      <span style={athCopyIcon}>📋</span>
+                    </div>
+                    <div style={athCopyHint}>Toca el recuadro para copiar</div>
+                  </div>
+
+                  <a 
+                    href="https://www.athmovil.com/pay?publicToken=phisigmaalpha"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={athGoButton}
+                  >
+                    ABRIR ATH MÓVIL BUSINESS
+                  </a>
 
                   <div style={uploadSection}>
+                    <div style={uploadTitle}>Evidencia de Pago</div>
                     <label style={uploadButton}>
                       <input
                         type="file"
@@ -675,11 +703,20 @@ export default function CompraConvencion() {
                         hidden
                         onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
                       />
-                      {receipt ? (
-                        <span style={{color: "#28a745"}}>Evidencia cargada: {receipt.name}</span>
-                      ) : (
-                        <span>Subir evidencia de pago</span>
-                      )}
+                      <div style={uploadIcon}>📤</div>
+                      <div style={uploadText}>
+                        {receipt ? (
+                          <>
+                            <span style={{color: "#28a745", fontWeight: 700}}>✓ Archivo cargado</span>
+                            <span style={{fontSize: 13, opacity: 0.7, marginTop: 4}}>{receipt.name}</span>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{fontWeight: 700}}>Subir captura de pago</span>
+                            <span style={{fontSize: 13, opacity: 0.7, marginTop: 4}}>Toca para seleccionar imagen</span>
+                          </>
+                        )}
+                      </div>
                     </label>
                   </div>
 
@@ -721,6 +758,9 @@ const main: React.CSSProperties = {
 };
 
 const header: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
   padding: "20px 40px",
   background: "rgba(15,23,41,0.95)",
   borderBottom: "1px solid rgba(212,175,55,0.3)",
@@ -728,6 +768,28 @@ const header: React.CSSProperties = {
   position: "sticky",
   top: 0,
   zIndex: 100,
+};
+
+const headerLeft: React.CSSProperties = {
+  width: 200,
+};
+
+const logoLink: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  textDecoration: "none",
+  color: "#fff",
+};
+
+const logoIcon: React.CSSProperties = {
+  fontSize: 28,
+};
+
+const logoText: React.CSSProperties = {
+  fontSize: 24,
+  fontWeight: 700,
+  letterSpacing: 2,
 };
 
 const backButton: React.CSSProperties = {
@@ -744,23 +806,7 @@ const backButton: React.CSSProperties = {
   fontWeight: 700,
   letterSpacing: 1,
   transition: "all 0.3s",
-};
-
-const backButtonInline: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 10,
-  padding: "10px 20px",
-  background: "rgba(212,175,55,0.1)",
-  border: "2px solid #d4af37",
-  borderRadius: 8,
-  color: "#d4af37",
-  textDecoration: "none",
-  fontSize: 13,
-  fontWeight: 700,
-  letterSpacing: 1,
-  marginBottom: 24,
-  transition: "all 0.3s",
+  cursor: "pointer",
 };
 
 const backArrow: React.CSSProperties = {
@@ -1021,43 +1067,138 @@ const reviewValue: React.CSSProperties = {
 
 const athSection: React.CSSProperties = {
   marginTop: 32,
-  padding: 32,
+  padding: 40,
   background: "rgba(15,23,41,0.6)",
   borderRadius: 12,
   border: "2px solid #d4af37",
+};
+
+const athTitle: React.CSSProperties = {
+  fontSize: 24,
+  fontWeight: 700,
+  textAlign: "center",
+  marginBottom: 32,
+  color: "#d4af37",
+  letterSpacing: 1,
+};
+
+const athAmountBox: React.CSSProperties = {
+  textAlign: "center",
+  marginBottom: 32,
+  padding: 24,
+  background: "rgba(212,175,55,0.1)",
+  borderRadius: 12,
+  border: "2px solid rgba(212,175,55,0.3)",
+};
+
+const athAmountLabel: React.CSSProperties = {
+  fontSize: 14,
+  opacity: 0.8,
+  marginBottom: 8,
+};
+
+const athAmountValue: React.CSSProperties = {
+  fontSize: 48,
+  fontWeight: 700,
+  color: "#d4af37",
+};
+
+const athUsernameSection: React.CSSProperties = {
+  marginBottom: 32,
+};
+
+const athUsernameLabel: React.CSSProperties = {
+  fontSize: 16,
+  fontWeight: 600,
+  textAlign: "center",
+  marginBottom: 12,
+  opacity: 0.9,
+};
+
+const athUsernameBox: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 16,
+  padding: 24,
+  background: "rgba(212,175,55,0.15)",
+  border: "3px solid #d4af37",
+  borderRadius: 12,
+  cursor: "pointer",
+  transition: "all 0.3s",
+  marginBottom: 8,
 };
 
 const athUsername: React.CSSProperties = {
   fontSize: 32,
   fontWeight: 700,
   color: "#d4af37",
+  letterSpacing: 1,
+};
+
+const athCopyIcon: React.CSSProperties = {
+  fontSize: 28,
+};
+
+const athCopyHint: React.CSSProperties = {
   textAlign: "center",
-  padding: 24,
-  background: "rgba(212,175,55,0.1)",
+  fontSize: 13,
+  opacity: 0.7,
+  fontStyle: "italic",
+};
+
+const athGoButton: React.CSSProperties = {
+  display: "block",
+  width: "100%",
+  padding: 20,
+  background: "#d4af37",
+  color: "#0f1729",
+  border: "none",
   borderRadius: 12,
-  border: "3px solid #d4af37",
-  cursor: "pointer",
-  marginBottom: 8,
+  fontSize: 18,
+  fontWeight: 700,
+  textAlign: "center",
+  textDecoration: "none",
+  letterSpacing: 1,
+  marginBottom: 32,
   transition: "all 0.3s",
+  boxShadow: "0 4px 16px rgba(212,175,55,0.3)",
 };
 
 const uploadSection: React.CSSProperties = {
   marginBottom: 24,
 };
 
+const uploadTitle: React.CSSProperties = {
+  fontSize: 16,
+  fontWeight: 600,
+  marginBottom: 16,
+  textAlign: "center",
+};
+
 const uploadButton: React.CSSProperties = {
-  display: "block",
-  width: "100%",
-  padding: 20,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 16,
+  padding: 32,
   background: "rgba(212,175,55,0.1)",
   border: "3px dashed #d4af37",
   borderRadius: 12,
-  textAlign: "center",
   cursor: "pointer",
-  fontSize: 15,
-  fontWeight: 600,
-  color: "#d4af37",
   transition: "all 0.3s",
+};
+
+const uploadIcon: React.CSSProperties = {
+  fontSize: 48,
+};
+
+const uploadText: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 4,
+  color: "#d4af37",
 };
 
 const successCard: React.CSSProperties = {
