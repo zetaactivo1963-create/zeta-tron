@@ -284,12 +284,7 @@ export default function CompraConvencion() {
                   </div>
                 </div>
 
-                <div style={backButtonContainer}>
-                  <Link href="/events/sigma-convention-98" style={backButton}>
-                    <span style={backArrow}>←</span>
-                    <span>VOLVER</span>
-                  </Link>
-                </div>
+
               </div>
 
               {/* DATOS */}
@@ -381,12 +376,7 @@ export default function CompraConvencion() {
                   </select>
                 </div>
 
-                <div style={backButtonContainer}>
-                  <Link href="/events/sigma-convention-98" style={backButton}>
-                    <span style={backArrow}>←</span>
-                    <span>VOLVER</span>
-                  </Link>
-                </div>
+   
               </div>
 
               {/* DETALLES */}
@@ -511,12 +501,7 @@ export default function CompraConvencion() {
                   </div>
                 </div>
 
-                <div style={backButtonContainer}>
-                  <Link href="/events/sigma-convention-98" style={backButton}>
-                    <span style={backArrow}>←</span>
-                    <span>VOLVER</span>
-                  </Link>
-                </div>
+
               </div>
 
               {/* TOTAL */}
@@ -538,6 +523,13 @@ export default function CompraConvencion() {
               <button type="submit" style={primaryButton}>
                 REVISAR INSCRIPCIÓN
               </button>
+
+              <div style={backButtonContainer}>
+                <Link href="/events/sigma-convention-98" style={backButton}>
+                  <span style={backArrow}>←</span>
+                  <span>VOLVER</span>
+                </Link>
+              </div>
             </form>
           </div>
         </div>
